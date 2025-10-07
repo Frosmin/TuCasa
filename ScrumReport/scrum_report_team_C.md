@@ -1,22 +1,43 @@
-Scrum Report 1: Oct 7
+# Scrum Report #1 — Oct 7
 
-Simon:
+## Simon
+- **Y:** Trabajé en creación del *Scrum Report*  
+- **T:** Hoy voy a trabajar en mejoras en el *Scrum Report*  
+- **B:** No he tenido problemas   
 
-**Y:** Trabaje en Creacion del ScrumReport
-**T:** Hoy voy a trabajar en Mejoras en el ScrumReport
-**B:** He tenido problemas de ninguno
+---
 
-Ricardo:
-Carlos: 
+## Ricardo
+- **Y:** Trabajé en ...  
+- **T:** Hoy voy a trabajar en ...  
+- **B:** He tenido problemas de ...  
 
-======================
-Scrum Report 1: Oct 10
+---
 
-Simon:
+## Carlos
+- **Y:**  
+- **T:**  
+- **B:**  
 
-**Y:** Trabaje en...
-**T:** Hoy voy a trabajar en...
-**B:** He tenido problemas de...
+---
 
-Ricardo:
-Carlos: 
+# Scrum Report #2 — Oct 10
+
+## Simon
+- **Y:** Trabajé en ...  
+- **T:** Hoy voy a trabajar en ...  
+- **B:** He tenido problemas de ...  
+
+---
+
+## Ricardo
+- **Y:**  
+- **T:**  
+- **B:**  
+
+---
+
+## Carlos
+- **Y:**  
+- **T:**  
+- **B:**  
