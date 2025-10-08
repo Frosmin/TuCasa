@@ -15,9 +15,9 @@
 ---
 
 ## Jhunior
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:**  Trabaje en la creacion de *Tasks* para los PBI del "Team B" y me asigne algunas
+- **T:**  Hoy voy a revisar el video de explicacion de pullrequest
+- **B:**  No he tenido problemas
 
 ---
 
