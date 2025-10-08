@@ -15,9 +15,9 @@
 ---
 
 ## Carlos
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Trabaje en propuestas para la UI, buscando aplicar un poco de Google material design.
+- **T:** Hoy revisaré la MER que acordó usar el integration team
+- **B:** De momento no enfrente problemas
 
 ---
 
