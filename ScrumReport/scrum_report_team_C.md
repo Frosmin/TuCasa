@@ -1,7 +1,7 @@
 # Scrum Report #1 — Oct 7
 
 ## Simon
-- **Y:** Trabajé en creación del *Scrum Report*  
+- **Y:** Trabajé en la configuracion de github ScrumReport, Dicussions, backlog...etc
 - **T:** Hoy voy a trabajar en mejoras en el *Scrum Report*  
 - **B:** No he tenido problemas   
 
