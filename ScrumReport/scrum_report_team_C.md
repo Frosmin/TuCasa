@@ -8,9 +8,9 @@
 ---
 
 ## Ricardo
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé en la primera reunión del integration team, se coordinó los primeros aspectos importantes del proyecto  
+- **T:** Hoy voy a revisar el video sobre el flujo de trabajo en github
+- **B:** No tuve problemas  
 
 ---
 
