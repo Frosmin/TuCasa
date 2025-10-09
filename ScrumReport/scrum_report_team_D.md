@@ -15,8 +15,8 @@
 ---
 
 ## Javier
-- **Y:**   
-- **T:**    
-- **B:**  
+- **Y:** Trabaje en completar las historias para la edicion de ofertas y la estructura para aprobacion de publicaciones.
+- **T:** inicie el diseño para la vista de edicion de publicaciones.
+- **B:** No he tenido ningun problema hasta el momento.
 
 ---
