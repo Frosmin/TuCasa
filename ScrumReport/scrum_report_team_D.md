@@ -8,9 +8,9 @@
 ---
 
 ## Luis
-- **Y:** 
-- **T:**   
-- **B:** 
+- **Y:** Trabaje en completar las historias para el registro e edicion de ofertas y la estructura para aprobacion de publicaciones.
+- **T:** inicie el diseño para la vista de aprobacion de publicaciones.
+- **B:** No he tenido ningun problema hasta el momento.
 
 ---
 
