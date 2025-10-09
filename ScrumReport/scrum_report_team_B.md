@@ -10,7 +10,7 @@
 ## Diego
 - **Y:** Trabajé en la creación de *Tasks* para "TeamB"
 - **T:** Hoy voy a revisar el video de explicación del pull request
-- **B:** No he tenido problemas de ...  
+- **B:** No he tenido problemas 
 
 ---
 
