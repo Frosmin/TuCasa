@@ -372,14 +372,7 @@ export default function VenderPage() {
                             )}
 
                             {/* Botones */}
-                            <div className="grid grid-cols-2 gap-4 pt-4">
-                                <button
-                                    type="button"
-                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition-colors"
-                                >
-                                    <Eye className="w-5 h-5" />
-                                    Vista previa
-                                </button>
+                            <div className="grid gap-4 pt-4">
                                 <button
                                     type="submit"
                                     className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
