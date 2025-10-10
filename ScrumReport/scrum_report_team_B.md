@@ -8,9 +8,9 @@
 ---
 
 ## Diego
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé en la creación de *Tasks* para "TeamB"
+- **T:** Hoy voy a revisar el video de explicación del pull request
+- **B:** No he tenido problemas 
 
 ---
 
