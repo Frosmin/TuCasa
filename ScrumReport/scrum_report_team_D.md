@@ -20,3 +20,24 @@
 - **B:** No he tenido ningun problema hasta el momento.
 
 ---
+# 🧾 Scrum Report #2 — Oct 10
+
+## Johan
+- **Y (Yesterday):**
+- **T (Today):** 
+- **B (Blockers):** 
+
+---
+
+## Luis
+- **Y:** Clone el repositorio con el proyecto inicial, instale las dependencias y revise las herramientas
+- **T:** Inicie el desarrollo Frontend de la vista de aprobacion de ofertas por parte del administrador
+- **B:** No he tenido problemas hasta el momento
+---
+
+## Javier
+- **Y:**
+- **T:** 
+- **B:** 
+
+---
