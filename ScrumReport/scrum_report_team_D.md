@@ -20,3 +20,11 @@
 - **B:** No he tenido ningun problema hasta el momento.
 
 ---
+🧾 Scrum Report #2 — Oct 10
+Johan
+
+Y (Yesterday): Inicialicé el proyecto base del frontend con Next.js + TypeScript, configurando rutas principales y el layout general.
+
+T (Today): Estuve trabajando en la posibilidad de integrar Supabase con Spring Boot, evaluando opciones para la conexión y autenticación. Además, avancé en la creación de endpoints para registrar publicaciones dentro del módulo correspondiente.
+
+B (Blockers): Ninguno por el momento, aunque podría necesitar revisar la configuración de CORS si se continúa con la integración de Supabase.
