@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload, Eye, Home, Building2, Store, DoorClosed, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Upload, Eye, Home, Building2, Store, DoorClosed, ArrowRight, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
 
 type PropertyType = 'casa' | 'departamento' | 'lote' | 'tienda' | 'cuarto';
@@ -9,6 +9,7 @@ type OperationType = 'venta' | 'alquiler' | 'anticrético';
 
 export default function VenderPage() {
     const [step, setStep] = useState(1);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [formData, setFormData] = useState({
         operacion: '' as OperationType | '',
         propertyType: 'casa' as PropertyType,
@@ -53,6 +54,34 @@ export default function VenderPage() {
         if (files) {
             const newImages = Array.from(files).map(file => URL.createObjectURL(file));
             setFormData(prev => ({ ...prev, images: [...prev.images, ...newImages] }));
+            setCurrentImageIndex(0);
+        }
+    };
+
+    const nextImage = () => {
+        setCurrentImageIndex((prev) => 
+            prev === formData.images.length - 1 ? 0 : prev + 1
+        );
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prev) => 
+            prev === 0 ? formData.images.length - 1 : prev - 1
+        );
+    };
+
+    const goToImage = (index: number) => {
+        setCurrentImageIndex(index);
+    };
+
+    const removeImage = (indexToRemove: number) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.filter((_, idx) => idx !== indexToRemove)
+        }));
+        // Ajustar el índice actual si es necesario
+        if (currentImageIndex >= indexToRemove && currentImageIndex > 0) {
+            setCurrentImageIndex(currentImageIndex - 1);
         }
     };
 
@@ -113,10 +142,11 @@ export default function VenderPage() {
         );
     }
 
-    // Paso 2: DESDE ACA SE EDITA EL FORMULARIO
+    // Paso 2: Formulario completo
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Botón volver */}
                 <button
                     onClick={() => setStep(1)}
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -158,7 +188,7 @@ export default function VenderPage() {
                                 ))}
                             </div>
 
-                            {/* Campos específicos para Casa (HACER LO MISMO PARA CADA TIPO DE INMUEBLE, DEBENDIENDO EL FORMDATA)*/}
+                            {/* Campos específicos para Casa, HACER LO MISMO PARA CADA TIPO DE INMUEBLE, NO TOCAR LOS DEMÁS */}
                             {formData.propertyType === 'casa' && (
                                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h3 className="font-semibold text-gray-900 mb-3">Detalles de la casa</h3>
@@ -357,22 +387,38 @@ export default function VenderPage() {
 
                             {/* Imágenes Cargadas */}
                             {formData.images.length > 0 && (
-                                <div className="grid grid-cols-4 gap-3">
-                                    {formData.images.map((img, idx) => (
-                                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
-                                            <Image
-                                                src={img}
-                                                alt={`Preview ${idx + 1}`}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    ))}
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-700 mb-3">
+                                        Imágenes cargadas ({formData.images.length})
+                                    </h3>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {formData.images.map((img, idx) => (
+                                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 group">
+                                                <Image
+                                                    src={img}
+                                                    alt={`Preview ${idx + 1}`}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(idx)}
+                                                    className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                    title="Eliminar imagen"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                                <div className="absolute bottom-1 left-1 bg-black/60 text-white px-2 py-0.5 rounded text-xs font-medium">
+                                                    {idx + 1}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 
                             {/* Botones */}
-                            <div className="grid gap-4 pt-4">
+                            <div className="grid  gap-4 pt-4">
                                 <button
                                     type="submit"
                                     className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
@@ -391,15 +437,58 @@ export default function VenderPage() {
                         </h2>
 
                         <div className="space-y-6">
-                            {/* Imagen Principal */}
-                            <div className="w-full h-64 bg-gray-100 rounded-xl overflow-hidden relative">
+                            {/* Imagen Principal con Carousel */}
+                            <div className="w-full h-64 bg-gray-100 rounded-xl overflow-hidden relative group">
                                 {formData.images.length > 0 ? (
-                                    <Image
-                                        src={formData.images[0]}
-                                        alt="Preview principal"
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    <>
+                                        <Image
+                                            src={formData.images[currentImageIndex]}
+                                            alt={`Preview ${currentImageIndex + 1}`}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                        
+                                        {/* Botones de navegación */}
+                                        {formData.images.length > 1 && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={prevImage}
+                                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                >
+                                                    <ArrowLeft className="w-5 h-5 text-gray-800" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={nextImage}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                >
+                                                    <ArrowRight className="w-5 h-5 text-gray-800" />
+                                                </button>
+                                                
+                                                {/* Indicadores de puntos */}
+                                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                                                    {formData.images.map((_, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            onClick={() => goToImage(idx)}
+                                                            className={`w-2 h-2 rounded-full transition-all ${
+                                                                idx === currentImageIndex 
+                                                                    ? 'bg-white w-6' 
+                                                                    : 'bg-white/60 hover:bg-white/80'
+                                                            }`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                
+                                                {/* Contador de imágenes */}
+                                                <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                                    {currentImageIndex + 1} / {formData.images.length}
+                                                </div>
+                                            </>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className="flex items-center justify-center h-full">
                                         <Upload className="w-16 h-16 text-gray-300" />
@@ -439,7 +528,7 @@ export default function VenderPage() {
                                     )}
                                 </div>
 
-                                {/* Características de Casa */}
+                                {/* Características de Casa, HACER LO MISMO PARA CADA TIPO DE INMUEBLE */}
                                 {formData.propertyType === 'casa' && (
                                     <div className="grid grid-cols-2 gap-3 pt-2">
                                         {formData.dormitorios && (
@@ -479,24 +568,6 @@ export default function VenderPage() {
                                         {formData.descripcion || 'Sin descripción aún...'}
                                     </p>
                                 </div>
-
-                                {formData.images.length > 1 && (
-                                    <div className="pt-4">
-                                        <h3 className="font-semibold text-gray-900 mb-3">Galería</h3>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {formData.images.slice(1, 5).map((img, idx) => (
-                                                <div key={idx} className="aspect-square rounded-lg overflow-hidden border border-gray-200 relative">
-                                                    <Image
-                                                        src={img}
-                                                        alt={`Gallery ${idx + 2}`}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
