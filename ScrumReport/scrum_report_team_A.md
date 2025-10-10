@@ -20,9 +20,9 @@
 
 ## Daniel
 
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Configuración de herramientas y tecnologias para Frontend.
+- **T:** Trabajé en la creación del Formulario de Registro de Cliente.
+- **B:** Configuración de herramientas de Backend
 
 ---
 
