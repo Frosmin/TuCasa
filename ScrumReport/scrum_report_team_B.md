@@ -38,6 +38,6 @@
 ---
 
 ## Jhunior
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Trabaje en crear la pagina de catalogo para casas
+- **T:** Hoy voy a trabajar en integrar con el catalogo de casas con el backend
+- **B:** No he tenido problemas
