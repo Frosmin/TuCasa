@@ -8,9 +8,9 @@
 ---
 
 ## Diego
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé en la creación de *Tasks* para "TeamB"
+- **T:** Hoy voy a revisar el video de explicación del pull request
+- **B:** No he tenido problemas 
 
 ---
 
@@ -24,9 +24,9 @@
 # Scrum Report #2 — Oct 10
 
 ## Pablo
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé en subir el backend y crear la entidad "Inmueble"
+- **T:** Hoy voy a trabajar en definir los atributos para la entidad "Casa"
+- **B:** No he tenido problemas
 
 ---
 
