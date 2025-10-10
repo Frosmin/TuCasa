@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "inmuebles")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Inmueble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Inmueble {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal superficie;  // Superficie en metros cuadrados
 
-    // Luego cambiar a relacion
+    // Luego cambiar a relacion con usuario
     @Column(name = "id_propietario", nullable = false)
     private Long idPropietario;
 
