@@ -31,9 +31,9 @@
 ---
 
 ## Diego
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Analicé la implementación del Header 
+- **T:**  Implementé el Header y el formulario base para una venta
+- **B:**  Problemas con el cómo está planteado los precios en la base de datos
 
 ---
 
