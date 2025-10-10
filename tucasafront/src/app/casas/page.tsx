@@ -40,13 +40,7 @@ const CatalogPage: FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 py-4">
-                    <h1 className="text-2xl font-bold text-gray-900">Catálogo de Casas</h1>
-                    <p className="text-gray-600 text-sm mt-1">Encuentra la propiedad ideal para ti</p>
-                </div>
-            </div>
+            
           
 
             {/* Buscador */}
