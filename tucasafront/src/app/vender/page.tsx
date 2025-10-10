@@ -1,20 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload, Eye, Home, Building2, Store, DoorClosed } from 'lucide-react';
+import { Upload, Eye, Home, Building2, Store, DoorClosed, ArrowRight, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
 type PropertyType = 'casa' | 'departamento' | 'lote' | 'tienda' | 'cuarto';
+type OperationType = 'venta' | 'alquiler' | 'anticrético';
 
 export default function VenderPage() {
+    const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
-        propertyType: 'departamento' as PropertyType,
+        operacion: '' as OperationType | '',
+        propertyType: 'casa' as PropertyType,
         direccion: '',
         zona: '',
         superficie: '',
         precio: '',
-        operacion: '',
         descripcion: '',
+        dormitorios: '',
+        banos: '',
+        garaje: '',
+        patio: '',
+        amoblado: '',
+        sotano: '',
         images: [] as string[],
     });
 
@@ -35,6 +43,11 @@ export default function VenderPage() {
         setFormData(prev => ({ ...prev, propertyType: type }));
     };
 
+    const handleOperationSelect = (operation: OperationType) => {
+        setFormData(prev => ({ ...prev, operacion: operation }));
+        setStep(2);
+    };
+
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -49,16 +62,81 @@ export default function VenderPage() {
         alert('Propiedad publicada (simulación)');
     };
 
+    // Paso 1: Selección de tipo de operación
+    if (step === 1) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
+                <div className="max-w-2xl w-full mx-4">
+                    <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 text-center">
+                            ¿Qué tipo de operación deseas realizar?
+                        </h1>
+                        <p className="text-gray-600 mb-10 text-center">Selecciona una opción para continuar</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button
+                                onClick={() => handleOperationSelect('venta')}
+                                className="group p-8 border-2 border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 text-center"
+                            >
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 transition-colors">
+                                    <Home className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Venta</h3>
+                                <p className="text-sm text-gray-600">Vende tu propiedad</p>
+                            </button>
+
+                            <button
+                                onClick={() => handleOperationSelect('alquiler')}
+                                className="group p-8 border-2 border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 text-center"
+                            >
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500 transition-colors">
+                                    <Building2 className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Alquiler</h3>
+                                <p className="text-sm text-gray-600">Alquila tu propiedad</p>
+                            </button>
+
+                            <button
+                                onClick={() => handleOperationSelect('anticrético')}
+                                className="group p-8 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all duration-300 text-center"
+                            >
+                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500 transition-colors">
+                                    <Store className="w-8 h-8 text-purple-600 group-hover:text-white transition-colors" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Anticrético</h3>
+                                <p className="text-sm text-gray-600">Anticrético de propiedad</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Paso 2: DESDE ACA SE EDITA EL FORMULARIO
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <button
+                    onClick={() => setStep(1)}
+                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    Volver a seleccionar operación
+                </button>
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Formulario */}
                     <div className="bg-white rounded-2xl shadow-lg p-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             ¿Qué tipo de propiedad quieres publicar?
                         </h1>
-                        <p className="text-gray-600 mb-8">Selecciona una opción para empezar.</p>
+                        <p className="text-gray-600 mb-2">
+                            Operación: <span className="font-semibold text-blue-600">
+                                {formData.operacion.charAt(0).toUpperCase() + formData.operacion.slice(1)}
+                            </span>
+                        </p>
+                        <p className="text-gray-600 mb-8">Selecciona el tipo de propiedad.</p>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Tipo de Propiedad */}
@@ -79,6 +157,132 @@ export default function VenderPage() {
                                     </button>
                                 ))}
                             </div>
+
+                            {/* Campos específicos para Casa (HACER LO MISMO PARA CADA TIPO DE INMUEBLE, DEBENDIENDO EL FORMDATA)*/}
+                            {formData.propertyType === 'casa' && (
+                                <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h3 className="font-semibold text-gray-900 mb-3">Detalles de la casa</h3>
+                                    
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Número de dormitorios
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="dormitorios"
+                                                value={formData.dormitorios}
+                                                onChange={handleInputChange}
+                                                placeholder="Ej: 3"
+                                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Número de baños
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="banos"
+                                                value={formData.banos}
+                                                onChange={handleInputChange}
+                                                placeholder="Ej: 2"
+                                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Tiene garaje?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ 
+                                                    ...prev, 
+                                                    garaje: prev.garaje === 'si' ? 'no' : 'si' 
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    formData.garaje === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        formData.garaje === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Tiene patio?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ 
+                                                    ...prev, 
+                                                    patio: prev.patio === 'si' ? 'no' : 'si' 
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    formData.patio === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        formData.patio === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Está amoblado?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ 
+                                                    ...prev, 
+                                                    amoblado: prev.amoblado === 'si' ? 'no' : 'si' 
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    formData.amoblado === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        formData.amoblado === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Tiene sótano?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ 
+                                                    ...prev, 
+                                                    sotano: prev.sotano === 'si' ? 'no' : 'si' 
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    formData.sotano === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        formData.sotano === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Dirección y Zona */}
                             <div className="grid grid-cols-2 gap-4">
@@ -119,19 +323,6 @@ export default function VenderPage() {
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
-
-                            {/* Tipo de Operación */}
-                            <select
-                                name="operacion"
-                                value={formData.operacion}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                            >
-                                <option value="">Tipo de operación</option>
-                                <option value="venta">Venta</option>
-                                <option value="alquiler">Alquiler</option>
-                                <option value="anticrético">Anticrético</option>
-                            </select>
 
                             {/* Descripción */}
                             <textarea
@@ -225,15 +416,13 @@ export default function VenderPage() {
 
                             {/* Información */}
                             <div className="space-y-4">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
                                         {formData.propertyType.charAt(0).toUpperCase() + formData.propertyType.slice(1)}
                                     </span>
-                                    {formData.operacion && (
-                                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                                            {formData.operacion.charAt(0).toUpperCase() + formData.operacion.slice(1)}
-                                        </span>
-                                    )}
+                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                        {formData.operacion.charAt(0).toUpperCase() + formData.operacion.slice(1)}
+                                    </span>
                                 </div>
 
                                 <div>
@@ -256,6 +445,40 @@ export default function VenderPage() {
                                         </p>
                                     )}
                                 </div>
+
+                                {/* Características de Casa */}
+                                {formData.propertyType === 'casa' && (
+                                    <div className="grid grid-cols-2 gap-3 pt-2">
+                                        {formData.dormitorios && (
+                                            <div className="text-sm">
+                                                <span className="text-gray-600">Dormitorios:</span>
+                                                <span className="font-semibold text-gray-900 ml-1">{formData.dormitorios}</span>
+                                            </div>
+                                        )}
+                                        {formData.banos && (
+                                            <div className="text-sm">
+                                                <span className="text-gray-600">Baños:</span>
+                                                <span className="font-semibold text-gray-900 ml-1">{formData.banos}</span>
+                                            </div>
+                                        )}
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Garaje:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.garaje === 'si' ? 'Sí' : 'No'}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Patio:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.patio === 'si' ? 'Sí' : 'No'}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Amoblado:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.amoblado === 'si' ? 'Sí' : 'No'}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Sótano:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.sotano === 'si' ? 'Sí' : 'No'}</span>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="pt-4 border-t border-gray-200">
                                     <h3 className="font-semibold text-gray-900 mb-2">Descripción</h3>
