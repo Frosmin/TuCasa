@@ -24,9 +24,9 @@
 # Scrum Report #2 — Oct 10
 
 ## Simon
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé refactorizando hu de registro de departamento y db  
+- **T:** Hoy voy a trabajar en ramas y permisos en github codeReview
+- **B:** problemas Ninguno 
 
 ---
 
