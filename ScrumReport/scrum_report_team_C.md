@@ -38,6 +38,6 @@
 ---
 
 ## Carlos
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Trabajé en el refinamiento del product backlog o grooming
+- **T:** Hoy trabaje en el desarrollo de los modelos iniciales de la propuesta de UI
+- **B:** problemas con las tecnologías (necesito estudiar más)
