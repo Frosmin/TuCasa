@@ -24,10 +24,10 @@ import java.util.Set;
         visible = true
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = CasaRequestDto.class, name = "CASA")
+        @JsonSubTypes.Type(value = CasaRequestDto.class, name = "CASA"),
         //@JsonSubTypes.Type(value = DepartamentoRequestDto.class, name = "DEPARTAMENTO")
         //@JsonSubTypes.Type(value = LoteRequestDto.class, name = "LOTE")
-        //@JsonSubTypes.Type(value = TiendaRequestDto.class, name = "TIENDA")
+        @JsonSubTypes.Type(value = TiendaRequestDto.class, name = "TIENDA")
         // LOS TIPOS QUE FALTEN Y SUS REQUEST DTO
 })
 public class InmuebleRequestDto {

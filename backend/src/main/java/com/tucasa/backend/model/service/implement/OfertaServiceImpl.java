@@ -3,10 +3,7 @@ package com.tucasa.backend.model.service.implement;
 import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.dto.*;
 import com.tucasa.backend.model.entity.*;
-import com.tucasa.backend.model.repository.CasaRepository;
-import com.tucasa.backend.model.repository.InmuebleRepository;
-import com.tucasa.backend.model.repository.OfertaRepository;
-import com.tucasa.backend.model.repository.ServicioRepository;
+import com.tucasa.backend.model.repository.*;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
 import jakarta.transaction.Transactional;
@@ -27,6 +24,9 @@ public class OfertaServiceImpl implements OfertaService {
 
     @Autowired
     private CasaRepository casaRepository;
+
+    @Autowired
+    private TiendaRepository tiendaRepository;
 
     @Autowired
     private InmuebleRepository inmuebleRepository;
@@ -195,6 +195,31 @@ public class OfertaServiceImpl implements OfertaService {
                 inmueble = casaRepository.save(casa);
             }
 
+            case TIENDA -> {
+                Tienda tienda = new Tienda();
+                tienda.setDireccion(dto.getDireccion());
+                tienda.setSuperficie(dto.getSuperficie());
+                tienda.setLongitud(dto.getLongitud());
+                tienda.setLatitud(dto.getLatitud());
+                tienda.setIdPropietario(dto.getIdPropietario());
+                tienda.setDescripcion(dto.getDescripcion());
+                tienda.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+                tienda.setTipo(dto.getTipo());
+
+                if (dto instanceof TiendaRequestDto tiendaDto) {
+                    tienda.setNumAmbientes(tiendaDto.getNumAmbientes());
+                    tienda.setBanoPrivado(tiendaDto.getBanoPrivado());
+                    tienda.setDeposito(tiendaDto.getDeposito());
+                }
+
+                if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
+                    Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
+                    tienda.setServicios(servicios);
+                }
+
+                inmueble = tiendaRepository.save(tienda);
+            }
+
             // Definir la construcción para los otros tipos de inmueble
             /*
             case DEPARTAMENTO -> {
@@ -242,11 +267,11 @@ public class OfertaServiceImpl implements OfertaService {
         if (inmueble instanceof Casa casa) {
             inmuebleDto = new CasaResponseDto(casa);
         }/*
-        else if (inmueble instanceof Departamento depto) {
-            inmuebleDto = new DepartamentoResponseDto(depto);
-        } else if (inmueble instanceof Tienda tienda) {
+        else if (inmueble instanceof Departamento departamento) {
+            inmuebleDto = new DepartamentoResponseDto(departamento);
+        }*/ else if (inmueble instanceof Tienda tienda) {
             inmuebleDto = new TiendaResponseDto(tienda);
-        } else if (inmueble instanceof Lote lote) {
+        }/* else if (inmueble instanceof Lote lote) {
             inmuebleDto = new LoteResponseDto(lote);
         } else if (inmueble instanceof Cuarto cuarto) {
             inmuebleDto = new CuartoResponseDto(cuarto);
