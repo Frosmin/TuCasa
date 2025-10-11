@@ -9,7 +9,5 @@ public interface InmuebleService {
     // estos servicios no seran usados necesariamente, son solo pruebas de la entidad
     ResponseEntity<?> findAll();
     ResponseEntity<?> findById(Long id);
-    ResponseEntity<?> create(InmuebleRequestDto inmueble);
-    ResponseEntity<?> update(Long id, InmuebleRequestDto inmueble);
     ResponseEntity<?> delete(Long id);
 }
