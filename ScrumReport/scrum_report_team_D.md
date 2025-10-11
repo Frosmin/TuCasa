@@ -8,15 +8,15 @@
 ---
 
 ## Luis
-- **Y:** 
-- **T:**   
-- **B:** 
+- **Y:** Trabaje en completar las historias para el registro e edicion de ofertas y la estructura para aprobacion de publicaciones.
+- **T:** inicie el diseño para la vista de aprobacion de publicaciones.
+- **B:** No he tenido ningun problema hasta el momento.
 
 ---
 
 ## Javier
-- **Y:**   
-- **T:**    
-- **B:**  
+- **Y:** Finalicé el flujo principal de las historias para la vista de registro de publicacion.
+- **T:** inicie el diseño para la vista de registro de publicacion.
+- **B:** No he tenido ningun problema hasta el momento.
 
 ---
