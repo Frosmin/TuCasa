@@ -31,9 +31,9 @@
 ---
 
 ## Ricardo
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Trabajé en dar el formato al JSON para empezar a trabajar con mock objects
+- **T:** hoy analice las propuestas iniciales que teniamos de los mock ups, encontrando algunos problemas que se aclararon en la reunion conjunta entre todos los desarrolladores, tambien asistí a la reunión del integration team colaborando en la toma de desiciones de modificaciones del MER inicial y elección de la fecha y hora del último commit antes de la integración 
+- **B:** problemas con el modelo de negocio 
 
 ---
 
