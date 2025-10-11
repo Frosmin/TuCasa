@@ -1,4 +1,4 @@
-package com.tucasa.backend.config;
+package com.tucasa.backend.security.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
