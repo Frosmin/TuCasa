@@ -4,34 +4,47 @@ import { useState } from 'react';
 import { Upload, Eye, Home, Building2, Store, DoorClosed, ArrowRight, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
 
-type PropertyType = 'casa' | 'departamento' | 'lote' | 'tienda';
-type OperationType = 'venta' | 'alquiler' | 'anticrético';
+type PropertyType = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA';
+type OperationType = 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
 
 export default function VenderPage() {
     const [step, setStep] = useState(1);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
+        // Datos del inmueble
         operacion: '' as OperationType | '',
-        propertyType: 'casa' as PropertyType,
+        propertyType: 'CASA' as PropertyType,
         direccion: '',
-        zona: '',
+        latitud: '',
+        longitud: '',
         superficie: '',
         precio: '',
+        moneda: 'Bs',
+        tipoPago: 'mensual',
+        duracion: '',
         descripcion: '',
+        descripcionOferta: '',
+        idPropietario: 1, // Por ahora hardcodeado
+        serviciosIds: [] as number[],
+        
+        // Campos específicos para Casa
         dormitorios: '',
         banos: '',
-        garaje: '',
-        patio: '',
-        amoblado: '',
-        sotano: '',
+        numPisos: '',
+        garaje: false,
+        patio: false,
+        amoblado: false,
+        sotano: false,
+        
         images: [] as string[],
     });
 
     const propertyTypes = [
-        { id: 'casa', label: 'Casa', icon: Home },
-        { id: 'departamento', label: 'Departamento', icon: Building2 },
-        { id: 'lote', label: 'Lote', icon: Home },
-        { id: 'tienda', label: 'Tienda', icon: Store },
+        { id: 'CASA', label: 'Casa', icon: Home },
+        { id: 'DEPARTAMENTO', label: 'Departamento', icon: Building2 },
+        { id: 'LOTE', label: 'Lote', icon: Home },
+        { id: 'TIENDA', label: 'Tienda', icon: Store },
     ];
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -78,16 +91,115 @@ export default function VenderPage() {
             ...prev,
             images: prev.images.filter((_, idx) => idx !== indexToRemove)
         }));
-        // Ajustar el índice actual si es necesario
         if (currentImageIndex >= indexToRemove && currentImageIndex > 0) {
             setCurrentImageIndex(currentImageIndex - 1);
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form data:', formData);
-        alert('Propiedad publicada (simulación)');
+        setIsSubmitting(true);
+
+        try {
+            // Construir el payload según el formato requerido
+            const inmuebleData: any = {
+                direccion: formData.direccion,
+                latitud: parseFloat(formData.latitud),
+                longitud: parseFloat(formData.longitud),
+                superficie: parseFloat(formData.superficie),
+                idPropietario: formData.idPropietario,
+                descripcion: formData.descripcion,
+                tipo: formData.propertyType,
+                serviciosIds: formData.serviciosIds,
+            };
+
+            // Agregar campos específicos de CASA solo si el tipo es CASA
+            if (formData.propertyType === 'CASA') {
+                inmuebleData.numDormitorios = parseInt(formData.dormitorios) || 0;
+                inmuebleData.numBanos = parseInt(formData.banos) || 0;
+                inmuebleData.numPisos = parseInt(formData.numPisos) || 0;
+                inmuebleData.garaje = formData.garaje;
+                inmuebleData.patio = formData.patio;
+                inmuebleData.amoblado = formData.amoblado;
+                inmuebleData.sotano = formData.sotano;
+            }
+
+            const payload = {
+                inmueble: inmuebleData,
+                descripcion: formData.descripcionOferta,
+                tipo: formData.operacion,
+                precio: parseFloat(formData.precio),
+                moneda: formData.moneda,
+                // duracion solo para ANTICRETICO, los demás son null
+                duracion: formData.operacion === 'ANTICRETICO' && formData.duracion ? parseInt(formData.duracion) : null,
+                // tipoPago es null para VENTA, para ALQUILER y ANTICRETICO se usa el valor del formulario
+                tipoPago: formData.operacion === 'VENTA' ? 'unico' : formData.tipoPago,
+            };
+
+            console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
+
+            const response = await fetch('http://localhost:8000/tucasabackend/api/oferta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Error del servidor:', errorData);
+                console.error('Payload que causó el error:', payload);
+                
+                // Mostrar el mensaje de error específico si está disponible
+                if (errorData.errors && errorData.errors.length > 0) {
+                    const errorMessages = errorData.errors.map((err: any) => 
+                        `${err.field}: ${err.defaultMessage}`
+                    ).join('\n');
+                    alert(`Errores de validación:\n${errorMessages}`);
+                } else if (errorData.message) {
+                    alert(`Error: ${errorData.message}`);
+                }
+                
+                throw new Error(`Error al crear la oferta: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
+            alert('¡Propiedad publicada exitosamente!');
+            
+            // Resetear formulario
+            setStep(1);
+            setFormData({
+                operacion: '',
+                propertyType: 'CASA',
+                direccion: '',
+                latitud: '',
+                longitud: '',
+                superficie: '',
+                precio: '',
+                moneda: 'Bs',
+                tipoPago: 'mensual',
+                duracion: '',
+                descripcion: '',
+                descripcionOferta: '',
+                idPropietario: 1,
+                serviciosIds: [],
+                dormitorios: '',
+                banos: '',
+                numPisos: '',
+                garaje: false,
+                patio: false,
+                amoblado: false,
+                sotano: false,
+                images: [],
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al publicar la propiedad. Por favor, intenta de nuevo.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // Paso 1: Selección de tipo de operación
@@ -103,7 +215,7 @@ export default function VenderPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <button
-                                onClick={() => handleOperationSelect('venta')}
+                                onClick={() => handleOperationSelect('VENTA')}
                                 className="group p-8 border-2 border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 text-center"
                             >
                                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 transition-colors">
@@ -114,7 +226,7 @@ export default function VenderPage() {
                             </button>
 
                             <button
-                                onClick={() => handleOperationSelect('alquiler')}
+                                onClick={() => handleOperationSelect('ALQUILER')}
                                 className="group p-8 border-2 border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 text-center"
                             >
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500 transition-colors">
@@ -125,7 +237,7 @@ export default function VenderPage() {
                             </button>
 
                             <button
-                                onClick={() => handleOperationSelect('anticrético')}
+                                onClick={() => handleOperationSelect('ANTICRETICO')}
                                 className="group p-8 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all duration-300 text-center"
                             >
                                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500 transition-colors">
@@ -145,7 +257,6 @@ export default function VenderPage() {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Botón volver */}
                 <button
                     onClick={() => setStep(1)}
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -162,7 +273,7 @@ export default function VenderPage() {
                         </h1>
                         <p className="text-gray-600 mb-2">
                             Operación: <span className="font-semibold text-blue-600">
-                                {formData.operacion.charAt(0).toUpperCase() + formData.operacion.slice(1)}
+                                {formData.operacion}
                             </span>
                         </p>
                         <p className="text-gray-600 mb-8">Selecciona el tipo de propiedad.</p>
@@ -187,15 +298,15 @@ export default function VenderPage() {
                                 ))}
                             </div>
 
-                            {/* Campos específicos para Casa, HACER LO MISMO PARA CADA TIPO DE INMUEBLE, NO TOCAR LOS DEMÁS */}
-                            {formData.propertyType === 'casa' && (
+                            {/* Campos específicos para Casa */}
+                            {formData.propertyType === 'CASA' && (
                                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h3 className="font-semibold text-gray-900 mb-3">Detalles de la casa</h3>
                                     
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Número de dormitorios
+                                                Número de dormitorios *
                                             </label>
                                             <input
                                                 type="number"
@@ -203,12 +314,13 @@ export default function VenderPage() {
                                                 value={formData.dormitorios}
                                                 onChange={handleInputChange}
                                                 placeholder="Ej: 3"
+                                                required
                                                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Número de baños
+                                                Número de baños *
                                             </label>
                                             <input
                                                 type="number"
@@ -216,9 +328,25 @@ export default function VenderPage() {
                                                 value={formData.banos}
                                                 onChange={handleInputChange}
                                                 placeholder="Ej: 2"
+                                                required
                                                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                             />
                                         </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Número de pisos *
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="numPisos"
+                                            value={formData.numPisos}
+                                            onChange={handleInputChange}
+                                            placeholder="Ej: 2"
+                                            required
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
@@ -230,15 +358,15 @@ export default function VenderPage() {
                                                 type="button"
                                                 onClick={() => setFormData(prev => ({ 
                                                     ...prev, 
-                                                    garaje: prev.garaje === 'si' ? 'no' : 'si' 
+                                                    garaje: !prev.garaje
                                                 }))}
                                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.garaje === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                    formData.garaje ? 'bg-blue-600' : 'bg-gray-300'
                                                 }`}
                                             >
                                                 <span
                                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.garaje === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                        formData.garaje ? 'translate-x-6' : 'translate-x-1'
                                                     }`}
                                                 />
                                             </button>
@@ -251,15 +379,15 @@ export default function VenderPage() {
                                                 type="button"
                                                 onClick={() => setFormData(prev => ({ 
                                                     ...prev, 
-                                                    patio: prev.patio === 'si' ? 'no' : 'si' 
+                                                    patio: !prev.patio
                                                 }))}
                                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.patio === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                    formData.patio ? 'bg-blue-600' : 'bg-gray-300'
                                                 }`}
                                             >
                                                 <span
                                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.patio === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                        formData.patio ? 'translate-x-6' : 'translate-x-1'
                                                     }`}
                                                 />
                                             </button>
@@ -275,15 +403,15 @@ export default function VenderPage() {
                                                 type="button"
                                                 onClick={() => setFormData(prev => ({ 
                                                     ...prev, 
-                                                    amoblado: prev.amoblado === 'si' ? 'no' : 'si' 
+                                                    amoblado: !prev.amoblado
                                                 }))}
                                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.amoblado === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                    formData.amoblado ? 'bg-blue-600' : 'bg-gray-300'
                                                 }`}
                                             >
                                                 <span
                                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.amoblado === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                        formData.amoblado ? 'translate-x-6' : 'translate-x-1'
                                                     }`}
                                                 />
                                             </button>
@@ -296,15 +424,15 @@ export default function VenderPage() {
                                                 type="button"
                                                 onClick={() => setFormData(prev => ({ 
                                                     ...prev, 
-                                                    sotano: prev.sotano === 'si' ? 'no' : 'si' 
+                                                    sotano: !prev.sotano
                                                 }))}
                                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.sotano === 'si' ? 'bg-blue-600' : 'bg-gray-300'
+                                                    formData.sotano ? 'bg-blue-600' : 'bg-gray-300'
                                                 }`}
                                             >
                                                 <span
                                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.sotano === 'si' ? 'translate-x-6' : 'translate-x-1'
+                                                        formData.sotano ? 'translate-x-6' : 'translate-x-1'
                                                     }`}
                                                 />
                                             </button>
@@ -313,55 +441,176 @@ export default function VenderPage() {
                                 </div>
                             )}
 
-                            {/* Dirección y Zona */}
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Dirección y Coordenadas */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Dirección *
+                                </label>
                                 <input
                                     type="text"
                                     name="direccion"
                                     value={formData.direccion}
                                     onChange={handleInputChange}
-                                    placeholder="Dirección"
+                                    placeholder="Av. Siempre Viva 123"
+                                    required
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
-                                <input
-                                    type="text"
-                                    name="zona"
-                                    value={formData.zona}
-                                    onChange={handleInputChange}
-                                    placeholder="Zona"
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Latitud *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        name="latitud"
+                                        value={formData.latitud}
+                                        onChange={handleInputChange}
+                                        placeholder="-17.3935"
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Longitud *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        name="longitud"
+                                        value={formData.longitud}
+                                        onChange={handleInputChange}
+                                        placeholder="-66.1570"
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
                             </div>
 
                             {/* Superficie y Precio */}
                             <div className="grid grid-cols-2 gap-4">
-                                <input
-                                    type="text"
-                                    name="superficie"
-                                    value={formData.superficie}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Superficie (m²) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        name="superficie"
+                                        value={formData.superficie}
+                                        onChange={handleInputChange}
+                                        placeholder="120.5"
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Precio *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        name="precio"
+                                        value={formData.precio}
+                                        onChange={handleInputChange}
+                                        placeholder="3000.00"
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Moneda y Tipo de Pago */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Moneda *
+                                    </label>
+                                    <select
+                                        name="moneda"
+                                        value={formData.moneda}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    >
+                                        <option value="Bs">Bolivianos (Bs)</option>
+                                        <option value="$">Dólares ($)</option>
+                                    </select>
+                                </div>
+                                {/* Tipo de Pago solo para ALQUILER y ANTICRETICO */}
+                                {formData.operacion !== 'VENTA' && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tipo de Pago *
+                                        </label>
+                                        <select
+                                            name="tipoPago"
+                                            value={formData.tipoPago}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                        >
+                                            <option value="mensual">Mensual</option>
+                                            <option value="anual">Anual</option>
+                                            <option value="unico">Único</option>
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Duración (solo para ANTICRETICO) */}
+                            {formData.operacion === 'ANTICRETICO' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Duración del anticrético (meses) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="duracion"
+                                        value={formData.duracion}
+                                        onChange={handleInputChange}
+                                        placeholder="24"
+                                        required
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Descripción del Inmueble */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Descripción del Inmueble *
+                                </label>
+                                <textarea
+                                    name="descripcion"
+                                    value={formData.descripcion}
                                     onChange={handleInputChange}
-                                    placeholder="Superficie (m²)"
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                />
-                                <input
-                                    type="text"
-                                    name="precio"
-                                    value={formData.precio}
-                                    onChange={handleInputChange}
-                                    placeholder="Precio (USD)"
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    placeholder="Hermosa casa con jardín y garaje"
+                                    rows={3}
+                                    required
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
                                 />
                             </div>
 
-                            {/* Descripción */}
-                            <textarea
-                                name="descripcion"
-                                value={formData.descripcion}
-                                onChange={handleInputChange}
-                                placeholder="Descripción"
-                                rows={5}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
-                            />
+                            {/* Descripción de la Oferta */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Descripción de la Oferta *
+                                </label>
+                                <textarea
+                                    name="descripcionOferta"
+                                    value={formData.descripcionOferta}
+                                    onChange={handleInputChange}
+                                    placeholder="Oferta de venta en zona céntrica"
+                                    rows={3}
+                                    required
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                                />
+                            </div>
 
                             {/* Upload de Imágenes */}
                             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
@@ -376,10 +625,13 @@ export default function VenderPage() {
                                 <label htmlFor="file-upload" className="cursor-pointer">
                                     <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                     <p className="text-lg font-semibold text-gray-700 mb-1">
-                                        Cargar fotos y videos
+                                        Cargar fotos
                                     </p>
                                     <p className="text-sm text-gray-500">
                                         Arrastra y suelta o haz clic para seleccionar
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                        (Las imágenes no se enviarán por ahora)
                                     </p>
                                 </label>
                             </div>
@@ -416,13 +668,14 @@ export default function VenderPage() {
                                 </div>
                             )}
 
-                            {/* Botones */}
-                            <div className="grid  gap-4 pt-4">
+                            {/* Botón Submit */}
+                            <div className="pt-4">
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+                                    disabled={isSubmitting}
+                                    className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 >
-                                    Publicar ahora
+                                    {isSubmitting ? 'Publicando...' : 'Publicar ahora'}
                                 </button>
                             </div>
                         </form>
@@ -447,7 +700,6 @@ export default function VenderPage() {
                                             className="object-cover"
                                         />
                                         
-                                        {/* Botones de navegación */}
                                         {formData.images.length > 1 && (
                                             <>
                                                 <button
@@ -465,7 +717,6 @@ export default function VenderPage() {
                                                     <ArrowRight className="w-5 h-5 text-gray-800" />
                                                 </button>
                                                 
-                                                {/* Indicadores de puntos */}
                                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                                                     {formData.images.map((_, idx) => (
                                                         <button
@@ -481,7 +732,6 @@ export default function VenderPage() {
                                                     ))}
                                                 </div>
                                                 
-                                                {/* Contador de imágenes */}
                                                 <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
                                                     {currentImageIndex + 1} / {formData.images.length}
                                                 </div>
@@ -499,17 +749,18 @@ export default function VenderPage() {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                                        {formData.propertyType.charAt(0).toUpperCase() + formData.propertyType.slice(1)}
+                                        {formData.propertyType}
                                     </span>
                                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                                        {formData.operacion.charAt(0).toUpperCase() + formData.operacion.slice(1)}
+                                        {formData.operacion}
                                     </span>
                                 </div>
 
                                 <div>
                                     <p className="text-3xl font-bold text-gray-900">
-                                        {formData.precio ? `$${formData.precio}` : '$0'}
-                                        <span className="text-lg text-gray-500 font-normal"> USD</span>
+                                        {formData.precio ? `${formData.moneda} ${formData.precio}` : `${formData.moneda} 0`}
+                                        {formData.operacion !== 'VENTA' && formData.tipoPago === 'mensual' && <span className="text-lg text-gray-500 font-normal"> /mes</span>}
+                                        {formData.operacion !== 'VENTA' && formData.tipoPago === 'anual' && <span className="text-lg text-gray-500 font-normal"> /año</span>}
                                     </p>
                                 </div>
 
@@ -517,9 +768,11 @@ export default function VenderPage() {
                                     <p className="text-gray-700 font-medium">
                                         {formData.direccion || 'Dirección no especificada'}
                                     </p>
-                                    <p className="text-gray-600">
-                                        {formData.zona || 'Zona no especificada'}
-                                    </p>
+                                    {(formData.latitud || formData.longitud) && (
+                                        <p className="text-gray-600 text-sm">
+                                            Coordenadas: {formData.latitud || '0'}, {formData.longitud || '0'}
+                                        </p>
+                                    )}
                                     {formData.superficie && (
                                         <p className="text-gray-600">
                                             Superficie: <span className="font-semibold">{formData.superficie} m²</span>
@@ -527,9 +780,9 @@ export default function VenderPage() {
                                     )}
                                 </div>
 
-                                {/* Características de Casa, HACER LO MISMO PARA CADA TIPO DE INMUEBLE */}
-                                {formData.propertyType === 'casa' && (
-                                    <div className="grid grid-cols-2 gap-3 pt-2">
+                                {/* Características de Casa */}
+                                {formData.propertyType === 'CASA' && (
+                                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
                                         {formData.dormitorios && (
                                             <div className="text-sm">
                                                 <span className="text-gray-600">Dormitorios:</span>
@@ -542,31 +795,46 @@ export default function VenderPage() {
                                                 <span className="font-semibold text-gray-900 ml-1">{formData.banos}</span>
                                             </div>
                                         )}
+                                        {formData.numPisos && (
+                                            <div className="text-sm">
+                                                <span className="text-gray-600">Pisos:</span>
+                                                <span className="font-semibold text-gray-900 ml-1">{formData.numPisos}</span>
+                                            </div>
+                                        )}
                                         <div className="text-sm">
                                             <span className="text-gray-600">Garaje:</span>
-                                            <span className="font-semibold text-gray-900 ml-1">{formData.garaje === 'si' ? 'Sí' : 'No'}</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.garaje ? 'Sí' : 'No'}</span>
                                         </div>
                                         <div className="text-sm">
                                             <span className="text-gray-600">Patio:</span>
-                                            <span className="font-semibold text-gray-900 ml-1">{formData.patio === 'si' ? 'Sí' : 'No'}</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.patio ? 'Sí' : 'No'}</span>
                                         </div>
                                         <div className="text-sm">
                                             <span className="text-gray-600">Amoblado:</span>
-                                            <span className="font-semibold text-gray-900 ml-1">{formData.amoblado === 'si' ? 'Sí' : 'No'}</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.amoblado ? 'Sí' : 'No'}</span>
                                         </div>
                                         <div className="text-sm">
                                             <span className="text-gray-600">Sótano:</span>
-                                            <span className="font-semibold text-gray-900 ml-1">{formData.sotano === 'si' ? 'Sí' : 'No'}</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.sotano ? 'Sí' : 'No'}</span>
                                         </div>
                                     </div>
                                 )}
 
                                 <div className="pt-4 border-t border-gray-200">
-                                    <h3 className="font-semibold text-gray-900 mb-2">Descripción</h3>
+                                    <h3 className="font-semibold text-gray-900 mb-2">Descripción del Inmueble</h3>
                                     <p className="text-gray-600 text-sm leading-relaxed">
                                         {formData.descripcion || 'Sin descripción aún...'}
                                     </p>
                                 </div>
+
+                                {formData.descripcionOferta && (
+                                    <div className="pt-4 border-t border-gray-200">
+                                        <h3 className="font-semibold text-gray-900 mb-2">Descripción de la Oferta</h3>
+                                        <p className="text-gray-600 text-sm leading-relaxed">
+                                            {formData.descripcionOferta}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
