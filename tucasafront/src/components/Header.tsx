@@ -22,31 +22,31 @@ export default function Header() {
                 {/* Navigation Links */}
                 <div className='flex items-center gap-8 text-sm font-medium'>
                     <Link
-                        href={'/buscar'}
+                        href={'/ventas'}
                         className='relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2'
                     >
-                        Buscar
+                        Ventas
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                     </Link>
                     <Link
-                        href={'/vender'}
+                        href={'/alquiler'}
                         className='relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2'
                     >
-                        Vender
+                        Alquiler
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                     </Link>
                     <Link
-                        href={'/proyectos'}
+                        href={'/anticretico'}
                         className='relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2'
                     >
-                        Proyectos
+                        Anticrético
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                     </Link>
                     <Link
-                        href={'/noticias'}
+                        href={'/publicar'}
                         className='relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2'
                     >
-                        Noticias
+                        Publicar
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                     </Link>
                 </div>

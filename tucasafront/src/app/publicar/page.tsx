@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Upload, Eye, Home, Building2, Store, DoorClosed, ArrowRight, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
 
-type PropertyType = 'casa' | 'departamento' | 'lote' | 'tienda' | 'cuarto';
+type PropertyType = 'casa' | 'departamento' | 'lote' | 'tienda';
 type OperationType = 'venta' | 'alquiler' | 'anticrético';
 
 export default function VenderPage() {
@@ -32,7 +32,6 @@ export default function VenderPage() {
         { id: 'departamento', label: 'Departamento', icon: Building2 },
         { id: 'lote', label: 'Lote', icon: Home },
         { id: 'tienda', label: 'Tienda', icon: Store },
-        { id: 'cuarto', label: 'Cuarto', icon: DoorClosed },
     ];
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
