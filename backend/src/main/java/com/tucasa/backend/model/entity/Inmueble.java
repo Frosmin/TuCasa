@@ -21,6 +21,12 @@ public abstract class Inmueble {
     @Column(nullable = false)
     private String direccion;
 
+    @Column(nullable = false)
+    private BigDecimal latitud;
+
+    @Column(nullable = false)
+    private BigDecimal longitud;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal superficie;  // Superficie en metros cuadrados
 

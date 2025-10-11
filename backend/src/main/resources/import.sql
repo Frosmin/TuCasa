@@ -7,7 +7,7 @@ INSERT INTO servicios (nombre_servicio) VALUES ('Recolección de basura');
 INSERT INTO servicios (nombre_servicio) VALUES ('Seguridad 24h');
 
 -- Inmueble
-INSERT INTO inmuebles (direccion, superficie, id_propietario, tipo_inmueble, descripcion, activo) VALUES ('Av. Ejemplo 231', 120.50, 100, 'CASA', 'Casa con jardín y garage', true);
+INSERT INTO inmuebles (direccion, superficie, id_propietario, tipo_inmueble, descripcion, activo, longitud, latitud) VALUES ('Av. Ejemplo 231', 120.50, 100, 'CASA', 'Casa con jardín y garage', true, 0.0, 0.0);
 
 -- Relación inmueble - servicios
 INSERT INTO inmueble_servicio (inmueble_id, servicio_id) VALUES (1, 1);

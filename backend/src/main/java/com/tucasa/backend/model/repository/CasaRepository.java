@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface CasaRepository extends JpaRepository<Casa, Long> {
     // Jpa ya incluye funciones base (findAll, findById, etc.)
-    // Ademas puede generar funciones/consultas si sigues un formato, por ejemplo
 }
