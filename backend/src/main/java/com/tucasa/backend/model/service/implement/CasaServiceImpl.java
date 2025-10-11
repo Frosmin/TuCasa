@@ -81,10 +81,10 @@ public class CasaServiceImpl implements CasaService {
         try {
             Casa casa = new Casa();
             casa.setDireccion(dto.getDireccion());
+            casa.setLatitud(dto.getLatitud());
+            casa.setLongitud(dto.getLongitud());
             casa.setSuperficie(dto.getSuperficie());
             casa.setIdPropietario(dto.getIdPropietario());
-            casa.setFechaPublicacion(LocalDateTime.now());
-            casa.setEstadoPublicacion(dto.getEstadoPublicacion());
             casa.setDescripcion(dto.getDescripcion());
             casa.setActivo(true);
             casa.setTipo(dto.getTipo());
@@ -124,8 +124,9 @@ public class CasaServiceImpl implements CasaService {
 
             // Actualiza solo los campos que vienen no nulos
             if (dto.getDireccion() != null) casa.setDireccion(dto.getDireccion());
+            if (dto.getLatitud() != null) casa.setLatitud(dto.getLatitud());
+            if (dto.getLongitud() != null) casa.setLongitud(dto.getLongitud());
             if (dto.getSuperficie() != null) casa.setSuperficie(dto.getSuperficie());
-            if (dto.getEstadoPublicacion() != null) casa.setEstadoPublicacion(dto.getEstadoPublicacion());
             if (dto.getDescripcion() != null) casa.setDescripcion(dto.getDescripcion());
             if (dto.getTipo() != null) casa.setTipo(dto.getTipo());
             if (dto.getActivo() != null) casa.setActivo(dto.getActivo());
@@ -178,10 +179,10 @@ public class CasaServiceImpl implements CasaService {
         CasaResponseDto dto = new CasaResponseDto();
         dto.setId(casa.getId());
         dto.setDireccion(casa.getDireccion());
+        dto.setLatitud(casa.getLatitud());
+        dto.setLongitud(casa.getLongitud());
         dto.setSuperficie(casa.getSuperficie());
         dto.setIdPropietario(casa.getIdPropietario());
-        dto.setFechaPublicacion(casa.getFechaPublicacion());
-        dto.setEstadoPublicacion(casa.getEstadoPublicacion());
         dto.setDescripcion(casa.getDescripcion());
         dto.setActivo(casa.isActivo());
         dto.setTipo(casa.getTipo());
@@ -193,6 +194,15 @@ public class CasaServiceImpl implements CasaService {
                     .collect(Collectors.toSet());
             dto.setServicios(serviciosDto);
         }
+
+        // Datos de casa
+        dto.setNumDormitorios(casa.getNumDormitorios());
+        dto.setNumBanos(casa.getNumBanos());
+        dto.setNumPisos(casa.getNumPisos());
+        dto.setGaraje(casa.getGaraje());
+        dto.setPatio(casa.getPatio());
+        dto.setAmoblado(casa.getAmoblado());
+        dto.setSotano(casa.getSotano());
 
         return dto;
     }

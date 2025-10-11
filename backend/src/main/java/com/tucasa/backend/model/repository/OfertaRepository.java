@@ -1,12 +1,10 @@
 package com.tucasa.backend.model.repository;
 
-import com.tucasa.backend.model.entity.Casa;
+import com.tucasa.backend.model.entity.Oferta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface CasaRepository extends JpaRepository<Casa, Long> {
+public interface OfertaRepository extends JpaRepository<Oferta, Long> {
     // Jpa ya incluye funciones base (findAll, findById, etc.)
 }
