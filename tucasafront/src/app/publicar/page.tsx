@@ -27,7 +27,7 @@ export default function VenderPage() {
         descripcionOferta: '',
         idPropietario: 1, // Por ahora hardcodeado
         serviciosIds: [] as number[],
-        
+
         // Campos específicos para Casa
         dormitorios: '',
         banos: '',
@@ -36,7 +36,12 @@ export default function VenderPage() {
         patio: false,
         amoblado: false,
         sotano: false,
-        
+
+        // Campos específicos para Tienda
+        numAmbientes: '',
+        deposito: false,
+        banoPrivado: false,
+
         images: [] as string[],
     });
 
@@ -71,13 +76,13 @@ export default function VenderPage() {
     };
 
     const nextImage = () => {
-        setCurrentImageIndex((prev) => 
+        setCurrentImageIndex((prev) =>
             prev === formData.images.length - 1 ? 0 : prev + 1
         );
     };
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => 
+        setCurrentImageIndex((prev) =>
             prev === 0 ? formData.images.length - 1 : prev - 1
         );
     };
@@ -124,6 +129,12 @@ export default function VenderPage() {
                 inmuebleData.sotano = formData.sotano;
             }
 
+            if (formData.propertyType === 'TIENDA') {
+                inmuebleData.numAmbientes = parseInt(formData.numAmbientes) || 0;
+                inmuebleData.deposito = formData.deposito;
+                inmuebleData.banoPrivado = formData.banoPrivado;
+            }
+
             const payload = {
                 inmueble: inmuebleData,
                 descripcion: formData.descripcionOferta,
@@ -150,24 +161,24 @@ export default function VenderPage() {
                 const errorData = await response.json().catch(() => ({}));
                 console.error('Error del servidor:', errorData);
                 console.error('Payload que causó el error:', payload);
-                
+
                 // Mostrar el mensaje de error específico si está disponible
                 if (errorData.errors && errorData.errors.length > 0) {
-                    const errorMessages = errorData.errors.map((err: any) => 
+                    const errorMessages = errorData.errors.map((err: any) =>
                         `${err.field}: ${err.defaultMessage}`
                     ).join('\n');
                     alert(`Errores de validación:\n${errorMessages}`);
                 } else if (errorData.message) {
                     alert(`Error: ${errorData.message}`);
                 }
-                
+
                 throw new Error(`Error al crear la oferta: ${response.status}`);
             }
 
             const data = await response.json();
             console.log('Respuesta del servidor:', data);
             alert('¡Propiedad publicada exitosamente!');
-            
+
             // Resetear formulario
             setStep(1);
             setFormData({
@@ -192,6 +203,9 @@ export default function VenderPage() {
                 patio: false,
                 amoblado: false,
                 sotano: false,
+                numAmbientes: '',
+                deposito: false,
+                banoPrivado: false,
                 images: [],
             });
         } catch (error) {
@@ -286,11 +300,10 @@ export default function VenderPage() {
                                         key={id}
                                         type="button"
                                         onClick={() => handlePropertyTypeChange(id as PropertyType)}
-                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium ${
-                                            formData.propertyType === id
-                                                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300'
-                                        }`}
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium ${formData.propertyType === id
+                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                            : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300'
+                                            }`}
                                     >
                                         <Icon className="w-5 h-5" />
                                         {label}
@@ -302,7 +315,7 @@ export default function VenderPage() {
                             {formData.propertyType === 'CASA' && (
                                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h3 className="font-semibold text-gray-900 mb-3">Detalles de la casa</h3>
-                                    
+
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -356,18 +369,16 @@ export default function VenderPage() {
                                             </label>
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({ 
-                                                    ...prev, 
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
                                                     garaje: !prev.garaje
                                                 }))}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.garaje ? 'bg-blue-600' : 'bg-gray-300'
-                                                }`}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.garaje ? 'bg-blue-600' : 'bg-gray-300'
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.garaje ? 'translate-x-6' : 'translate-x-1'
-                                                    }`}
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.garaje ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
                                                 />
                                             </button>
                                         </div>
@@ -377,18 +388,16 @@ export default function VenderPage() {
                                             </label>
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({ 
-                                                    ...prev, 
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
                                                     patio: !prev.patio
                                                 }))}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.patio ? 'bg-blue-600' : 'bg-gray-300'
-                                                }`}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.patio ? 'bg-blue-600' : 'bg-gray-300'
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.patio ? 'translate-x-6' : 'translate-x-1'
-                                                    }`}
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.patio ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
                                                 />
                                             </button>
                                         </div>
@@ -401,18 +410,16 @@ export default function VenderPage() {
                                             </label>
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({ 
-                                                    ...prev, 
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
                                                     amoblado: !prev.amoblado
                                                 }))}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.amoblado ? 'bg-blue-600' : 'bg-gray-300'
-                                                }`}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.amoblado ? 'bg-blue-600' : 'bg-gray-300'
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.amoblado ? 'translate-x-6' : 'translate-x-1'
-                                                    }`}
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.amoblado ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
                                                 />
                                             </button>
                                         </div>
@@ -422,18 +429,79 @@ export default function VenderPage() {
                                             </label>
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({ 
-                                                    ...prev, 
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
                                                     sotano: !prev.sotano
                                                 }))}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                                    formData.sotano ? 'bg-blue-600' : 'bg-gray-300'
-                                                }`}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.sotano ? 'bg-blue-600' : 'bg-gray-300'
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                        formData.sotano ? 'translate-x-6' : 'translate-x-1'
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.sotano ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Campos específicos para Tienda */}
+                            {formData.propertyType === 'TIENDA' && (
+                                <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                    <h3 className="font-semibold text-gray-900 mb-3">Detalles de la tienda</h3>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Número de ambientes *
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="numAmbientes"
+                                            value={formData.numAmbientes}
+                                            onChange={handleInputChange}
+                                            placeholder="Ej: 1"
+                                            required
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Tiene depósito?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    deposito: !prev.deposito
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.deposito ? 'bg-purple-600' : 'bg-gray-300'
                                                     }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.deposito ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
+                                                />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-300">
+                                            <label className="text-sm font-medium text-gray-700">
+                                                ¿Tiene baño privado?
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    banoPrivado: !prev.banoPrivado
+                                                }))}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.banoPrivado ? 'bg-purple-600' : 'bg-gray-300'
+                                                    }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.banoPrivado ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
                                                 />
                                             </button>
                                         </div>
@@ -556,7 +624,6 @@ export default function VenderPage() {
                                         >
                                             <option value="mensual">Mensual</option>
                                             <option value="anual">Anual</option>
-                                            <option value="unico">Único</option>
                                         </select>
                                     </div>
                                 )}
@@ -589,7 +656,6 @@ export default function VenderPage() {
                                     name="descripcion"
                                     value={formData.descripcion}
                                     onChange={handleInputChange}
-                                    placeholder="Hermosa casa con jardín y garaje"
                                     rows={3}
                                     required
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
@@ -605,7 +671,6 @@ export default function VenderPage() {
                                     name="descripcionOferta"
                                     value={formData.descripcionOferta}
                                     onChange={handleInputChange}
-                                    placeholder="Oferta de venta en zona céntrica"
                                     rows={3}
                                     required
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
@@ -699,7 +764,7 @@ export default function VenderPage() {
                                             fill
                                             className="object-cover"
                                         />
-                                        
+
                                         {formData.images.length > 1 && (
                                             <>
                                                 <button
@@ -716,22 +781,21 @@ export default function VenderPage() {
                                                 >
                                                     <ArrowRight className="w-5 h-5 text-gray-800" />
                                                 </button>
-                                                
+
                                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                                                     {formData.images.map((_, idx) => (
                                                         <button
                                                             key={idx}
                                                             type="button"
                                                             onClick={() => goToImage(idx)}
-                                                            className={`w-2 h-2 rounded-full transition-all ${
-                                                                idx === currentImageIndex 
-                                                                    ? 'bg-white w-6' 
-                                                                    : 'bg-white/60 hover:bg-white/80'
-                                                            }`}
+                                                            className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex
+                                                                ? 'bg-white w-6'
+                                                                : 'bg-white/60 hover:bg-white/80'
+                                                                }`}
                                                         />
                                                     ))}
                                                 </div>
-                                                
+
                                                 <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
                                                     {currentImageIndex + 1} / {formData.images.length}
                                                 </div>
@@ -816,6 +880,26 @@ export default function VenderPage() {
                                         <div className="text-sm">
                                             <span className="text-gray-600">Sótano:</span>
                                             <span className="font-semibold text-gray-900 ml-1">{formData.sotano ? 'Sí' : 'No'}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Características de Tienda */}
+                                {formData.propertyType === 'TIENDA' && (
+                                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+                                        {formData.numAmbientes && (
+                                            <div className="text-sm">
+                                                <span className="text-gray-600">Ambientes:</span>
+                                                <span className="font-semibold text-gray-900 ml-1">{formData.numAmbientes}</span>
+                                            </div>
+                                        )}
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Depósito:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.deposito ? 'Sí' : 'No'}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="text-gray-600">Baño privado:</span>
+                                            <span className="font-semibold text-gray-900 ml-1">{formData.banoPrivado ? 'Sí' : 'No'}</span>
                                         </div>
                                     </div>
                                 )}
