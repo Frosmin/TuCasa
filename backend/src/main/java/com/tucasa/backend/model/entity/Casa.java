@@ -12,23 +12,23 @@ import lombok.NoArgsConstructor;
 public class Casa extends Inmueble {
 
     @Column(name = "num_dormitorios", nullable = false)
-    private int numDormitorios;
+    private Integer numDormitorios;
 
     @Column(name = "num_banos", nullable = false)
-    private int numBanos;
+    private Integer numBanos;
 
     @Column(name = "num_pisos", nullable = false)
-    private int numPisos;
+    private Integer numPisos;
 
     @Column(nullable = false)
-    private boolean garaje = false;
+    private Boolean garaje = false;
 
     @Column(nullable = false)
-    private boolean patio = false;
+    private Boolean patio = false;
 
     @Column(nullable = false)
-    private boolean amoblado = false;
+    private Boolean amoblado = false;
 
     @Column(nullable = false)
-    private boolean sotano = false;
+    private Boolean sotano = false;
 }

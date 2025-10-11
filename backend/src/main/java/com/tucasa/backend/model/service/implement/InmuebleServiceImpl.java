@@ -41,10 +41,7 @@ public class InmuebleServiceImpl implements InmuebleService {
         try {
             List<Inmueble> inmuebles = inmuebleRepository.findAll();
             if (!inmuebles.isEmpty()) {
-                List<InmuebleResponseDto> dtos = inmuebles.stream()
-                        .map(this::mapToDto)
-                        .collect(Collectors.toList());
-                return apiResponse.responseSuccess(successMessage, dtos);
+                return apiResponse.responseSuccess(successMessage, inmuebles);
             } else {
                 return apiResponse.responseDataError(errorMessage, null);
             }
@@ -61,76 +58,11 @@ public class InmuebleServiceImpl implements InmuebleService {
         try {
             Inmueble inmueble = inmuebleRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
-            return apiResponse.responseSuccess(successMessage, mapToDto(inmueble));
+            return apiResponse.responseSuccess(successMessage, inmueble);
         } catch (Exception e) {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }
     }
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> create(InmuebleRequestDto dto) {
-        String successMessage = Constants.RECORD_CREATED;
-        String errorMessage = Constants.RECORD_NOT_CREATED;
-
-        try {
-            Inmueble inmueble = new Inmueble();
-            inmueble.setDireccion(dto.getDireccion());
-            inmueble.setSuperficie(dto.getSuperficie());
-            inmueble.setIdPropietario(dto.getIdPropietario());
-            inmueble.setFechaPublicacion(LocalDateTime.now());
-            inmueble.setEstadoPublicacion(dto.getEstadoPublicacion());
-            inmueble.setDescripcion(dto.getDescripcion());
-            inmueble.setActivo(true);
-            inmueble.setTipo(dto.getTipo());
-
-            // Lista de servicios
-            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
-                Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
-                inmueble.setServicios(servicios);
-            }
-
-            Inmueble saved = inmuebleRepository.save(inmueble);
-            return apiResponse.responseCreate(successMessage, mapToDto(saved));
-
-        } catch (Exception e) {
-            return apiResponse.responseDataError(errorMessage, e.getMessage());
-        }
-    }
-
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> update(Long id, InmuebleRequestDto dto) {
-        String successMessage = Constants.RECORD_UPDATED;
-        String errorMessage = "Inmueble no encontrado: " + id;
-
-        try {
-            Inmueble inmueble = inmuebleRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException(errorMessage));
-
-            // Actualiza solo los campos que vienen no nulos
-            if (dto.getDireccion() != null) inmueble.setDireccion(dto.getDireccion());
-            if (dto.getSuperficie() != null) inmueble.setSuperficie(dto.getSuperficie());
-            if (dto.getEstadoPublicacion() != null) inmueble.setEstadoPublicacion(dto.getEstadoPublicacion());
-            if (dto.getDescripcion() != null) inmueble.setDescripcion(dto.getDescripcion());
-            if (dto.getTipo() != null) inmueble.setTipo(dto.getTipo());
-            if (dto.getActivo() != null) inmueble.setActivo(dto.getActivo());
-
-            // Actualiza la lista de servicios
-            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
-                Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
-                inmueble.setServicios(servicios);
-            }
-
-            Inmueble updated = inmuebleRepository.save(inmueble);
-            return apiResponse.responseSuccess(successMessage, mapToDto(updated));
-
-        } catch (Exception e) {
-            return apiResponse.responseDataError(errorMessage, e.getMessage());
-        }
-    }
-
 
     @Override
     @Transactional
@@ -158,8 +90,6 @@ public class InmuebleServiceImpl implements InmuebleService {
         dto.setDireccion(inmueble.getDireccion());
         dto.setSuperficie(inmueble.getSuperficie());
         dto.setIdPropietario(inmueble.getIdPropietario());
-        dto.setFechaPublicacion(inmueble.getFechaPublicacion());
-        dto.setEstadoPublicacion(inmueble.getEstadoPublicacion());
         dto.setDescripcion(inmueble.getDescripcion());
         dto.setActivo(inmueble.isActivo());
         dto.setTipo(inmueble.getTipo());
