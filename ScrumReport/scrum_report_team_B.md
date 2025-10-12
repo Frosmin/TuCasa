@@ -31,13 +31,13 @@
 ---
 
 ## Diego
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Analicé la implementación del Header 
+- **T:**  Implementé el Header y el formulario base para una venta
+- **B:**  Problemas con el cómo está planteado los precios en la base de datos
 
 ---
 
 ## Jhunior
-- **Y:**  
-- **T:**  
-- **B:**  
+- **Y:** Trabaje en crear la pagina de catalogo para casas
+- **T:** Hoy voy a trabajar en integrar con el catalogo de casas con el backend
+- **B:** No he tenido problemas
