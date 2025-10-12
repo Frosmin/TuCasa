@@ -41,11 +41,9 @@ export interface PropertyFormData {
   ascensor: boolean;
   balcon: boolean;
   areaComun: boolean;
-  seguridad: boolean;
   parqueo: boolean;
   mascotasPermitidas: boolean;
   expensas: string;
-  vistaPanoramica: boolean;
   antiguedadEdificio: string;
   numDepartamentosPorPiso: string;
   porteroAutomatico: boolean;
@@ -90,11 +88,9 @@ export interface InmuebleData {
   ascensor?: boolean;
   balcon?: boolean;
   areaComun?: boolean;
-  seguridad?: boolean;
   parqueo?: boolean;
   mascotasPermitidas?: boolean;
   expensas?: string;
-  vistaPanoramica?: boolean;
   antiguedadEdificio?: string;
   numDepartamentosPorPiso?: string;
   porteroAutomatico?: boolean;
