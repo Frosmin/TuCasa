@@ -36,6 +36,21 @@ export interface PropertyFormData {
   deposito: boolean;
   banoPrivado: boolean;
 
+  // Campos específicos para Departamento
+  piso: string;
+  ascensor: boolean;
+  balcon: boolean;
+  areaComun: boolean;
+  seguridad: boolean;
+  parqueo: boolean;
+  mascotasPermitidas: boolean;
+  expensas: string;
+  vistaPanoramica: boolean;
+  antiguedadEdificio: string;
+  numDepartamentosPorPiso: string;
+  porteroAutomatico: boolean;
+  terrazaCompartida: boolean;
+
   images: string[];
 }
 
@@ -70,4 +85,18 @@ export interface InmuebleData {
   numAmbientes?: number;
   deposito?: boolean;
   banoPrivado?: boolean;
+  // Departamento fields
+  piso?: string;
+  ascensor?: boolean;
+  balcon?: boolean;
+  areaComun?: boolean;
+  seguridad?: boolean;
+  parqueo?: boolean;
+  mascotasPermitidas?: boolean;
+  expensas?: string;
+  vistaPanoramica?: boolean;
+  antiguedadEdificio?: string;
+  numDepartamentosPorPiso?: string;
+  porteroAutomatico?: boolean;
+  terrazaCompartida?: boolean;
 }
