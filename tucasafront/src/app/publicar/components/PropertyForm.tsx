@@ -5,6 +5,7 @@ import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constan
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
+import DepartamentoFields from './DepartamentoFields';
 import ImageUploader from './ImageUploader';
 
 interface PropertyFormProps {
@@ -48,6 +49,15 @@ export default function PropertyForm({
       {/* Campos específicos para Tienda */}
       {formData.propertyType === 'TIENDA' && (
         <TiendaFields
+          formData={formData}
+          onChange={onInputChange}
+          onToggle={onToggle}
+        />
+      )}
+
+      {/* Campos específicos para Departamento */}
+      {formData.propertyType === 'DEPARTAMENTO' && (
+        <DepartamentoFields
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
