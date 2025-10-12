@@ -14,13 +14,11 @@ export interface Filtros {
 interface FiltroSidebarProps {
     filters: Filtros
     setFilters: (filtros: Filtros) => void
-    zonas: string[]
     tipos: string[]
 }
 export const FiltroSidebar: FC<FiltroSidebarProps> = ({
     filters,
     setFilters,
-    zonas,
     tipos
 }) => {
     const filtrosDefault: Filtros = {
@@ -47,14 +45,6 @@ export const FiltroSidebar: FC<FiltroSidebarProps> = ({
                 onChange={(value) => setFilters({ ...filters, tipo: value })}
                 options={tipos}
                 placeholder="Todos los tipos"
-            />
-
-            <SelectFilter
-                label="Zona"
-                value={filters.zona}
-                onChange={(value) => setFilters({ ...filters, zona: value })}
-                options={zonas}
-                placeholder="Todas las zonas"
             />
 
             <RangeFilter
