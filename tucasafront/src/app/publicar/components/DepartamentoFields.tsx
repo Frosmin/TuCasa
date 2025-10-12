@@ -36,19 +36,6 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <ToggleSwitch label="Tiene Ascensor?" checked={formData.ascensor} onChange={() => onToggle('ascensor')} />
-        <ToggleSwitch label="Tiene Balcón?" checked={formData.balcon} onChange={() => onToggle('balcon')} />
-        <ToggleSwitch label="Tiene Área común?" checked={formData.areaComun} onChange={() => onToggle('areaComun')} />
-        <ToggleSwitch label="Tiene Seguridad?" checked={formData.seguridad} onChange={() => onToggle('seguridad')} />
-        <ToggleSwitch label="Tiene Parqueo?" checked={formData.parqueo} onChange={() => onToggle('parqueo')} />
-        <ToggleSwitch label="Mascotas permitidas?" checked={formData.mascotasPermitidas} onChange={() => onToggle('mascotasPermitidas')} />
-        <ToggleSwitch label="Vista panorámica?" checked={formData.vistaPanoramica} onChange={() => onToggle('vistaPanoramica')} />
-        <ToggleSwitch label="Portero automático?" checked={formData.porteroAutomatico} onChange={() => onToggle('porteroAutomatico')} />
-        <ToggleSwitch label="Terraza compartida?" checked={formData.terrazaCompartida} onChange={() => onToggle('terrazaCompartida')} />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Antigüedad del edificio *</label>
           <input
@@ -73,6 +60,15 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <ToggleSwitch label="Ascensor" checked={formData.ascensor} onChange={() => onToggle('ascensor')} />
+        <ToggleSwitch label="Balcón" checked={formData.balcon} onChange={() => onToggle('balcon')} />
+        <ToggleSwitch label="Área común" checked={formData.areaComun} onChange={() => onToggle('areaComun')} />
+        <ToggleSwitch label="Parqueo" checked={formData.parqueo} onChange={() => onToggle('parqueo')} />
+        <ToggleSwitch label="Mascotas Permitidas" checked={formData.mascotasPermitidas} onChange={() => onToggle('mascotasPermitidas')} />
+        <ToggleSwitch label="Portero Automático" checked={formData.porteroAutomatico} onChange={() => onToggle('porteroAutomatico')} />
+        <ToggleSwitch label="Terraza Compartida" checked={formData.terrazaCompartida} onChange={() => onToggle('terrazaCompartida')} />
       </div>
     </div>
   );
