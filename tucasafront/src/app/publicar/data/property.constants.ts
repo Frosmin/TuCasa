@@ -69,5 +69,21 @@ export const INITIAL_FORM_DATA = {
   numAmbientes: '',
   deposito: false,
   banoPrivado: false,
+
+  // Campos específicos para Departamento
+  piso: '',
+  ascensor: false,
+  balcon: false,
+  areaComun: false,
+  seguridad: false,
+  parqueo: false,
+  mascotasPermitidas: false,
+  expensas: '',
+  vistaPanoramica: false,
+  antiguedadEdificio: '',
+  numDepartamentosPorPiso: '',
+  porteroAutomatico: false,
+  terrazaCompartida: false,
+  
   images: [],
 };
