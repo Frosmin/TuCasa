@@ -75,15 +75,13 @@ export const INITIAL_FORM_DATA = {
   ascensor: false,
   balcon: false,
   areaComun: false,
-  seguridad: false,
   parqueo: false,
   mascotasPermitidas: false,
   expensas: '',
-  vistaPanoramica: false,
   antiguedadEdificio: '',
   numDepartamentosPorPiso: '',
   porteroAutomatico: false,
   terrazaCompartida: false,
-  
+
   images: [],
 };
