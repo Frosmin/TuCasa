@@ -4,59 +4,33 @@ import { Bed, Bath, Maximize, Heart, Eye, Upload, Home } from "lucide-react"
 import { useState, type FC } from "react"
 import { formatearPrecio } from "../utils/utils"
 import Link from "next/link"
+import type { Inmueble } from "../../../models/Inmueble"
 
-interface Casa {
-    id: string
-    tipo: 'alquiler' | 'venta' | 'anticretico'
-    zona: string
-    direccion?: string
-    descripcion: string
-    num_dormitorios: number
-    num_banios: number
-    superficie: number
-    precio: number
-    imagen: string
-    estado: 'nuevo' | 'oferta' | 'oportunidad'
-    garaje: boolean
-    patio: boolean
-    amoblado: boolean
-    tiene_sotano: boolean
-}
-
-interface CasaCardProps {
-    casa: Casa
+interface InmuebleCardProps {
+    casa: Inmueble
     onFavorite?: (id: string) => void
     onViewDetails?: (id: string) => void
 }
 
-const getOperationBadgeColor = (tipo: Casa['tipo']): string => {
-    const colores: Record<Casa['tipo'], string> = {
-        venta: 'bg-blue-100 text-blue-700',
-        alquiler: 'bg-green-100 text-green-700',
-        anticretico: 'bg-purple-100 text-purple-700'
+const getOperationBadgeColor = (tipo: Inmueble['tipo']): string => {
+    const colores: Record<Exclude<Inmueble['tipo'], ''>, string> = {
+        CASA: 'bg-blue-100 text-blue-700',
+        DEPARTAMENTO: 'bg-green-100 text-green-700',
+        LOTE: 'bg-purple-100 text-purple-700'
     }
-    return colores[tipo]
+    return tipo ? colores[tipo] : 'bg-yellow-100 text-yellow-700'
 }
 
-const getOperationLabel = (tipo: Casa['tipo']): string => {
-    const labels: Record<Casa['tipo'], string> = {
-        venta: 'Venta',
-        alquiler: 'Alquiler',
-        anticretico: 'Anticretico'
+const getOperationLabel = (tipo: Inmueble['tipo']): string => {
+    const labels: Record<Exclude<Inmueble['tipo'], ''>, string> = {
+        CASA: 'Casa',
+        DEPARTAMENTO: 'Departamento',
+        LOTE: 'Lote'
     }
-    return labels[tipo]
+    return tipo ? labels[tipo] : "Desconocido"
 }
 
-const getEstadoBadgeColor = (estado: Casa['estado']): string => {
-    const colores: Record<Casa['estado'], string> = {
-        nuevo: 'bg-orange-100 text-orange-700',
-        oferta: 'bg-blue-100 text-blue-700',
-        oportunidad: 'bg-green-100 text-green-700'
-    }
-    return colores[estado]
-}
-
-export const CasaCard: FC<CasaCardProps> = ({
+export const CasaCard: FC<InmuebleCardProps> = ({
     casa,
     onFavorite,
     onViewDetails
@@ -80,7 +54,7 @@ export const CasaCard: FC<CasaCardProps> = ({
     return (
         <Link href={`/casa/${casa.id}`} className="group h-full">
             <div className="bg-white rounded-xl overflow-hidden shadow-md transition-all hover:shadow-xl h-full flex flex-col">
-               
+
 
                 {/* Imagen Principal */}
                 <div className="relative aspect-[4/3] overflow-hidden px-4 py-4">
@@ -91,7 +65,7 @@ export const CasaCard: FC<CasaCardProps> = ({
                     ) : (
                         <img
                             src={casa.imagen}
-                            alt={casa.descripcion || `Casa en ${casa.zona}`}
+                            alt={casa.descripcion}
                             onError={() => setImageError(true)}
                             className="w-full h-full rounded-xl object-cover transition-transform group-hover:scale-105"
                         />
@@ -107,12 +81,7 @@ export const CasaCard: FC<CasaCardProps> = ({
                         />
                     </button>
 
-                    {/* Badge Estado */}
-                    {casa.estado && (
-                        <div className={`absolute top-6 left-6 px-2 py-1 rounded-full text-xs font-semibold ${getEstadoBadgeColor(casa.estado)}`}>
-                            {casa.estado.toUpperCase()}
-                        </div>
-                    )}
+
                 </div>
 
                 {/* Contenido */}
@@ -134,16 +103,13 @@ export const CasaCard: FC<CasaCardProps> = ({
                             {getOperationLabel(casa.tipo)}
                         </span>
 
-                        
+
                     </div>
 
                     {/* Información Básica */}
                     <div className="mb-3 space-y-1">
                         <p className="text-xs text-gray-700 font-medium">
                             {casa.direccion || 'Dirección no especificada'}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                            {casa.zona || 'Zona no especificada'}
                         </p>
                     </div>
 
@@ -178,7 +144,7 @@ export const CasaCard: FC<CasaCardProps> = ({
                         <div className="flex justify-between">
                             <span className="text-gray-600">Sótano:</span>
                             <span className="font-medium text-gray-900">
-                                {casa.tiene_sotano ? 'Sí' : 'No'}
+                                {casa.sotano ? 'Sí' : 'No'}
                             </span>
                         </div>
                     </div>
@@ -194,18 +160,18 @@ export const CasaCard: FC<CasaCardProps> = ({
                     )}
 
                     {/* Características con iconos */}
-                    {(casa.num_dormitorios > 0 || casa.num_banios > 0 || casa.superficie > 0) && (
+                    {(casa.numDormitorios > 0 || casa.numBanos > 0 || casa.superficie > 0) && (
                         <div className="flex gap-3 mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
-                            {casa.num_dormitorios > 0 && (
+                            {casa.numDormitorios > 0 && (
                                 <div className="flex items-center gap-1">
                                     <Bed className="h-4 w-4" />
-                                    <span>{casa.num_dormitorios}</span>
+                                    <span>{casa.numDormitorios}</span>
                                 </div>
                             )}
-                            {casa.num_banios > 0 && (
+                            {casa.numBanos > 0 && (
                                 <div className="flex items-center gap-1">
                                     <Bath className="h-4 w-4" />
-                                    <span>{casa.num_banios}</span>
+                                    <span>{casa.numBanos}</span>
                                 </div>
                             )}
                         </div>
