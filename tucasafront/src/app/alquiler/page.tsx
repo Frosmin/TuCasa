@@ -16,7 +16,7 @@ const CatalogPage = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    const [tipoSeleccionado, setTipoSeleccionado] = useState<TipoPropiedad>('')
+    const [tipoInmuebleSeleccionado, setTipoInmuebleSeleccionado] = useState<TipoPropiedad>('')
     const [filters, setFilters] = useState<Filtros>({
         tipo: '',
         zona: '',
@@ -72,7 +72,7 @@ const CatalogPage = () => {
             dormitorios: '',
         })
         setSearchTerm('')
-        setTipoSeleccionado('')
+        setTipoInmuebleSeleccionado('')
     }
 
     if (error) {
@@ -105,8 +105,8 @@ const CatalogPage = () => {
                         {tiposPropiedad.map(({ id, label, icon: Icon }) => (
                             <button
                                 key={id}
-                                onClick={() => setTipoSeleccionado(id as TipoPropiedad)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoSeleccionado === id
+                                onClick={() => setTipoInmuebleSeleccionado(id as TipoPropiedad)}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
                                     ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
                                     : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
                                     }`}

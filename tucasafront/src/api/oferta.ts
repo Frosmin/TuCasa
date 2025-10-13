@@ -1,19 +1,37 @@
 import { URL_BACKEND } from "@/config/constants"
 import type { ApiResponse } from "./api"
 import type { Oferta, TipoOperacion } from "@/models/Oferta"
+import type { FiltrosOferta } from "@/models/Filtros"
+import { buildQueryParams } from "@/utils/filtros"
 
-export async function fetchOfertas(tipoOperacion: TipoOperacion): Promise<Oferta[]> {
+export async function fetchOfertas(
+    tipoOperacion: TipoOperacion,
+    filtros?: Omit<FiltrosOferta, 'tipoOperacion'>
+): Promise<Oferta[]> {
     try {
-        const response = await fetch(`${URL_BACKEND}/api/oferta?tipoOperacion=${tipoOperacion}`)
-        const data: ApiResponse<Oferta[]> = await response.json()
-
-        if (!response.ok || data.error) {
-            throw new Error(data.message || 'Error al obtener casas')
+        const parametros: FiltrosOferta = {
+            tipoOperacion,
+            ...filtros,
         }
 
-        return data.data
+        const queryParams = buildQueryParams(parametros)
+        const url = `${URL_BACKEND}/api/oferta?${queryParams.toString()}`
+
+        const response = await fetch(url)
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data: ApiResponse<Oferta[]> = await response.json()
+
+        if (data.error) {
+            throw new Error(data.message || 'Error al obtener ofertas')
+        }
+
+        return data.data || []
     } catch (error) {
-        console.error('Error fetching casas:', error)
+        console.error('Error fetching ofertas:', error)
         throw error
     }
 }

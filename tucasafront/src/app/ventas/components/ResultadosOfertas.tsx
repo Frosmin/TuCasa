@@ -1,5 +1,5 @@
 import type { FC } from "react"
-import { OfertaCard } from "./OfertaCard"
+import { OfertaCard } from "../../../components/OfertaCard"
 import type { Oferta } from "@/models/Oferta"
 
 interface ResultadosOfertasProps {
