@@ -31,6 +31,20 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.deposito = formData.deposito;
     inmuebleData.banoPrivado = formData.banoPrivado;
   }
+  
+  // Agregar campos específicos de DEPARTAMENTO
+  if (formData.propertyType === 'DEPARTAMENTO') {
+    inmuebleData.piso = formData.piso;
+    inmuebleData.superficieInterna = formData.superficieInterna;
+    inmuebleData.numDormitorios = parseInt(formData.dormitorios) || 0;
+    inmuebleData.numBanos = parseInt(formData.banos) || 0;
+    inmuebleData.montoExpensas = formData.montoExpensas;
+    inmuebleData.ascensor = formData.ascensor;
+    inmuebleData.balcon = formData.balcon;
+    inmuebleData.parqueo = formData.parqueo;
+    inmuebleData.mascotasPermitidas = formData.mascotasPermitidas;
+    inmuebleData.amoblado = formData.amoblado;
+  }
 
   return {
     inmueble: inmuebleData,
