@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Home, Building2, MapPin, Store } from 'lucide-react'
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble'
 import { fetchCasas } from '@/api/casas'
+import { fetchDepartamentos } from '@/api/departamentos'
 import { FiltroSidebar, type Filtros } from './components/FiltroSidebar'
 import { SearchBar } from './components/SearchBar'
 import { ResultadosInmuebles } from './components/ResultadosInmuebles'
@@ -39,8 +40,11 @@ const CatalogPage = () => {
             try {
                 setLoading(true)
                 setError(null)
-                const data = await fetchCasas()
-                setInmuebles(data)
+                const [casas, departamentos] = await Promise.all([
+                    fetchCasas(),
+                    fetchDepartamentos()
+                ])
+                setInmuebles([...casas, ...departamentos])
             } catch (err) {
                 const mensaje = err instanceof Error ? err.message : 'Error desconocido'
                 setError(mensaje)
