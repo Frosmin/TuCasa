@@ -63,6 +63,19 @@ public class LoteServiceImpl implements LoteService {
 
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> findById(Long id) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = "Lote no encontrado";
+        try {
+            Lote lote = loteRepository.findById(id).orElseThrow(() -> new RuntimeException(errorMessage));
+            return apiResponse.responseSuccess(successMessage, mapToDto(lote));
+        } catch (Exception e) {
+            return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
+        }
+    }
+
     private LoteResponseDto mapToDto(Lote lote) {
         LoteResponseDto dto = new LoteResponseDto();
         dto.setId(lote.getId());
