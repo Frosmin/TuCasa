@@ -1,13 +1,13 @@
 package com.tucasa.backend.model.service.interfaces;
 
+import com.tucasa.backend.model.dto.CasaRequestDto;
 import com.tucasa.backend.model.dto.InmuebleRequestDto;
-import com.tucasa.backend.model.entity.Inmueble;
 import org.springframework.http.ResponseEntity;
 
-public interface InmuebleService {
-    //Este es un crud basico de ejemplo,
-    // estos servicios no seran usados necesariamente, son solo pruebas de la entidad
+public interface CasaService {
     ResponseEntity<?> findAll();
     ResponseEntity<?> findById(Long id);
+    ResponseEntity<?> create(CasaRequestDto casa);
+    ResponseEntity<?> update(Long id, CasaRequestDto casa);
     ResponseEntity<?> delete(Long id);
 }
