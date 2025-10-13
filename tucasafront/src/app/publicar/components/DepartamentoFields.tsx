@@ -15,11 +15,51 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Piso *</label>
           <input
-            type="text"
+            type="number"
             name="piso"
             value={formData.piso}
             onChange={onChange}
-            placeholder="Ej: 5"
+            placeholder="Ej: 8"
+            required
+            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Superficie interna (m²) *</label>
+          <input
+            type="number"
+            name="superficieInterna"
+            value={formData.superficieInterna}
+            onChange={onChange}
+            placeholder="Ej: 105"
+            required
+            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Número de dormitorios *
+          </label>
+          <input
+            type="number"
+            name="dormitorios"
+            value={formData.dormitorios}
+            onChange={onChange}
+            placeholder="Ej: 3"
+            required
+            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Número de baños *
+          </label>
+          <input
+            type="number"
+            name="banos"
+            value={formData.banos}
+            onChange={onChange}
+            placeholder="Ej: 2"
             required
             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
@@ -27,35 +67,11 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Expensas *</label>
           <input
-            type="text"
-            name="expensas"
-            value={formData.expensas}
+            type="string"
+            name="montoExpensas"
+            value={formData.montoExpensas}
             onChange={onChange}
-            placeholder="Ej: 200"
-            required
-            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Antigüedad del edificio *</label>
-          <input
-            type="text"
-            name="antiguedadEdificio"
-            value={formData.antiguedadEdificio}
-            onChange={onChange}
-            placeholder="Ej: 10 años"
-            required
-            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">N° departamentos por piso *</label>
-          <input
-            type="text"
-            name="numDepartamentosPorPiso"
-            value={formData.numDepartamentosPorPiso}
-            onChange={onChange}
-            placeholder="Ej: 4"
+            placeholder="Ej: 450"
             required
             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
@@ -64,11 +80,9 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
       <div className="grid grid-cols-2 gap-4">
         <ToggleSwitch label="Ascensor" checked={formData.ascensor} onChange={() => onToggle('ascensor')} />
         <ToggleSwitch label="Balcón" checked={formData.balcon} onChange={() => onToggle('balcon')} />
-        <ToggleSwitch label="Área común" checked={formData.areaComun} onChange={() => onToggle('areaComun')} />
         <ToggleSwitch label="Parqueo" checked={formData.parqueo} onChange={() => onToggle('parqueo')} />
         <ToggleSwitch label="Mascotas Permitidas" checked={formData.mascotasPermitidas} onChange={() => onToggle('mascotasPermitidas')} />
-        <ToggleSwitch label="Portero Automático" checked={formData.porteroAutomatico} onChange={() => onToggle('porteroAutomatico')} />
-        <ToggleSwitch label="Terraza Compartida" checked={formData.terrazaCompartida} onChange={() => onToggle('terrazaCompartida')} />
+        <ToggleSwitch label="Amoblado" checked={formData.amoblado} onChange={() => onToggle('amoblado')} />
       </div>
     </div>
   );

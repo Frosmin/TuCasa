@@ -72,16 +72,13 @@ export const INITIAL_FORM_DATA = {
 
   // Campos específicos para Departamento
   piso: '',
+  superficieInterna: '',
   ascensor: false,
   balcon: false,
-  areaComun: false,
   parqueo: false,
   mascotasPermitidas: false,
-  expensas: '',
-  antiguedadEdificio: '',
-  numDepartamentosPorPiso: '',
-  porteroAutomatico: false,
-  terrazaCompartida: false,
+  //amoblado: false,
+  montoExpensas: '',
 
   images: [],
 };
