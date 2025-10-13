@@ -82,3 +82,12 @@ export const INITIAL_FORM_DATA = {
 
   images: [],
 };
+
+export const SERVICIOS = [
+  { id: 1, nombre: 'Agua' },
+  { id: 2, nombre: 'Luz' },
+  { id: 3, nombre: 'Gas' },
+  { id: 4, nombre: 'Internet' },
+  { id: 5, nombre: 'Cable' },
+  { id: 6, nombre: 'Teléfono' },
+];
