@@ -2,14 +2,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Home, Building2, MapPin, Store } from 'lucide-react'
 
-import { FiltroSidebar, type Filtros } from './components/FiltroSidebar'
-import { SearchBar } from './components/SearchBar'
-import { ResultadosOfertas } from './components/ResultadosOfertas'
 import Loading from '@/components/Loading'
 import type { Oferta } from '@/models/Oferta'
 import type { TipoPropiedad } from '@/models/Inmueble'
-import { obtenerTiposUnicos } from './utils/utils'
 import { fetchOfertas } from '@/api/oferta'
+import { obtenerTiposUnicos } from '../ventas/utils/utils'
+import { SearchBar } from '../ventas/components/SearchBar'
+import { FiltroSidebar, type Filtros } from '../ventas/components/FiltroSidebar'
+import { ResultadosOfertas } from '../ventas/components/ResultadosOfertas'
 
 const CatalogPage = () => {
     const [ofertas, setOfertas] = useState<Oferta[]>([])
@@ -42,7 +42,7 @@ const CatalogPage = () => {
             try {
                 setLoading(true)
                 setError(null)
-                const data = await fetchOfertas('VENTA')
+                const data = await fetchOfertas('ALQUILER')
                 setOfertas(data)
             } catch (err) {
                 const mensaje =

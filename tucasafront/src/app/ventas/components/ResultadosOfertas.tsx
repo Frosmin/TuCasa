@@ -3,11 +3,11 @@ import { OfertaCard } from "./OfertaCard"
 import type { Oferta } from "@/models/Oferta"
 
 interface ResultadosOfertasProps {
-    inmuebles: Oferta[]
+    ofertas: Oferta[]
     onLimpiarFiltros: () => void
 }
 
-export const ResultadosOfertas: FC<ResultadosOfertasProps> = ({ inmuebles: ofertas, onLimpiarFiltros }) => {
+export const ResultadosOfertas: FC<ResultadosOfertasProps> = ({ ofertas, onLimpiarFiltros }) => {
     if (ofertas.length === 0) {
         return (
             <div className="text-center py-12 bg-white rounded-lg">
