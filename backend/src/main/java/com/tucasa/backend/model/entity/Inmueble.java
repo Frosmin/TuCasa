@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "inmuebles")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Inmueble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
