@@ -76,6 +76,53 @@ public class LoteServiceImpl implements LoteService {
         }
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> update(Long id, LoteRequestDto dto) {
+        String successMessage = Constants.RECORD_UPDATED;
+        String errorMessage = "lote no encontrado: "+ id;
+        try {
+            Lote lote = loteRepository.findById(id).orElseThrow(() -> new RuntimeException(errorMessage));
+
+            if(dto.getDireccion() != null) {
+                lote.setDireccion(dto.getDireccion());
+            }
+            if(dto.getLatitud() != null) {
+                lote.setLatitud(dto.getLatitud());
+            }
+            if(dto.getLongitud() != null) {
+                lote.setLongitud(dto.getLongitud());
+            }
+            if(dto.getSuperficie() != null) {
+                lote.setSuperficie(dto.getSuperficie());
+            }
+            if(dto.getDescripcion() != null) {
+                lote.setDescripcion(dto.getDescripcion());
+            }
+            if(dto.getActivo() != null) {
+                lote.setActivo(dto.getActivo());
+            }
+
+            if(dto.getTamanio() != null) {
+                lote.setTamanio(dto.getTamanio());
+            }
+            if(dto.getMuroPerimetral() != null) {
+                lote.setMuroPerimetral(dto.getMuroPerimetral());
+            }
+
+
+            if(dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()){
+                Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
+                lote.setServicios(servicios);
+            }
+
+            Lote updated = loteRepository.save(lote);
+            return apiResponse.responseSuccess(successMessage, mapToDto(updated));
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
     private LoteResponseDto mapToDto(Lote lote) {
         LoteResponseDto dto = new LoteResponseDto();
         dto.setId(lote.getId());
