@@ -1,3 +1,5 @@
+import type { Inmueble } from "../../../models/Inmueble"
+
 interface Filtros {
     tipo: string
     zona: string
@@ -7,41 +9,28 @@ interface Filtros {
     superficieMax: number
     dormitorios: string
 }
-export const formatearPrecio = (precio: number, locale: string = 'es-BO'): string => {
+export const formatearPrecio = (precio: number = 0, locale: string = 'es-BO'): string => {
     return new Intl.NumberFormat(locale).format(precio)
 }
 
-export const obtenerZonasUnicas = (casas: Casa[]): string[] => {
-    return [...new Set(casas.map(c => c.zona))]
-}
 
-export const obtenerTiposUnicos = (casas: Casa[]): string[] => {
+export const obtenerTiposUnicos = (casas: Inmueble[]): string[] => {
     return [...new Set(casas.map(c => c.tipo))]
 }
 
-export const filtrarCasas = (
-    casas: Casa[],
+export const filtrarInmueble = (
+    inmuebles: Inmueble[],
     filtros: Filtros,
     busqueda: string
-): Casa[] => {
-    return casas.filter(casa => {
-        const matchTipo = !filtros.tipo || casa.tipo === filtros.tipo
-        const matchZona = !filtros.zona || casa.zona === filtros.zona
-        const matchPrecio = casa.precio >= filtros.precioMin && casa.precio <= filtros.precioMax
-        const matchSuperficie = casa.superficie >= filtros.superficieMin && casa.superficie <= filtros.superficieMax
-        const matchDormitorios = !filtros.dormitorios || casa.num_dormitorios >= Number(filtros.dormitorios)
+): Inmueble[] => {
+    return inmuebles.filter(inmueble => {
+        const matchTipo = !filtros.tipo || inmueble.tipo === filtros.tipo
+        const matchPrecio = (inmueble.precio || 0) >= filtros.precioMin && (inmueble.precio || 0) <= filtros.precioMax
+        const matchSuperficie = inmueble.superficie >= filtros.superficieMin && inmueble.superficie <= filtros.superficieMax
+        const matchDormitorios = !filtros.dormitorios || inmueble.numDormitorios >= Number(filtros.dormitorios)
         // const matchBusqueda = casa.title.toLowerCase().includes(busqueda.toLowerCase()) ||
         //     casa.descripcion.toLowerCase().includes(busqueda.toLowerCase())
 
-        return matchTipo && matchZona && matchPrecio && matchSuperficie && matchDormitorios 
+        return matchTipo && matchPrecio && matchSuperficie && matchDormitorios
     })
-}
-
-export const obtenerEstadoColor = (estado: Casa['estado']): string => {
-    const colores: Record<Casa['estado'], string> = {
-        nuevo: 'bg-orange-100 text-orange-700',
-        oferta: 'bg-blue-100 text-blue-700',
-        oportunidad: 'bg-green-100 text-green-700'
-    }
-    return colores[estado]
 }

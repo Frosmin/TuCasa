@@ -6,14 +6,16 @@ import com.tucasa.backend.model.entity.*;
 import com.tucasa.backend.model.repository.*;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,13 +39,16 @@ public class OfertaServiceImpl implements OfertaService {
     @Autowired
     private ApiResponse apiResponse;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @Override
     public ResponseEntity<?> findAll() {
         String successMessage = Constants.RECORDS_FOUND;
         String errorMessage = Constants.TABLE_NOT_FOUND;
 
         try {
-            List<Oferta> ofertas = ofertaRepository.findAll();
+            List<Oferta> ofertas = ofertaRepository.findAllCompleto();
             if (!ofertas.isEmpty()) {
                 List<OfertaResponseDto> response = ofertas.stream()
                         .map(this::mapToDto)
@@ -63,7 +68,7 @@ public class OfertaServiceImpl implements OfertaService {
         String errorMessage = "Oferta no encontrada";
 
         try {
-            Oferta oferta = ofertaRepository.findById(id)
+            Oferta oferta = ofertaRepository.findCompletoById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
             return apiResponse.responseSuccess(successMessage, mapToDto(oferta));
         } catch (Exception e) {
@@ -255,6 +260,137 @@ public class OfertaServiceImpl implements OfertaService {
         return inmueble;
     }
 
+    @Override
+    public ResponseEntity<?> search(Map<String, String> params) {
+        // Consulta base en SQL nativo - Complementar con los tipos de inmueble
+        StringBuilder sql = new StringBuilder(
+                "SELECT o.id " +
+                "FROM ofertas o " +
+                "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
+                "LEFT JOIN casas c ON i.id = c.id " +
+                "LEFT JOIN tiendas t ON i.id = t.id " +
+                // LEFT JOIN departamento d ON i.id = d.id " +
+                // LEFT JOIN lotes l ON i.id = l.id " +
+                "WHERE o.activo = true AND i.activo = true ");
+
+        // Campos permitidos para filtro por tipos - Complementar con los tipos de inmueble
+        Map<String, String> camposTexto = Map.of(
+                "tipoOperacion", "o.tipo_operacion",
+                "tipoInmueble", "i.tipo_inmueble"
+        );
+
+        Map<String, String> camposNumericos = Map.of(
+                "numDormitorios", "c.num_dormitorios",
+                "numBanos", "c.num_banos",
+                "numPisos", "c.num_pisos",
+                "numAmbientes", "t.num_ambientes",
+                "precioMin", "o.precio",
+                "precioMax", "o.precio"
+        );
+
+        Map<String, String> camposBooleanos = Map.of(
+                "garaje", "c.garaje",
+                "patio", "c.patio",
+                "amoblado", "c.amoblado",
+                "sotano", "c.sotano",
+                "banoPrivado", "t.bano_privado",
+                "deposito", "t.deposito"
+        );
+
+        // Aplicar filtros por campos
+        for (var entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            // Si el campo viene sin valor se ignora
+            if (value == null || value.isBlank()) continue;
+
+            if (camposTexto.containsKey(key)) {     // Se construye el AND WHERE para texto
+                sql.append(" AND ").append(camposTexto.get(key))
+                        .append(" ILIKE '%").append(value.replace("'", "''")).append("%'"); // Busca coincidencias con ILIKE
+            } else if (camposNumericos.containsKey(key)) {  // Construye para campos numericos
+                try {
+                    BigDecimal num = new BigDecimal(value);
+                    String campo = camposNumericos.get(key);
+                    if (key.equals("precioMin")) sql.append(" AND ").append(campo).append(" >= ").append(value);    // Para rango de precios
+                    else if (key.equals("precioMax")) sql.append(" AND ").append(campo).append(" <= ").append(value);
+                    else sql.append(" AND ").append(campo).append(" = ").append(value); // Para cualquier numero (dormitorios por ejemplo)
+                } catch (NumberFormatException ignored) {}
+            } else if (camposBooleanos.containsKey(key)) {  // Contruye AND WHERE para booleanos (Si tiene deposito, sotano, garaje, etc.)
+                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+                    sql.append(" AND ").append(camposBooleanos.get(key)).append(" = ").append(value);
+            }
+        }
+
+        // Filtrado por proximidad - Tendria que ser obligatorio (No interesa recibir ofertas fuera del rango escogido)
+        Double latitud = params.containsKey("latitud") ? Double.valueOf(params.get("latitud")) : null;
+        Double longitud = params.containsKey("longitud") ? Double.valueOf(params.get("longitud")) : null;
+        Double proximidad = params.containsKey("proximidad") ? Double.valueOf(params.get("proximidad")) : null;
+
+        if (latitud != null && longitud != null && proximidad != null) {
+            sql.append(" AND (")
+                    .append("6371 * acos(")
+                    .append("cos(radians(").append(latitud).append(")) * cos(radians(i.latitud)) * ")
+                    .append("cos(radians(i.longitud) - radians(").append(longitud).append(")) + ")
+                    .append("sin(radians(").append(latitud).append(")) * sin(radians(i.latitud))")
+                    .append(")")
+                    .append(") <= ").append(proximidad);
+        }
+
+        // Ordenamiento
+        String orderBy = params.get("orderBy");
+
+        Map<String, String> camposOrdenables = Map.of(
+                "precio", "o.precio",
+                "fechaPublicacionInicio", "o.fecha_publicacion_inicio",
+                "fechaPublicacionFin", "o.fecha_publicacion_fin"
+        );
+
+        if (orderBy != null && !orderBy.isBlank()) {
+            String[] parts = orderBy.split(",");
+            String campo = parts[0].trim();
+            String direccion = (parts.length > 1 ? parts[1].trim() : "asc").toUpperCase();
+
+            if (!direccion.equals("ASC") && !direccion.equals("DESC")) {
+                direccion = "DESC";
+            }
+
+            if (camposOrdenables.containsKey(campo)) {
+                sql.append(" ORDER BY ").append(camposOrdenables.get(campo))
+                        .append(" ").append(direccion);
+            } else {
+                sql.append(" ORDER BY o.fecha_publicacion_inicio DESC");
+            }
+        } else {
+            sql.append(" ORDER BY o.fecha_publicacion_inicio DESC");
+        }
+
+        System.out.println("SQL generada: " + sql);
+
+        // Consulta nativa de los ids
+        Query query = entityManager.createNativeQuery(sql.toString());
+        List<Long> ofertaIds = query.getResultList().stream()
+                .map(id -> ((Number) id).longValue())
+                .toList();
+
+        if (ofertaIds.isEmpty()) {
+            return apiResponse.responseSuccess(Constants.RECORDS_FOUND, List.of());
+        }
+
+        // Logica para mapeo de subtipos (no funciona con sql nativo)
+        List<Oferta> resultados = ofertaRepository.findAllCompletoByIds(ofertaIds);
+
+        // Conservar el orden
+        Map<Long, Oferta> ofertasFinded = resultados.stream()
+                .collect(Collectors.toMap(Oferta::getId, Function.identity()));
+
+        List<Oferta> ofertasList = ofertaIds.stream()
+                .map(ofertasFinded::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        List<OfertaResponseDto> response = ofertasList.stream().map(this::mapToDto).toList();
+        return apiResponse.responseSuccess(Constants.RECORDS_FOUND, response);
+    }
 
 
     // --- Mapeo a DTO ---

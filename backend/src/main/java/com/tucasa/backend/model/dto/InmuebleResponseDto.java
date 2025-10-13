@@ -34,6 +34,8 @@ public class InmuebleResponseDto {
 
     private Set<ServicioResponseDto> servicios;
 
+    private String url_imagen;
+
     public InmuebleResponseDto(Inmueble inmueble) {
         this.id = inmueble.getId();
         this.direccion = inmueble.getDireccion();
