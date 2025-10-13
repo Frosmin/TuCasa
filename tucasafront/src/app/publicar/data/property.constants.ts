@@ -72,16 +72,22 @@ export const INITIAL_FORM_DATA = {
 
   // Campos específicos para Departamento
   piso: '',
+  superficieInterna: '',
   ascensor: false,
   balcon: false,
-  areaComun: false,
   parqueo: false,
   mascotasPermitidas: false,
-  expensas: '',
-  antiguedadEdificio: '',
-  numDepartamentosPorPiso: '',
-  porteroAutomatico: false,
-  terrazaCompartida: false,
+  //amoblado: false,
+  montoExpensas: '',
 
   images: [],
 };
+
+export const SERVICIOS = [
+  { id: 1, nombre: 'Luz' },
+  { id: 2, nombre: 'Agua' },
+  { id: 3, nombre: 'Gas' },
+  { id: 4, nombre: 'Internet' },
+  { id: 5, nombre: 'Recoleccion de Basura' },
+  { id: 6, nombre: 'Seguridad 24h' },
+];

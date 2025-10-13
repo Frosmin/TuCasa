@@ -38,16 +38,13 @@ export interface PropertyFormData {
 
   // Campos específicos para Departamento
   piso: string;
+  superficieInterna: string;
   ascensor: boolean;
   balcon: boolean;
-  areaComun: boolean;
   parqueo: boolean;
   mascotasPermitidas: boolean;
-  expensas: string;
-  antiguedadEdificio: string;
-  numDepartamentosPorPiso: string;
-  porteroAutomatico: boolean;
-  terrazaCompartida: boolean;
+  //amoblado: boolean;
+  montoExpensas: string;
 
   images: string[];
 }
@@ -85,14 +82,11 @@ export interface InmuebleData {
   banoPrivado?: boolean;
   // Departamento fields
   piso?: string;
+  superficieInterna?: string;
   ascensor?: boolean;
   balcon?: boolean;
-  areaComun?: boolean;
   parqueo?: boolean;
   mascotasPermitidas?: boolean;
-  expensas?: string;
-  antiguedadEdificio?: string;
-  numDepartamentosPorPiso?: string;
-  porteroAutomatico?: boolean;
-  terrazaCompartida?: boolean;
+  //amoblado: boolean;
+  montoExpensas?: string;
 }

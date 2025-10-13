@@ -1,12 +1,13 @@
 // publicar/components/PropertyForm.tsx
 
 import { PropertyFormData } from '../types/property.types';
-import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constants';
+import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS, SERVICIOS } from '../data/property.constants';
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
 import DepartamentoFields from './DepartamentoFields';
 import ImageUploader from './ImageUploader';
+import ServiciosSelector from './ServiciosSelector';
 
 interface PropertyFormProps {
   formData: PropertyFormData;
@@ -146,6 +147,17 @@ export default function PropertyForm({
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
         </div>
+      </div>
+      <div>
+        <ServiciosSelector
+          servicios={SERVICIOS}
+          selectedIds={formData.serviciosIds}
+          onChange={(ids) =>
+            onInputChange({
+              target: { name: 'serviciosIds', value: ids },
+            } as any)
+          }
+        />
       </div>
 
       {/* Moneda y Tipo de Pago */}

@@ -212,66 +212,38 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
                   <span className="font-semibold text-gray-900 ml-1">{formData.piso}</span>
                 </div>
               )}
+              {formData.superficieInterna && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Superficie interna:</span>
+                  <span className="font-semibold text-gray-900 ml-1">{formData.superficieInterna} m²</span>
+                </div>
+              )}
               <div className="text-sm">
                 <span className="text-gray-600">Ascensor:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.ascensor ? 'Sí' : 'No'}
-                </span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.ascensor ? 'Sí' : 'No'}</span>
               </div>
               <div className="text-sm">
                 <span className="text-gray-600">Balcón:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.balcon ? 'Sí' : 'No'}
-                </span>
-              </div>
-              <div className="text-sm">
-                <span className="text-gray-600">Área común:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.areaComun ? 'Sí' : 'No'}
-                </span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.balcon ? 'Sí' : 'No'}</span>
               </div>
               <div className="text-sm">
                 <span className="text-gray-600">Parqueo:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.parqueo ? 'Sí' : 'No'}
-                </span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.parqueo ? 'Sí' : 'No'}</span>
               </div>
               <div className="text-sm">
                 <span className="text-gray-600">Mascotas permitidas:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.mascotasPermitidas ? 'Sí' : 'No'}
-                </span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.mascotasPermitidas ? 'Sí' : 'No'}</span>
               </div>
-              {formData.expensas && (
+              <div className="text-sm">
+                <span className="text-gray-600">Amoblado:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.amoblado ? 'Sí' : 'No'}</span>
+              </div>
+              {formData.montoExpensas && (
                 <div className="text-sm">
                   <span className="text-gray-600">Expensas:</span>
-                  <span className="font-semibold text-gray-900 ml-1">{formData.expensas}</span>
+                  <span className="font-semibold text-gray-900 ml-1">{formData.montoExpensas}</span>
                 </div>
               )}
-              {formData.antiguedadEdificio && (
-                <div className="text-sm">
-                  <span className="text-gray-600">Antigüedad edificio:</span>
-                  <span className="font-semibold text-gray-900 ml-1">{formData.antiguedadEdificio}</span>
-                </div>
-              )}
-              {formData.numDepartamentosPorPiso && (
-                <div className="text-sm">
-                  <span className="text-gray-600">Departamentos por piso:</span>
-                  <span className="font-semibold text-gray-900 ml-1">{formData.numDepartamentosPorPiso}</span>
-                </div>
-              )}
-              <div className="text-sm">
-                <span className="text-gray-600">Portero automático:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.porteroAutomatico ? 'Sí' : 'No'}
-                </span>
-              </div>
-              <div className="text-sm">
-                <span className="text-gray-600">Terraza compartida:</span>
-                <span className="font-semibold text-gray-900 ml-1">
-                  {formData.terrazaCompartida ? 'Sí' : 'No'}
-                </span>
-              </div>
             </div>
           )}
 
