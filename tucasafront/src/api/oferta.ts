@@ -1,11 +1,11 @@
 import { URL_BACKEND } from "@/config/constants"
-import type { Inmueble } from "@/models/Inmueble"
 import type { ApiResponse } from "./api"
+import type { Oferta } from "@/models/Oferta"
 
-export async function fetchCasas(): Promise<Inmueble[]> {
+export async function fetchVentas(): Promise<Oferta[]> {
     try {
-        const response = await fetch(`${URL_BACKEND}/api/casa`)
-        const data: ApiResponse<Inmueble[]> = await response.json()
+        const response = await fetch(`${URL_BACKEND}/api/oferta?tipoOperacion=venta`)
+        const data: ApiResponse<Oferta[]> = await response.json()
 
         if (!response.ok || data.error) {
             throw new Error(data.message || 'Error al obtener casas')
