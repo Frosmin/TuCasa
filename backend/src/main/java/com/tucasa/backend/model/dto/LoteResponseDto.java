@@ -12,15 +12,15 @@ public class LoteResponseDto {
 
     private String direccion;
 
+    private BigDecimal latitud;
+
+    private BigDecimal longitud;
+
     private BigDecimal superficie;
 
     private Long idPropietario;
 
-    private LocalDateTime fechaPublicacion;
-
     private String descripcion;
-
-    private String estadoPublicacion;
 
     private boolean activo;
 

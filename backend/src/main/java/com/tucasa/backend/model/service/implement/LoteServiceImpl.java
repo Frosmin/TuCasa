@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,10 +39,10 @@ public class LoteServiceImpl implements LoteService {
         try {
             Lote lote = new Lote();
             lote.setDireccion(dto.getDireccion());
+            lote.setLatitud(dto.getLatitud());
+            lote.setLongitud(dto.getLongitud());
             lote.setSuperficie(dto.getSuperficie());
             lote.setIdPropietario(dto.getIdPropietario());
-            lote.setFechaPublicacion(LocalDateTime.now());
-            lote.setEstadoPublicacion(dto.getEstadoPublicacion());
             lote.setDescripcion(dto.getDescripcion());
             lote.setActivo(true);
             lote.setTipo(TipoInmueble.LOTE);
@@ -68,11 +67,11 @@ public class LoteServiceImpl implements LoteService {
         LoteResponseDto dto = new LoteResponseDto();
         dto.setId(lote.getId());
         dto.setDireccion(lote.getDireccion());
+        dto.setLatitud(lote.getLatitud());
+        dto.setLongitud(lote.getLongitud());
         dto.setSuperficie(lote.getSuperficie());
         dto.setIdPropietario(lote.getIdPropietario());
-        dto.setFechaPublicacion(lote.getFechaPublicacion());
         dto.setDescripcion(lote.getDescripcion());
-        dto.setEstadoPublicacion(lote.getEstadoPublicacion());
         dto.setActivo(lote.isActivo());
         dto.setTamanio(lote.getTamanio());
         dto.setMuroPerimetral(lote.isMuroPerimetral());

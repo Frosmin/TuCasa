@@ -21,13 +21,19 @@ public class LoteRequestDto {
     @NotBlank(message = "La dirección es obligatoria", groups = Create.class)
     private String direccion;
 
+    @NotNull(message = "La latitud es obligatoria", groups = Create.class)
+    private BigDecimal latitud;
+
+    @NotNull(message = "La longitud es obligatoria", groups = Create.class)
+    private BigDecimal longitud;
+
     @NotNull(message = "La superficie es obligatoria", groups = Create.class)   
     private BigDecimal superficie;
 
     @NotNull(message = "El propietario es obligatorio", groups = Create.class)  
     private Long idPropietario;
 
-    private String estadoPublicacion;
+    
     private String descripcion;
 
     @NotNull(message = "El estado activo es obligatorio", groups = Create.class)
