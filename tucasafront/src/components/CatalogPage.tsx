@@ -72,11 +72,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
   // Filtrar ofertas
   const ofertasFiltradas = useMemo(() => {
     return ofertas.filter(oferta => {
-      // Solo ofertas publicadas y activas
-      if (oferta.estadoPublicacion !== 'PUBLICADO' || !oferta.activo) {
-        return false
-      }
-
       // Filtro por tipo de inmueble
       if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
         return false
@@ -127,7 +122,8 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
 
       // Filtro por servicios
       if (filters.servicios && filters.servicios.length > 0) {
-        const serviciosInmueble = oferta.inmueble.servicios.map(s => s.nombre)
+        const servicios = oferta.inmueble.servicios || []
+        const serviciosInmueble = servicios.map(s => s.nombre)
         const tieneServicios = filters.servicios.every(servicio =>
           serviciosInmueble.includes(servicio)
         )
