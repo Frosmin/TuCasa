@@ -4,13 +4,13 @@ import { PropertyFormData, PropertyPayload, InmuebleData } from '../types/proper
 
 export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayload => {
   const inmuebleData: InmuebleData = {
+    tipo: formData.propertyType,
     direccion: formData.direccion,
     latitud: parseFloat(formData.latitud),
     longitud: parseFloat(formData.longitud),
     superficie: parseFloat(formData.superficie),
     idPropietario: formData.idPropietario,
     descripcion: formData.descripcion,
-    tipo: formData.propertyType,
     serviciosIds: formData.serviciosIds,
   };
 
@@ -34,29 +34,30 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
   
   // Agregar campos específicos de DEPARTAMENTO
   if (formData.propertyType === 'DEPARTAMENTO') {
-    inmuebleData.piso = formData.piso;
-    inmuebleData.superficieInterna = formData.superficieInterna;
-    inmuebleData.numDormitorios = parseInt(formData.dormitorios) || 0;
-    inmuebleData.numBanos = parseInt(formData.banos) || 0;
-    inmuebleData.montoExpensas = formData.montoExpensas;
-    inmuebleData.ascensor = formData.ascensor;
-    inmuebleData.balcon = formData.balcon;
-    inmuebleData.parqueo = formData.parqueo;
-    inmuebleData.mascotasPermitidas = formData.mascotasPermitidas;
-    inmuebleData.amoblado = formData.amoblado;
+    inmuebleData.piso = Number(formData.piso) || 0;
+    inmuebleData.superficieInterna = Number((formData as any).superficieInterna) || 0;
+    inmuebleData.numDormitorios = Number(formData.dormitorios) || 0;
+    inmuebleData.numBanos = Number(formData.banos) || 0;
+    inmuebleData.montoExpensas = Number((formData as any).montoExpensas) || 0;
+    inmuebleData.ascensor = !!formData.ascensor;
+    inmuebleData.balcon = !!formData.balcon;
+    inmuebleData.parqueo = !!formData.parqueo;
+    inmuebleData.mascotasPermitidas = !!formData.mascotasPermitidas;
+    inmuebleData.amoblado = !!formData.amoblado;
   }
 
   return {
-    inmueble: inmuebleData,
+    ...inmuebleData,
     descripcion: formData.descripcionOferta,
-    tipo: formData.operacion as any,
+    tipoOperacion: formData.operacion as any,
     precio: parseFloat(formData.precio),
     moneda: formData.moneda,
-    duracion: formData.operacion === 'ANTICRETICO' && formData.duracion 
-      ? parseInt(formData.duracion) 
+    duracion: formData.operacion === 'ANTICRETICO' && formData.duracion
+      ? parseInt(formData.duracion)
       : null,
     tipoPago: formData.operacion === 'VENTA' ? 'unico' : formData.tipoPago,
   };
+
 };
 
 export const handleApiError = (errorData: any): string => {

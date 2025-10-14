@@ -50,11 +50,9 @@ export interface PropertyFormData {
 }
 
 
-
 export type PropertyPayload = InmuebleData & {
-  // campos del payload principal (ahora en la raíz junto con InmuebleData)
-  descripcion: string;            // descripción de la oferta (antes descripcionOferta)
-  tipoOperacion: OperationType;   // o string si lo tienes definido así
+  descripcion: string;  
+  tipoOperacion: OperationType;   
   precio: number;
   moneda: Currency;
   duracion: number | null;
