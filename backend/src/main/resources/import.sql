@@ -7,9 +7,15 @@ INSERT INTO servicios (nombre_servicio) VALUES ('Recolección de basura');
 INSERT INTO servicios (nombre_servicio) VALUES ('Seguridad 24h');
 
 -- Inmueble
-INSERT INTO inmuebles (id, direccion, superficie, id_propietario, tipo_inmueble, fecha_publicacion, estado_publicacion, descripcion, activo) VALUES (1, 'Av. Ejemplo 231', 120.50, 100, 'CASA', NOW(), 'EN REVISION', 'Casa con jardín y garage', true);
+INSERT INTO inmuebles (direccion, superficie, id_propietario, tipo_inmueble, descripcion, activo, longitud, latitud) VALUES ('Av. Ejemplo 231', 120.50, 100, 'CASA', 'Casa con jardín y garage', true, 0.0, 0.0);
 
 -- Relación inmueble - servicios
 INSERT INTO inmueble_servicio (inmueble_id, servicio_id) VALUES (1, 1);
 INSERT INTO inmueble_servicio (inmueble_id, servicio_id) VALUES (1, 2);
 INSERT INTO inmueble_servicio (inmueble_id, servicio_id) VALUES (1, 4);
+
+-- Casa
+INSERT INTO casas (id, num_dormitorios, num_banos, num_pisos, garaje, patio, amoblado, sotano) VALUES (1, 3, 2, 2, true, true, false, false);
+
+-- Oferta
+INSERT INTO ofertas (id_inmueble, descripcion, tipo_operacion, precio, moneda, duracion_pago, tipo_pago, fecha_publicacion_inicio, fecha_publicacion_fin, estado_publicacion, activo) VALUES (1, 'Casa con jardín y garage - oferta ejemplo', 'VENTA', 95000.00, '$us', NULL, 'unico', NOW(), NULL, 'EN REVISION', true);
