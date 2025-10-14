@@ -59,6 +59,6 @@
 ---
 
 ## Jhunior
-- **Y:** Trabaje en 
-- **T:** Hoy voy a 
-- **B:** No he tenido problemas
+- **Y:** Trabaje en en la integracion de la api de ofertas de casas
+- **T:** Hoy voy a corregir algunos problemas que tuve
+- **B:** tuve problemas en el paginado de ofertas y sus filtros de casas
