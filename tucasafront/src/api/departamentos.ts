@@ -4,7 +4,7 @@ import type { ApiResponse } from "./api";
 
 export async function fetchDepartamentos(): Promise<Inmueble[]> {
     try {
-        const response = await fetch(`${URL_BACKEND}/api/departamentos`);
+        const response = await fetch(`${URL_BACKEND}/api/departamento`);
         const data: ApiResponse<Inmueble[]> = await response.json();
 
         if (!response.ok || data.error) {

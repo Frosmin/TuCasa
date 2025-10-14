@@ -9,7 +9,7 @@ const getEndpoint = (tipo: string) => {
     case 'CASA':
       return '/casa';
     case 'DEPARTAMENTO':
-      return '/departamentos';
+      return '/departamento';
     case 'TIENDA':
       return '/tienda';
     default:
@@ -19,7 +19,7 @@ const getEndpoint = (tipo: string) => {
 
 export class PropertyService {
   static async createProperty(payload: PropertyPayload): Promise<any> {
-    const endpoint = getEndpoint(payload.inmueble.tipo);
+    const endpoint = getEndpoint(payload.tipo);
     console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {

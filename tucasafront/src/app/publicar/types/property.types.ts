@@ -37,27 +37,29 @@ export interface PropertyFormData {
   banoPrivado: boolean;
 
   // Campos específicos para Departamento
-  piso: string;
-  superficieInterna: string;
+  piso: number;
+  superficieInterna: number;
   ascensor: boolean;
   balcon: boolean;
   parqueo: boolean;
   mascotasPermitidas: boolean;
   //amoblado: boolean;
-  montoExpensas: string;
+  montoExpensas: number;
 
   images: string[];
 }
 
-export interface PropertyPayload {
-  inmueble: InmuebleData;
-  descripcion: string;
-  tipo: OperationType;
+
+
+export type PropertyPayload = InmuebleData & {
+  // campos del payload principal (ahora en la raíz junto con InmuebleData)
+  descripcion: string;            // descripción de la oferta (antes descripcionOferta)
+  tipoOperacion: OperationType;   // o string si lo tienes definido así
   precio: number;
   moneda: Currency;
   duracion: number | null;
   tipoPago: PaymentType;
-}
+};
 
 export interface InmuebleData {
   direccion: string;
@@ -81,12 +83,12 @@ export interface InmuebleData {
   deposito?: boolean;
   banoPrivado?: boolean;
   // Departamento fields
-  piso?: string;
-  superficieInterna?: string;
+  piso?: number;
+  superficieInterna?: number;
   ascensor?: boolean;
   balcon?: boolean;
   parqueo?: boolean;
   mascotasPermitidas?: boolean;
   //amoblado: boolean;
-  montoExpensas?: string;
+  montoExpensas?: number;
 }
