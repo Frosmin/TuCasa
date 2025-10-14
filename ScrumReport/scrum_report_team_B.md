@@ -52,9 +52,9 @@
 ---
 
 ## Diego
-- **Y:** Trabaje en
-- **T:** Hoy voy a
-- **B:** Tuve problemas con
+- **Y:** Trabaje en el formulario de registro de una casa
+- **T:** Hoy voy a analizar la implementación del registro
+- **B:** No he tenido problemas
 
 ---
 
