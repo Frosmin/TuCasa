@@ -13,7 +13,7 @@ export interface Inmueble {
     descripcion: string
     activo: boolean
     tipo: TipoPropiedad
-    servicios: Servicio[]
+    servicios?: Servicio[]
     url_imagen?: string | null
     numDormitorios?: number
     numBanos?: number

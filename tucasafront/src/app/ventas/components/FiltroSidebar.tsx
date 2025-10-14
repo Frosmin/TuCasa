@@ -64,7 +64,7 @@ export const FiltroSidebar = ({
   const serviciosUnicos = Array.from(
     new Set(
       ofertas
-        .flatMap(o => o.inmueble.servicios)
+        .flatMap(o => o.inmueble.servicios || [])
         .map(s => s.nombre)
     )
   ).sort()
