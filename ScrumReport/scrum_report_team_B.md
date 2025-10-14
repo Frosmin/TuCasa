@@ -41,3 +41,24 @@
 - **Y:** Trabaje en crear la pagina de catalogo para casas
 - **T:** Hoy voy a trabajar en integrar con el catalogo de casas con el backend
 - **B:** No he tenido problemas
+
+# Scrum Report #3 — Oct 14
+
+## Pablo
+- **Y:** Trabajé en el filtrado de ofertas de inmuebles (Casa - Tienda)
+- **T:** Hoy voy a trabajar en definir las imagenes de un inmueble
+- **B:** No he tenido problemas
+
+---
+
+## Diego
+- **Y:** Trabaje en
+- **T:** Hoy voy a
+- **B:** Tuve problemas con
+
+---
+
+## Jhunior
+- **Y:** Trabaje en 
+- **T:** Hoy voy a 
+- **B:** No he tenido problemas
