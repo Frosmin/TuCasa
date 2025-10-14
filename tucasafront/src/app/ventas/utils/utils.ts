@@ -1,4 +1,4 @@
-import type { Inmueble } from "../../../models/Inmueble"
+import type { Oferta } from "@/models/Oferta"
 
 interface Filtros {
     tipo: string
@@ -14,20 +14,21 @@ export const formatearPrecio = (precio: number = 0, locale: string = 'es-BO'): s
 }
 
 
-export const obtenerTiposUnicos = (casas: Inmueble[]): string[] => {
+export const obtenerTiposUnicos = (casas: Oferta[]): string[] => {
     return [...new Set(casas.map(c => c.tipo))]
 }
 
 export const filtrarInmueble = (
-    inmuebles: Inmueble[],
+    ofertas: Oferta[],
     filtros: Filtros,
     busqueda: string
-): Inmueble[] => {
-    return inmuebles.filter(inmueble => {
+): Oferta[] => {
+    return ofertas.filter(oferta => {
+        const inmueble = oferta.inmueble
         const matchTipo = !filtros.tipo || inmueble.tipo === filtros.tipo
-        const matchPrecio = (inmueble.precio || 0) >= filtros.precioMin && (inmueble.precio || 0) <= filtros.precioMax
+        const matchPrecio = (oferta.precio || 0) >= filtros.precioMin && (oferta.precio || 0) <= filtros.precioMax
         const matchSuperficie = inmueble.superficie >= filtros.superficieMin && inmueble.superficie <= filtros.superficieMax
-        const matchDormitorios = !filtros.dormitorios || inmueble.numDormitorios >= Number(filtros.dormitorios)
+        const matchDormitorios = !filtros.dormitorios || (inmueble.numDormitorios && inmueble.numDormitorios >= Number(filtros.dormitorios))
         // const matchBusqueda = casa.title.toLowerCase().includes(busqueda.toLowerCase()) ||
         //     casa.descripcion.toLowerCase().includes(busqueda.toLowerCase())
 
