@@ -1,92 +1,334 @@
-import type { FC } from "react"
-import { RangeFilter } from "./RangeFilter"
-import { SelectFilter } from "./SelectFilter"
+// components/FiltroSidebar.tsx
+'use client'
+import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import type { Oferta } from '@/models/Oferta'
 
 export interface Filtros {
-    tipo: string
-    zona: string
-    precioMin: number
-    precioMax: number
-    superficieMin: number
-    superficieMax: number
-    dormitorios: string
+  precioMin: number
+  precioMax: number
+  superficieMin: number
+  superficieMax: number
+  dormitorios: string
+  garaje?: boolean | null
+  amoblado?: boolean | null
+  servicios?: string[]
 }
+
 interface FiltroSidebarProps {
-    filters: Filtros
-    setFilters: (filtros: Filtros) => void
-    zonas: string[]
-    tipos: string[]
+  filters: Filtros
+  setFilters: (filters: Filtros) => void
+  tipos: string[]
+  ofertas: Oferta[]
 }
-export const FiltroSidebar: FC<FiltroSidebarProps> = ({
-    filters,
-    setFilters,
-    zonas,
-    tipos
-}) => {
-    const filtrosDefault: Filtros = {
-        tipo: '',
-        zona: '',
-        precioMin: 0,
-        precioMax: Infinity,
-        superficieMin: 0,
-        superficieMax: Infinity,
-        dormitorios: ''
-    }
 
-    const limpiarFiltros = (): void => {
-        setFilters(filtrosDefault)
-    }
+export const FiltroSidebar = ({
+  filters,
+  setFilters,
+  tipos,
+  ofertas,
+}: FiltroSidebarProps) => {
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    precio: true,
+    superficie: true,
+    dormitorios: true,
+    caracteristicas: false,
+    servicios: false,
+  })
 
-    return (
-        <div className="bg-white rounded-lg shadow-md p-6 space-y-6 h-fit sticky top-6">
-            <h2 className="text-lg font-bold text-gray-900">Filtros</h2>
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
+  }
 
-            <SelectFilter
-                label="Tipo de Propiedad"
-                value={filters.tipo}
-                onChange={(value) => setFilters({ ...filters, tipo: value })}
-                options={tipos}
-                placeholder="Todos los tipos"
-            />
+  // Calcular rangos de la API
+  const precios = ofertas.map(o => o.precio)
+  const precioMin = precios.length > 0 ? Math.min(...precios) : 0
+  const precioMax = precios.length > 0 ? Math.max(...precios) : 100000
 
-            <SelectFilter
-                label="Zona"
-                value={filters.zona}
-                onChange={(value) => setFilters({ ...filters, zona: value })}
-                options={zonas}
-                placeholder="Todas las zonas"
-            />
+  const superficies = ofertas.map(o => o.inmueble.superficie)
+  const supMin = superficies.length > 0 ? Math.min(...superficies) : 0
+  const supMax = superficies.length > 0 ? Math.max(...superficies) : 1000
 
-            <RangeFilter
-                label="Rango de Precio"
-                minValue={filters.precioMin}
-                maxValue={filters.precioMax === Infinity ? 0 : filters.precioMax}
-                onMinChange={(value) => setFilters({ ...filters, precioMin: value })}
-                onMaxChange={(value) => setFilters({ ...filters, precioMax: value || Infinity })}
-            />
-
-            <RangeFilter
-                label="Superficie (m²)"
-                minValue={filters.superficieMin}
-                maxValue={filters.superficieMax === Infinity ? 0 : filters.superficieMax}
-                onMinChange={(value) => setFilters({ ...filters, superficieMin: value })}
-                onMaxChange={(value) => setFilters({ ...filters, superficieMax: value || Infinity })}
-            />
-
-            <SelectFilter
-                label="Dormitorios"
-                value={filters.dormitorios}
-                onChange={(value) => setFilters({ ...filters, dormitorios: value })}
-                options={['1', '2', '3', '4', '5']}
-                placeholder="Cualquier cantidad"
-            />
-
-            <button
-                onClick={limpiarFiltros}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 rounded-lg transition-colors"
-            >
-                Limpiar Filtros
-            </button>
-        </div>
+  const dormitorios = Array.from(
+    new Set(
+      ofertas
+        .filter(o => o.inmueble.numDormitorios)
+        .map(o => o.inmueble.numDormitorios)
     )
+  ).sort((a, b) => (a || 0) - (b || 0))
+
+  // Obtener servicios únicos
+  const serviciosUnicos = Array.from(
+    new Set(
+      ofertas
+        .flatMap(o => o.inmueble.servicios || [])
+        .map(s => s.nombre)
+    )
+  ).sort()
+
+  // Verificar si hay propiedades con garaje
+  const tieneGaraje = ofertas.some(o => o.inmueble.garaje === true)
+  const tieneAmoblado = ofertas.some(o => o.inmueble.amoblado === true)
+
+  return (
+    <div className="space-y-4">
+      {/* Filtro por Precio */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <button
+          onClick={() => toggleSection('precio')}
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+        >
+          <h3 className="font-semibold text-gray-900">Precio</h3>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${expandedSections.precio ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {expandedSections.precio && (
+          <div className="px-4 py-3 border-t border-gray-200 space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-gray-700">Mínimo</label>
+              <input
+                type="number"
+                value={filters.precioMin}
+                onChange={e =>
+                  setFilters({
+                    ...filters,
+                    precioMin: parseFloat(e.target.value) || 0,
+                  })
+                }
+                min={precioMin}
+                max={precioMax}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-1"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-700">Máximo</label>
+              <input
+                type="number"
+                value={filters.precioMax}
+                onChange={e =>
+                  setFilters({
+                    ...filters,
+                    precioMax: parseFloat(e.target.value) || Infinity,
+                  })
+                }
+                min={precioMin}
+                max={precioMax}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-1"
+              />
+            </div>
+
+            <div className="text-xs text-gray-500">
+              Rango: ${precioMin.toLocaleString()} - ${precioMax.toLocaleString()}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Filtro por Superficie */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <button
+          onClick={() => toggleSection('superficie')}
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+        >
+          <h3 className="font-semibold text-gray-900">Superficie (m²)</h3>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${expandedSections.superficie ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {expandedSections.superficie && (
+          <div className="px-4 py-3 border-t border-gray-200 space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-gray-700">Mínima</label>
+              <input
+                type="number"
+                value={filters.superficieMin}
+                onChange={e =>
+                  setFilters({
+                    ...filters,
+                    superficieMin: parseFloat(e.target.value) || 0,
+                  })
+                }
+                min={supMin}
+                max={supMax}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-1"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-700">Máxima</label>
+              <input
+                type="number"
+                value={filters.superficieMax}
+                onChange={e =>
+                  setFilters({
+                    ...filters,
+                    superficieMax: parseFloat(e.target.value) || Infinity,
+                  })
+                }
+                min={supMin}
+                max={supMax}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-1"
+              />
+            </div>
+
+            <div className="text-xs text-gray-500">
+              Rango: {supMin.toLocaleString()} - {supMax.toLocaleString()} m²
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Filtro por Dormitorios */}
+      {dormitorios.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('dormitorios')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900">Dormitorios</h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.dormitorios ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.dormitorios && (
+            <div className="px-4 py-3 border-t border-gray-200 space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="dormitorios"
+                  checked={filters.dormitorios === ''}
+                  onChange={() =>
+                    setFilters({
+                      ...filters,
+                      dormitorios: '',
+                    })
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700">Cualquiera</span>
+              </label>
+
+              {dormitorios.map(dorm => (
+                <label key={dorm} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="dormitorios"
+                    value={dorm}
+                    checked={filters.dormitorios === String(dorm)}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        dormitorios: String(dorm),
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">{dorm} dormitorio(s)</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Filtro por Características */}
+      {(tieneGaraje || tieneAmoblado) && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('caracteristicas')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900">Características</h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.caracteristicas ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.caracteristicas && (
+            <div className="px-4 py-3 border-t border-gray-200 space-y-2">
+              {tieneGaraje && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.garaje === true}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        garaje: filters.garaje === true ? null : true,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">Con garaje</span>
+                </label>
+              )}
+
+              {tieneAmoblado && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.amoblado === true}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        amoblado: filters.amoblado === true ? null : true,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">Amoblado</span>
+                </label>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Filtro por Servicios */}
+      {serviciosUnicos.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('servicios')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900">Servicios</h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.servicios ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.servicios && (
+            <div className="px-4 py-3 border-t border-gray-200 space-y-2">
+              {serviciosUnicos.map(servicio => (
+                <label key={servicio} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={(filters.servicios || []).includes(servicio)}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        servicios: (filters.servicios || []).includes(servicio)
+                          ? (filters.servicios || []).filter(s => s !== servicio)
+                          : [...(filters.servicios || []), servicio],
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">{servicio}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }

@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/oferta")
 public class OfertaController {
@@ -14,7 +16,7 @@ public class OfertaController {
     @Autowired
     private OfertaService ofertaService;
 
-    @GetMapping("")
+    @GetMapping("/all")
     public ResponseEntity<?> findAll() {
         return ofertaService.findAll();
     }
@@ -38,4 +40,10 @@ public class OfertaController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         return ofertaService.delete(id);
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
+        return ofertaService.search(params);
+    }
+
 }
