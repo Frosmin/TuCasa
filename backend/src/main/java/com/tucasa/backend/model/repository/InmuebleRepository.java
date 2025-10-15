@@ -1,7 +1,6 @@
 package com.tucasa.backend.model.repository;
 
 import com.tucasa.backend.model.entity.Inmueble;
-import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.enums.TipoInmueble;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

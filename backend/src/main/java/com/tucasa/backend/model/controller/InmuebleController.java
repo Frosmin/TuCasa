@@ -29,16 +29,6 @@ public class InmuebleController {
         return inmuebleService.findById(id);
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> create(@Validated(InmuebleRequestDto.Create.class) @RequestBody InmuebleRequestDto inmuebleRequestDto) {
-        return inmuebleService.create(inmuebleRequestDto);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Validated(InmuebleRequestDto.Update.class) @RequestBody InmuebleRequestDto inmuebleRequestDto) {
-        return inmuebleService.update(id, inmuebleRequestDto);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         return inmuebleService.delete(id);
