@@ -50,7 +50,8 @@ export interface PropertyFormData {
 }
 
 
-export type PropertyPayload = InmuebleData & {
+export type PropertyPayload = {
+  inmueble: InmuebleData,
   descripcion: string;  
   tipoOperacion: OperationType;   
   precio: number;

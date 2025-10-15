@@ -1,7 +1,6 @@
 package com.tucasa.backend.model.service.implement;
 
 import com.tucasa.backend.Constants.Constants;
-import com.tucasa.backend.model.dto.DepartamentoFiltroDto;
 import com.tucasa.backend.model.dto.DepartamentoRequestDto;
 import com.tucasa.backend.model.dto.DepartamentoResponseDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -69,8 +67,6 @@ public class DepartamentoServiceImpl implements DepartamentoService {
     }
 
 
-
-
     @Override
     @Transactional
     public ResponseEntity<?> create(DepartamentoRequestDto dto) {
@@ -114,21 +110,4 @@ public class DepartamentoServiceImpl implements DepartamentoService {
         }
     }
 
-   @Override
-    public ResponseEntity<?> filtrar2(DepartamentoFiltroDto filtro) {
-        String successMessage = "Datos filtrados correctamente";
-        String errorMessage = "Error al filtrar los datos";
-        try{
-            List<Map<String, Object>> resultados = departamentoRepository.filtrar2(
-                filtro.getOperacion(),
-                filtro.getPrecioMn(),
-                filtro.getPrecioMx(),
-                filtro.getSuperficieMn(),
-                filtro.getSuperficieMx(),
-                filtro.getNumDormitorios()
-            );
-            return apiResponse.responseSuccess(successMessage, resultados);
-        } catch (Exception e){
-            return apiResponse.responseDataError(errorMessage, e.getMessage());
-        }    }
 }

@@ -34,6 +34,9 @@ public class OfertaServiceImpl implements OfertaService {
     private InmuebleRepository inmuebleRepository;
 
     @Autowired
+    private DepartamentoRepository departamentoRepository;
+
+    @Autowired
     private ServicioRepository servicioRepository;
 
     @Autowired
@@ -87,7 +90,7 @@ public class OfertaServiceImpl implements OfertaService {
             Oferta oferta = new Oferta();
             oferta.setInmueble(inmueble);
             oferta.setDescripcion(dto.getDescripcion());
-            oferta.setTipo(dto.getTipo());
+            oferta.setTipo(dto.getTipoOperacion());
             oferta.setPrecio(dto.getPrecio());
             oferta.setMoneda(dto.getMoneda());
             oferta.setDuracion(dto.getDuracion());
@@ -118,7 +121,7 @@ public class OfertaServiceImpl implements OfertaService {
 
             // Actualiza solo los campos no nulos
             if (dto.getDescripcion() != null) oferta.setDescripcion(dto.getDescripcion());
-            if (dto.getTipo() != null) oferta.setTipo(dto.getTipo());
+            if (dto.getTipoOperacion() != null) oferta.setTipo(dto.getTipoOperacion());
             if (dto.getPrecio() != null) oferta.setPrecio(dto.getPrecio());
             if (dto.getMoneda() != null) oferta.setMoneda(dto.getMoneda());
             if (dto.getDuracion() != null) oferta.setDuracion(dto.getDuracion());
@@ -226,7 +229,7 @@ public class OfertaServiceImpl implements OfertaService {
             }
 
             // Definir la construcción para los otros tipos de inmueble
-            /*
+            // /*
             case DEPARTAMENTO -> {
                 Departamento departamento = new Departamento();
                 departamento.setDireccion(dto.getDireccion());
@@ -236,20 +239,30 @@ public class OfertaServiceImpl implements OfertaService {
                 departamento.setIdPropietario(dto.getIdPropietario());
                 departamento.setDescripcion(dto.getDescripcion());
                 departamento.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
-                departamento.setTipo(dto.getTipo());
+                departamento.setTipo(dto.getTipo()); // esto tiene que ser tipo operacion
 
                 if (dto instanceof DepartamentoRequestDto departamentoDto) {
                     // settear para el resto de campos unicos del departamento
+                    departamento.setAmoblado(departamentoDto.getAmoblado());
+                    departamento.setAscensor(departamentoDto.getAscensor());
+                    departamento.setBalcon(departamentoDto.getBalcon());
+                    departamento.setMascotasPermitidas(departamentoDto.getMascotasPermitidas());
+                    departamento.setMontoExpensas(departamentoDto.getMontoExpensas());
+                    departamento.setNumBanos(departamentoDto.getNumBanos());
+                    departamento.setNumDormitorios(departamentoDto.getNumDormitorios());
+                    departamento.setParqueo(departamentoDto.getParqueo());
+                    departamento.setPiso(departamentoDto.getPiso());
+                    departamento.setSuperficieInterna(departamentoDto.getSuperficieInterna());
                 }
 
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
-                    casa.setServicios(servicios);
+                    departamento.setServicios(servicios);
                 }
 
-                inmueble = casaRepository.save(casa);
+                inmueble = departamentoRepository.save(departamento);
             }
-             */
+            //  */
             // case TIENDA -> ...
             // case LOTE -> ...
             // Etc.
@@ -269,7 +282,7 @@ public class OfertaServiceImpl implements OfertaService {
                 "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
                 "LEFT JOIN casas c ON i.id = c.id " +
                 "LEFT JOIN tiendas t ON i.id = t.id " +
-                // LEFT JOIN departamento d ON i.id = d.id " +
+                "LEFT JOIN departamentos d ON i.id = d.id " +
                 // LEFT JOIN lotes l ON i.id = l.id " +
                 "WHERE o.activo = true AND i.activo = true ");
 

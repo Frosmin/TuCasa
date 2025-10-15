@@ -1,25 +1,29 @@
 import type { Servicio } from "./Servicio"
 
-export type TipoPropiedad = 'LOTE' | 'CASA' | 'DEPARTAMENTO' | ''
+export type TipoPropiedad = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA' | ''
+
+
 export interface Inmueble {
-    id: string
-    tipo: TipoPropiedad
+    id: number
+    direccion: string
     latitud: number
     longitud: number
-    idPropietario: number
-    direccion?: string
-    descripcion: string
-    numDormitorios: number
-    numBanos: number
     superficie: number
-    numPisos: number
-    precio?: number;
-    imagen?: string
-    garaje: boolean
-    patio: boolean
-    amoblado: boolean
-    sotano: boolean
+    idPropietario: number
+    descripcion: string
     activo: boolean
+    tipo: TipoPropiedad
     servicios: Servicio[]
+    url_imagen?: string | null
+    numDormitorios?: number
+    numBanos?: number
+    numPisos?: number
+    garaje?: boolean
+    patio?: boolean
+    amoblado?: boolean
+    sotano?: boolean
+    numAmbientes?: number
+    banoPrivado?: boolean
+    deposito?: boolean
 }
 

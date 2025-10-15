@@ -1,6 +1,6 @@
 // publicar/utils/property.utils.ts
 
-import { PropertyFormData, PropertyPayload, InmuebleData } from '../types/property.types';
+import { PropertyFormData, PropertyPayload, InmuebleData, OperationType } from '../types/property.types';
 
 export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayload => {
   const inmuebleData: InmuebleData = {
@@ -47,9 +47,9 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
   }
 
   return {
-    ...inmuebleData,
+    inmueble: inmuebleData,
     descripcion: formData.descripcionOferta,
-    tipoOperacion: formData.operacion as any,
+    tipoOperacion: formData.operacion as OperationType,
     precio: parseFloat(formData.precio),
     moneda: formData.moneda,
     duracion: formData.operacion === 'ANTICRETICO' && formData.duracion
