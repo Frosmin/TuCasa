@@ -3,6 +3,7 @@ package com.tucasa.backend.model.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,7 @@ import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.service.interfaces.LoteService;
 
 @RestController
-@RequestMapping("/api/lotes")
+@RequestMapping("/api/lote")
 public class LoteController {
     
     @Autowired
@@ -35,5 +36,15 @@ public class LoteController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Validated(LoteRequestDto.Update.class) @RequestBody LoteRequestDto lote) {
         return loteService.update(id, lote);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        return loteService.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return loteService.delete(id);
     }
 }

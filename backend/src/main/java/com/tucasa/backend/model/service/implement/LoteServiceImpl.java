@@ -20,8 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
-
 @Service
 public class LoteServiceImpl implements LoteService {
     @Autowired
@@ -45,11 +43,11 @@ public class LoteServiceImpl implements LoteService {
             lote.setIdPropietario(dto.getIdPropietario());
             lote.setDescripcion(dto.getDescripcion());
             lote.setActivo(true);
-            lote.setTipo(TipoInmueble.LOTE);
+            lote.setTipo(dto.getTipo());
             lote.setTamanio(dto.getTamanio());
             lote.setMuroPerimetral(dto.getMuroPerimetral());
 
-            if(dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()){
+            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                 Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                 lote.setServicios(servicios);
             }
@@ -80,44 +78,75 @@ public class LoteServiceImpl implements LoteService {
     @Transactional
     public ResponseEntity<?> update(Long id, LoteRequestDto dto) {
         String successMessage = Constants.RECORD_UPDATED;
-        String errorMessage = "lote no encontrado: "+ id;
+        String errorMessage = "lote no encontrado: " + id;
         try {
             Lote lote = loteRepository.findById(id).orElseThrow(() -> new RuntimeException(errorMessage));
 
-            if(dto.getDireccion() != null) {
+            if (dto.getDireccion() != null) {
                 lote.setDireccion(dto.getDireccion());
             }
-            if(dto.getLatitud() != null) {
+            if (dto.getLatitud() != null) {
                 lote.setLatitud(dto.getLatitud());
             }
-            if(dto.getLongitud() != null) {
+            if (dto.getLongitud() != null) {
                 lote.setLongitud(dto.getLongitud());
             }
-            if(dto.getSuperficie() != null) {
+            if (dto.getSuperficie() != null) {
                 lote.setSuperficie(dto.getSuperficie());
             }
-            if(dto.getDescripcion() != null) {
+            if (dto.getDescripcion() != null) {
                 lote.setDescripcion(dto.getDescripcion());
             }
-            if(dto.getActivo() != null) {
+            if (dto.getActivo() != null) {
                 lote.setActivo(dto.getActivo());
             }
 
-            if(dto.getTamanio() != null) {
+            if (dto.getTamanio() != null) {
                 lote.setTamanio(dto.getTamanio());
             }
-            if(dto.getMuroPerimetral() != null) {
+            if (dto.getMuroPerimetral() != null) {
                 lote.setMuroPerimetral(dto.getMuroPerimetral());
             }
 
-
-            if(dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()){
+            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                 Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                 lote.setServicios(servicios);
             }
 
             Lote updated = loteRepository.save(lote);
             return apiResponse.responseSuccess(successMessage, mapToDto(updated));
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> findAll() {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = Constants.NO_RECORDS;
+        try {
+            var lotes = loteRepository.findAll();
+            var lotesDto = lotes.stream()
+                    .map(this::mapToDto)
+                    .collect(Collectors.toList());
+            return apiResponse.responseSuccess(successMessage, lotesDto);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> delete(Long id) {
+        String successMessage = Constants.RECORD_DELETED;
+        String errorMessage = "Error al eliminar lote: " + id;
+        try {
+            Lote lote = loteRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Lote no encontrado con ID: " + id));
+
+            loteRepository.delete(lote);
+            return apiResponse.responseSuccess(successMessage, "Lote eliminado correctamente");
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }

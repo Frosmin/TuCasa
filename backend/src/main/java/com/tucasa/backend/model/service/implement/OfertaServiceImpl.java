@@ -31,6 +31,9 @@ public class OfertaServiceImpl implements OfertaService {
     private TiendaRepository tiendaRepository;
 
     @Autowired
+    private LoteRepository loteRepository;
+
+    @Autowired
     private InmuebleRepository inmuebleRepository;
 
     @Autowired
@@ -251,7 +254,29 @@ public class OfertaServiceImpl implements OfertaService {
             }
              */
             // case TIENDA -> ...
-            // case LOTE -> ...
+            case LOTE -> {
+                Lote lote = new Lote();
+                lote.setDireccion(dto.getDireccion());
+                lote.setSuperficie(dto.getSuperficie());
+                lote.setLongitud(dto.getLongitud());
+                lote.setLatitud(dto.getLatitud());
+                lote.setIdPropietario(dto.getIdPropietario());
+                lote.setDescripcion(dto.getDescripcion());
+                lote.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+                lote.setTipo(dto.getTipo());
+
+                if (dto instanceof LoteRequestDto loteDto) {
+                    lote.setTamanio(loteDto.getTamanio());
+                    lote.setMuroPerimetral(loteDto.getMuroPerimetral() != null && loteDto.getMuroPerimetral());
+                }
+
+                if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
+                    Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
+                    lote.setServicios(servicios);
+                }
+
+                inmueble = loteRepository.save(lote);
+            }
             // Etc.
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
@@ -270,7 +295,7 @@ public class OfertaServiceImpl implements OfertaService {
                 "LEFT JOIN casas c ON i.id = c.id " +
                 "LEFT JOIN tiendas t ON i.id = t.id " +
                 // LEFT JOIN departamento d ON i.id = d.id " +
-                // LEFT JOIN lotes l ON i.id = l.id " +
+                "LEFT JOIN lotes l ON i.id = l.id " +
                 "WHERE o.activo = true AND i.activo = true ");
 
         // Campos permitidos para filtro por tipos - Complementar con los tipos de inmueble
@@ -285,7 +310,8 @@ public class OfertaServiceImpl implements OfertaService {
                 "numPisos", "c.num_pisos",
                 "numAmbientes", "t.num_ambientes",
                 "precioMin", "o.precio",
-                "precioMax", "o.precio"
+                "precioMax", "o.precio",
+                "tamanio", "l.tamanio"
         );
 
         Map<String, String> camposBooleanos = Map.of(
@@ -294,7 +320,9 @@ public class OfertaServiceImpl implements OfertaService {
                 "amoblado", "c.amoblado",
                 "sotano", "c.sotano",
                 "banoPrivado", "t.bano_privado",
-                "deposito", "t.deposito"
+                "deposito", "t.deposito",
+                "muroPerimetral", "l.muro_perimetral"
+
         );
 
         // Aplicar filtros por campos
@@ -407,9 +435,9 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new DepartamentoResponseDto(departamento);
         }*/ else if (inmueble instanceof Tienda tienda) {
             inmuebleDto = new TiendaResponseDto(tienda);
-        }/* else if (inmueble instanceof Lote lote) {
+        }else if (inmueble instanceof Lote lote) {
             inmuebleDto = new LoteResponseDto(lote);
-        } else if (inmueble instanceof Cuarto cuarto) {
+        } /*  else if (inmueble instanceof Cuarto cuarto) {
             inmuebleDto = new CuartoResponseDto(cuarto);
         }*/ else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
