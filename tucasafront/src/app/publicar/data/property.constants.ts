@@ -58,7 +58,7 @@ export const INITIAL_FORM_DATA = {
   descripcion: '',
   descripcionOferta: '',
   idPropietario: 1,
-  serviciosIds: [],
+  serviciosIds: [] as number[],
   dormitorios: '',
   banos: '',
   numPisos: '',
