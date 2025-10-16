@@ -10,8 +10,4 @@ public interface LoteService {
     ResponseEntity<?> update(Long id, LoteRequestDto dto); 
     ResponseEntity<?> findAll();
     ResponseEntity<?> delete(Long id);
-
-
-    
-
 }

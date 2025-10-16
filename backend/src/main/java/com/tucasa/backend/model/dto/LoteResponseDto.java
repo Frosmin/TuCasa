@@ -16,10 +16,11 @@ public class LoteResponseDto extends InmuebleResponseDto {
     private BigDecimal tamanio;
     private boolean muroPerimetral;
 
-    // Constructor que recibe un Lote y lo mapea al DTO
+
     public LoteResponseDto(Lote lote) {
-        super(lote); // Inicializa los campos de InmuebleResponseDto
+        super(lote);
         this.tamanio = lote.getTamanio();
         this.muroPerimetral = lote.isMuroPerimetral();
     }
+
 }

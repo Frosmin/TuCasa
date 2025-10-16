@@ -56,7 +56,7 @@ public class OfertaServiceImpl implements OfertaService {
     private TiendaRepository tiendaRepository;
 
     @Autowired
-    private LoteRepository loteRepository; // <-- CORRECCIÓN: inyectar LoteRepository
+    private LoteRepository loteRepository;
 
     @Autowired
     private InmuebleRepository inmuebleRepository;
@@ -243,21 +243,22 @@ public class OfertaServiceImpl implements OfertaService {
                 inmueble = tiendaRepository.save(tienda);
             }
 
+            // case TIENDA -> ...
             case LOTE -> {
-                if (!(dto instanceof LoteRequestDto loteDto)) {
-                    throw new RuntimeException("DTO no corresponde a LOTE");
-                }
                 Lote lote = new Lote();
                 lote.setDireccion(dto.getDireccion());
-                lote.setLatitud(dto.getLatitud());
-                lote.setLongitud(dto.getLongitud());
                 lote.setSuperficie(dto.getSuperficie());
+                lote.setLongitud(dto.getLongitud());
+                lote.setLatitud(dto.getLatitud());
                 lote.setIdPropietario(dto.getIdPropietario());
                 lote.setDescripcion(dto.getDescripcion());
                 lote.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
                 lote.setTipo(dto.getTipo());
-                lote.setTamanio(loteDto.getTamanio());
-                lote.setMuroPerimetral(loteDto.getMuroPerimetral());
+
+                if (dto instanceof LoteRequestDto loteDto) {
+                    lote.setTamanio(loteDto.getTamanio());
+                    lote.setMuroPerimetral(loteDto.getMuroPerimetral() != null && loteDto.getMuroPerimetral());
+                }
 
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
@@ -266,6 +267,7 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = loteRepository.save(lote);
             }
+            // Etc.
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
         }
@@ -296,7 +298,8 @@ public class OfertaServiceImpl implements OfertaService {
                 "numPisos", "c.num_pisos",
                 "numAmbientes", "t.num_ambientes",
                 "precioMin", "o.precio",
-                "precioMax", "o.precio"
+                "precioMax", "o.precio",
+                "tamanio", "l.tamanio"
         );
 
         Map<String, String> camposBooleanos = Map.of(
@@ -305,7 +308,9 @@ public class OfertaServiceImpl implements OfertaService {
                 "amoblado", "c.amoblado",
                 "sotano", "c.sotano",
                 "banoPrivado", "t.bano_privado",
-                "deposito", "t.deposito"
+                "deposito", "t.deposito",
+                "muroPerimetral", "l.muro_perimetral"
+
         );
 
         for (var entry : params.entrySet()) {
