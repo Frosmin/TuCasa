@@ -22,7 +22,8 @@ public class LoteController {
     
     @Autowired
     private LoteService loteService;
-    @GetMapping("")
+
+    @GetMapping
     public ResponseEntity<?> findAll() {
         return loteService.findAll();
     }
@@ -40,11 +41,6 @@ public class LoteController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Validated(LoteRequestDto.Update.class) @RequestBody LoteRequestDto lote) {
         return loteService.update(id, lote);
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getAll() {
-        return loteService.findAll();
     }
 
     @DeleteMapping("/{id}")
