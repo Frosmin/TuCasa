@@ -1,5 +1,13 @@
 package com.tucasa.backend.model.service.implement;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.dto.LoteResponseDto;
@@ -11,14 +19,8 @@ import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.LoteService;
 import com.tucasa.backend.payload.ApiResponse;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
 
 
 
@@ -75,6 +77,35 @@ public class LoteServiceImpl implements LoteService {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }
     }
+    @Override
+    @Transactional
+    public ResponseEntity<?> findAll() {
+        try {
+            var lotes = loteRepository.findAll();
+            var dtos = lotes.stream()
+                            .map(this::mapToDto)
+                            .collect(Collectors.toList());
+            return apiResponse.responseSuccess(Constants.RECORDS_FOUND, dtos);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(Constants.ERROR_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> delete(Long id) {
+        String successMessage = Constants.RECORD_DELETED;
+        String errorMessage = "Lote no encontrado: " + id;
+        try {
+            Lote lote = loteRepository.findById(id)
+                                    .orElseThrow(() -> new RuntimeException(errorMessage));
+            loteRepository.delete(lote);
+            return apiResponse.responseSuccess(successMessage, null);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
 
     @Override
     @Transactional

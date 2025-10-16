@@ -21,6 +21,10 @@ public class LoteController {
     
     @Autowired
     private LoteService loteService;
+    @GetMapping("")
+    public ResponseEntity<?> findAll() {
+        return loteService.findAll();
+    }
 
     @PostMapping
     public ResponseEntity<?> create(@Validated(InmuebleRequestDto.Create.class) @RequestBody LoteRequestDto loteRequestDto) {
