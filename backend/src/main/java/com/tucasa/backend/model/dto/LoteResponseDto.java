@@ -1,32 +1,28 @@
 package com.tucasa.backend.model.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Set;
+import com.tucasa.backend.model.entity.Lote;
+
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 
 @Data
-public class LoteResponseDto {
-    private Long id;
-
-    private String direccion;
-
-    private BigDecimal latitud;
-
-    private BigDecimal longitud;
-
-    private BigDecimal superficie;
-
-    private Long idPropietario;
-
-    private String descripcion;
-
-    private boolean activo;
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+public class LoteResponseDto extends InmuebleResponseDto {
 
     private BigDecimal tamanio;
 
     private boolean muroPerimetral;
 
-    private Set<ServicioResponseDto> servicios;
+    public LoteResponseDto(Lote lote) {
+        super(lote);
+        this.tamanio = lote.getTamanio();
+        this.muroPerimetral = lote.isMuroPerimetral();
+    }
+
+    
 }

@@ -26,7 +26,7 @@ import java.util.Set;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CasaRequestDto.class, name = "CASA"),
         //@JsonSubTypes.Type(value = DepartamentoRequestDto.class, name = "DEPARTAMENTO")
-        //@JsonSubTypes.Type(value = LoteRequestDto.class, name = "LOTE")
+        @JsonSubTypes.Type(value = LoteRequestDto.class, name = "LOTE"),
         @JsonSubTypes.Type(value = TiendaRequestDto.class, name = "TIENDA")
         // LOS TIPOS QUE FALTEN Y SUS REQUEST DTO
 })
