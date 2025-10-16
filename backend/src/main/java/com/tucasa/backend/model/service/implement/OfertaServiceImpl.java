@@ -284,7 +284,7 @@ public class OfertaServiceImpl implements OfertaService {
                 "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
                 "LEFT JOIN casas c ON i.id = c.id " +
                 "LEFT JOIN tiendas t ON i.id = t.id " +
-                "LEFT JOIN lotes l ON i.id = l.id " +
+                "LEFT JOIN lote l ON i.id = l.id " +
                 "WHERE o.activo = true AND i.activo = true ");
 
         Map<String, String> camposTexto = Map.of(

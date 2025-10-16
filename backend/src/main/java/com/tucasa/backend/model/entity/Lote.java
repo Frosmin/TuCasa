@@ -1,24 +1,25 @@
 package com.tucasa.backend.model.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = false)
+
+@Entity
+@DiscriminatorValue("LOTE")
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "lotes")
-@PrimaryKeyJoinColumn(name = "id")
+@EqualsAndHashCode(callSuper = true)
 public class Lote extends Inmueble {
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal tamanio;
 
     @Column(name = "muro_perimetral", nullable = false)
     private boolean muroPerimetral;
-    
 }
