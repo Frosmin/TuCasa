@@ -23,6 +23,15 @@ export default function RegisterPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === "telefono") {
+      const filteredValue = value.replace(/[^0-9+ ]/g, "");
+      setFormData({
+        ...formData,
+        [name]: filteredValue,
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -40,32 +49,31 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      console.log("Datos enviados:", formData);
-
       const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
 
-      const res = await fetch(API_BASE_URL + "/usuarios", {
+      const res = await fetch(API_BASE_URL + "/usuarios/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
-      console.log("Respuesta del servidor:", data);
-
-      showSuccess("Cuenta creada correctamente");
-      setFormData({
-        nombre: "",
-        apellido: "",
-        correo: "",
-        telefono: "",
-        contrasena: "",
-        rol: "CLIENTE",
-      });
-      setConfirmPassword("");
+      if (data.error) {
+        showError(data.message);
+      } else {
+        showSuccess(data.message);
+        setFormData({
+          nombre: "",
+          apellido: "",
+          correo: "",
+          telefono: "",
+          contrasena: "",
+          rol: "CLIENTE",
+        });
+        setConfirmPassword("");
+      }
     } catch (err) {
       console.error("Error al enviar los datos:", err);
-      // setError(data.message);
       showError("Ocurrió un error al crear la cuenta");
     } finally {
       setIsSubmitting(false);
