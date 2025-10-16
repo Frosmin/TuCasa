@@ -59,9 +59,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Trabaje en la UI del formulario de registro de departamentos 
+- **T:** Trabajare en el envio de los datos del formulario al endpoint en el que trabajo mi equipo
+- **B:** Debo trabajar en la refactorizacion de mi código 
 
 # Scrum Report #4 — Oct 17
 
