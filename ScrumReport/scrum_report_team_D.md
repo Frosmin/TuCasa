@@ -103,8 +103,8 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 ---
 
 ## Javier
-- **Y:** 
-- **T:** 
-- **B:** 
+- **Y: se finalizo los endpoints de leer y eliminar lotes 
+- **T:** se corrigió los archivos de lotes de los endpoints  de leer y eliminar
+- **B:**  no se tuvo problemas hasta el momento
 
 ---
