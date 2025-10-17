@@ -4,36 +4,36 @@ import { PropertyPayload } from '../types/property.types';
 
 const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
 
+
 export class PropertyService {
   static async createProperty(payload: PropertyPayload): Promise<any> {
-    // Normalizar enums en mayúsculas con defensas
-    if (payload?.tipoOperacion) {
-      payload.tipoOperacion = payload.tipoOperacion.toUpperCase() as PropertyPayload['tipoOperacion'];
-    }
-    if (payload?.inmueble?.tipo) {
-      payload.inmueble.tipo = payload.inmueble.tipo.toUpperCase() as typeof payload.inmueble.tipo;
-    }
+    // Asegurar enums en mayúscula
+    payload.tipo = payload.tipo.toUpperCase() as any;
+    payload.inmueble.tipo = payload.inmueble.tipo.toUpperCase() as any;
 
-    console.log('POST /api/oferta ->', JSON.stringify(payload, null, 2));
+    console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
 
-    const res = await fetch(`${API_BASE_URL}/oferta`, {
+    const response = await fetch(`${API_BASE_URL}/oferta`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      let data: any = {};
-      try {
-        const ct = res.headers.get('Content-Type') || '';
-        data = ct.includes('application/json') ? await res.json() : { message: await res.text() };
-      } catch {
-        data = { message: 'Error desconocido' };
+    let errorData: any = {};
+    const contentType = response.headers.get('Content-Type');
+
+    if (!response.ok) {
+      if (contentType && contentType.includes('application/json')) {
+        errorData = await response.json().catch(() => ({}));
+      } else {
+        const text = await response.text();
+        errorData = { message: text };
       }
-      console.error('Error del servidor:', data);
-      throw { status: res.status, data };
+      console.error('Error del servidor:', errorData);
+      console.error('Payload que causó el error:', payload);
+      throw { status: response.status, data: errorData };
     }
 
-    return res.json();
+    return await response.json();
   }
 }

@@ -54,15 +54,13 @@ export interface PropertyFormData {
 
 
 export type PropertyPayload = {
-  inmueble: InmuebleData;
-  descripcion: string;
-  descripcionOferta?: string; // agregar si necesitas enviarlo
-  tipoOperacion: OperationType;
+  inmueble: InmuebleData,
+  descripcion: string;  
+  tipoOperacion: OperationType;   
   precio: number;
   moneda: Currency;
   duracion: number | null;
   tipoPago: PaymentType;
-  images?: string[];
 };
 
 export interface InmuebleData {
