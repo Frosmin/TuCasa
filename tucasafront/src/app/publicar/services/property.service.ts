@@ -8,7 +8,7 @@ const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
 export class PropertyService {
   static async createProperty(payload: PropertyPayload): Promise<any> {
     // Asegurar enums en mayúscula
-    payload.tipo = payload.tipo.toUpperCase() as any;
+    payload.tipoOperacion = payload.tipoOperacion.toUpperCase() as any;
     payload.inmueble.tipo = payload.inmueble.tipo.toUpperCase() as any;
 
     console.log('Payload a enviar:', JSON.stringify(payload, null, 2));

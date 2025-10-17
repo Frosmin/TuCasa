@@ -6,9 +6,10 @@ interface DepartamentoFieldsProps {
   formData: PropertyFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onToggle: (field: keyof PropertyFormData) => void;
+  onServiciosChange: (ids: number[]) => void;
 }
 
-export default function DepartamentoFields({ formData, onChange, onToggle }: DepartamentoFieldsProps) {
+export default function DepartamentoFields({ formData, onChange, onToggle, onServiciosChange }: DepartamentoFieldsProps) {
   return (
     <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
       <h3 className="font-semibold text-gray-900 mb-3">Detalles del departamento</h3>
@@ -85,6 +86,14 @@ export default function DepartamentoFields({ formData, onChange, onToggle }: Dep
         <ToggleSwitch label="Mascotas Permitidas" checked={formData.mascotasPermitidas} onChange={() => onToggle('mascotasPermitidas')} />
         <ToggleSwitch label="Amoblado" checked={formData.amoblado} onChange={() => onToggle('amoblado')} />
       </div>
+      {/* Selector de Servicios */}
+            <div className="pt-4 border-t border-blue-300">
+              <ServiciosSelector
+                selectedIds={formData.serviciosIds}
+                onChange={onServiciosChange}
+                color="blue"
+              />
+            </div>
     </div>
   );
 }

@@ -37,13 +37,13 @@ export interface PropertyFormData {
   banoPrivado: boolean;
 
   // Campos específicos para Departamento
-  piso: number;
-  superficieInterna: number;
+  piso: string;
+  superficieInterna: string;
   ascensor: boolean;
   balcon: boolean;
   parqueo: boolean;
   mascotasPermitidas: boolean;
-  montoExpensas: number;
+  montoExpensas: string;
 
   // Campos específicos para Lote
   tamanio: string;

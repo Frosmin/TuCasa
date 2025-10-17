@@ -89,12 +89,3 @@ export const INITIAL_FORM_DATA = {
 
   images: [],
 };
-
-export const SERVICIOS = [
-  { id: 1, nombre: 'Luz' },
-  { id: 2, nombre: 'Agua' },
-  { id: 3, nombre: 'Gas' },
-  { id: 4, nombre: 'Internet' },
-  { id: 5, nombre: 'Recoleccion de Basura' },
-  { id: 6, nombre: 'Seguridad 24h' },
-];
