@@ -23,14 +23,14 @@
 # 🧾 Scrum Report #1 — Oct 10
 
 ## Johan
-Y (Yesterday):
+- Y (Yesterday):
 Definí las entidades principales del sistema: Inmueble, Lote, Casa, Departamento, Publicación y Usuario.
 Configuré la estructura de herencia en JPA utilizando @Inheritance(strategy = InheritanceType.JOINED) y @DiscriminatorColumn.
 Establecí la conexión inicial con Supabase (PostgreSQL), configurando el application.properties con variables base (spring.datasource.url, user, password).
-T (Today):
+- T (Today):
 Iniciar pruebas de persistencia en Supabase y verificar la estructura de tablas generada.
 Crear controladores de prueba para Inmueble y Lote.
-B (Blockers):
+- B (Blockers):
 Error de mapeo ambiguo entre clases hijas y el DiscriminatorColumn.
 Problemas menores al mapear EnumType.STRING en la entidad TipoInmueble.
 
@@ -52,14 +52,14 @@ Problemas menores al mapear EnumType.STRING en la entidad TipoInmueble.
 # 🧾 Scrum Report #1 — Oct 14
 
 ## Johan
-Y:
+- Y:
 Corregí los errores de mapeo y ajusté DTOs para Inmueble y Lote (LoteRequestDto, InmuebleRequestDto).
 Implementé los servicios y controladores base (InmuebleService, LoteService) con respuestas ResponseEntity estandarizadas.
 Añadí validaciones (@NotNull, @NotBlank, @Valid) y separación de grupos de validación (Create, Update).
-T:
+- T:
 Probar los endpoints con Insomnia y documentar los flujos funcionales.
 Revisar que las entidades persistidas se reflejen correctamente en Supabase.
-B:
+- B:
 Error de constraint por null en el campo tamanio de Lote, solucionado agregando @Column(nullable = false) y ajuste en el DTO.
 
 ---
@@ -80,7 +80,7 @@ Error de constraint por null en el campo tamanio de Lote, solucionado agregando 
 # 🧾 Scrum Report #1 — Oct 17
 
 ## Johan
-Y:
+- Y:
 Finalicé la configuración estable de Supabase:
 Se ajustó la conexión JDBC con el formato correcto postgresql://usuario:contraseña@host:5432/postgres.
 Se verificó el acceso con pgAdmin y conexión directa desde Spring Boot.
@@ -88,9 +88,9 @@ Se probó la autenticación y persistencia de datos en Supabase.
 Monté y validé los endpoints de prueba para crear y listar Lotes e Inmuebles.
 Generé ejemplos curl y documentación de endpoints para el equipo frontend.
 Inicié la definición del esquema de Publicaciones de terrenos, vinculando con Usuario e Inmueble.
-T:
+- T:
 Integrar todos los módulos (Inmueble, Lote, Publicación, Usuario) y generar el informe técnico para revisión del sprint.
-B:
+- B:
 Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores al serializar entidades anidadas.
 
 ---
