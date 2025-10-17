@@ -32,6 +32,11 @@ export function usePropertyForm() {
     setFormData((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  const handleServiciosChange = (ids: number[]) => {
+    setFormData((prev) => ({ ...prev, serviciosIds: ids }));
+  };
+
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -87,6 +92,7 @@ export function usePropertyForm() {
     handlePropertyTypeChange,
     handleOperationSelect,
     handleToggle,
+    handleServiciosChange,
     handleImageUpload,
     handleImageRemove,
     handleSubmit,

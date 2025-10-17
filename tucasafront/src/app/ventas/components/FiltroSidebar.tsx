@@ -12,6 +12,8 @@ export interface Filtros {
   dormitorios: string
   garaje?: boolean | null
   amoblado?: boolean | null
+  patio?: boolean | null
+  sotano?: boolean | null
   servicios?: string[]
 }
 
@@ -20,12 +22,14 @@ interface FiltroSidebarProps {
   setFilters: (filters: Filtros) => void
   tipos: string[]
   ofertas: Oferta[]
+  tipoInmueble: string
 }
 
 export const FiltroSidebar = ({
   filters,
   setFilters,
   tipos,
+  tipoInmueble,
   ofertas,
 }: FiltroSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -35,6 +39,8 @@ export const FiltroSidebar = ({
     caracteristicas: false,
     servicios: false,
   })
+
+  
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -72,6 +78,8 @@ export const FiltroSidebar = ({
   // Verificar si hay propiedades con garaje
   const tieneGaraje = ofertas.some(o => o.inmueble.garaje === true)
   const tieneAmoblado = ofertas.some(o => o.inmueble.amoblado === true)
+  const tienePatio = ofertas.some(o => o.inmueble.patio === true)
+  const tieneSotano = ofertas.some(o => o.inmueble.sotano === true)
 
   return (
     <div className="space-y-4">
@@ -186,7 +194,7 @@ export const FiltroSidebar = ({
       </div>
 
       {/* Filtro por Dormitorios */}
-      {dormitorios.length > 0 && (
+      {(tipoInmueble !== 'LOTE' && dormitorios.length > 0) && (
         <div className="bg-white rounded-lg shadow-sm">
           <button
             onClick={() => toggleSection('dormitorios')}
@@ -240,7 +248,7 @@ export const FiltroSidebar = ({
       )}
 
       {/* Filtro por Características */}
-      {(tieneGaraje || tieneAmoblado) && (
+      {(tipoInmueble !== 'LOTE') && (tieneGaraje || tieneAmoblado || tienePatio || tieneSotano) && (
         <div className="bg-white rounded-lg shadow-sm">
           <button
             onClick={() => toggleSection('caracteristicas')}
@@ -285,6 +293,38 @@ export const FiltroSidebar = ({
                     className="rounded"
                   />
                   <span className="text-sm text-gray-700">Amoblado</span>
+                </label>
+              )}
+              {tienePatio && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.patio === true}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        patio: filters.patio === true ? null : true,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">Con Patio</span>
+                </label>
+              )}
+              {tieneSotano && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.sotano === true}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        sotano: filters.sotano === true ? null : true,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">Con Sotano</span>
                 </label>
               )}
             </div>
