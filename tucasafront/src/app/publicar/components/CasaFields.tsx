@@ -1,15 +1,22 @@
 // publicar/components/CasaFields.tsx
 
-import { PropertyFormData } from '../types/property.types';
-import ToggleSwitch from './ToggleSwitch';
+import { PropertyFormData } from "../types/property.types";
+import ToggleSwitch from "./ToggleSwitch";
+import ServiciosSelector from "./ServiciosSelector";
 
 interface CasaFieldsProps {
   formData: PropertyFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onToggle: (field: keyof PropertyFormData) => void;
+  onServiciosChange: (ids: number[]) => void;
 }
 
-export default function CasaFields({ formData, onChange, onToggle }: CasaFieldsProps) {
+export default function CasaFields({
+  formData,
+  onChange,
+  onToggle,
+  onServiciosChange,
+}: CasaFieldsProps) {
   return (
     <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
       <h3 className="font-semibold text-gray-900 mb-3">Detalles de la casa</h3>
@@ -64,12 +71,12 @@ export default function CasaFields({ formData, onChange, onToggle }: CasaFieldsP
         <ToggleSwitch
           label="¿Tiene garaje?"
           checked={formData.garaje}
-          onChange={() => onToggle('garaje')}
+          onChange={() => onToggle("garaje")}
         />
         <ToggleSwitch
           label="¿Tiene patio?"
           checked={formData.patio}
-          onChange={() => onToggle('patio')}
+          onChange={() => onToggle("patio")}
         />
       </div>
 
@@ -77,12 +84,20 @@ export default function CasaFields({ formData, onChange, onToggle }: CasaFieldsP
         <ToggleSwitch
           label="¿Está amoblado?"
           checked={formData.amoblado}
-          onChange={() => onToggle('amoblado')}
+          onChange={() => onToggle("amoblado")}
         />
         <ToggleSwitch
           label="¿Tiene sótano?"
           checked={formData.sotano}
-          onChange={() => onToggle('sotano')}
+          onChange={() => onToggle("sotano")}
+        />
+      </div>
+      {/* Selector de Servicios */}
+      <div className="pt-4 border-t border-blue-300">
+        <ServiciosSelector
+          selectedIds={formData.serviciosIds}
+          onChange={onServiciosChange}
+          color="blue"
         />
       </div>
     </div>

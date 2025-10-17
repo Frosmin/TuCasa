@@ -5,6 +5,8 @@ import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constan
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
+import DepartamentoFields from './DepartamentoFields';
+import LoteFields from './LoteFields';
 import ImageUploader from './ImageUploader';
 
 interface PropertyFormProps {
@@ -12,6 +14,7 @@ interface PropertyFormProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onPropertyTypeChange: (type: any) => void;
   onToggle: (field: keyof PropertyFormData) => void;
+  onServiciosChange: (ids: number[]) => void;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove: (index: number) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -23,6 +26,7 @@ export default function PropertyForm({
   onInputChange,
   onPropertyTypeChange,
   onToggle,
+  onServiciosChange,
   onImageUpload,
   onImageRemove,
   onSubmit,
@@ -42,15 +46,34 @@ export default function PropertyForm({
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
         />
       )}
 
-      {/* Campos específicos para Tienda */}
       {formData.propertyType === 'TIENDA' && (
         <TiendaFields
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
+        />
+      )}
+      {/* Campos específicos para Lote */}
+      {formData.propertyType === 'LOTE' && (
+        <LoteFields
+          formData={formData}
+          onChange={onInputChange}
+          onToggle={onToggle}
+        />
+      )}
+
+      {/* Campos específicos para Departamento */}
+      {formData.propertyType === 'DEPARTAMENTO' && (
+        <DepartamentoFields
+          formData={formData}
+          onChange={onInputChange}
+          onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
         />
       )}
 
