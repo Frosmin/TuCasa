@@ -1,22 +1,51 @@
 package com.tucasa.backend.model.service.implement;
 
-import com.tucasa.backend.Constants.Constants;
-import com.tucasa.backend.model.dto.*;
-import com.tucasa.backend.model.entity.*;
-import com.tucasa.backend.model.repository.*;
-import com.tucasa.backend.model.service.interfaces.OfertaService;
-import com.tucasa.backend.payload.ApiResponse;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.tucasa.backend.Constants.Constants;
+import com.tucasa.backend.model.dto.CasaRequestDto;
+import com.tucasa.backend.model.dto.CasaResponseDto;
+import com.tucasa.backend.model.dto.DepartamentoRequestDto;
+import com.tucasa.backend.model.dto.DepartamentoResponseDto;
+import com.tucasa.backend.model.dto.InmuebleRequestDto;
+import com.tucasa.backend.model.dto.InmuebleResponseDto;
+import com.tucasa.backend.model.dto.LoteRequestDto;
+import com.tucasa.backend.model.dto.LoteResponseDto;
+import com.tucasa.backend.model.dto.OfertaRequestDto;
+import com.tucasa.backend.model.dto.OfertaResponseDto;
+import com.tucasa.backend.model.dto.TiendaRequestDto;
+import com.tucasa.backend.model.dto.TiendaResponseDto;
+import com.tucasa.backend.model.entity.Casa;
+import com.tucasa.backend.model.entity.Departamento;
+import com.tucasa.backend.model.entity.Inmueble;
+import com.tucasa.backend.model.entity.Lote;
+import com.tucasa.backend.model.entity.Oferta;
+import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Tienda;
+import com.tucasa.backend.model.repository.CasaRepository;
+import com.tucasa.backend.model.repository.DepartamentoRepository;
+import com.tucasa.backend.model.repository.InmuebleRepository;
+import com.tucasa.backend.model.repository.LoteRepository;
+import com.tucasa.backend.model.repository.OfertaRepository;
+import com.tucasa.backend.model.repository.ServicioRepository;
+import com.tucasa.backend.model.repository.TiendaRepository;
+import com.tucasa.backend.model.service.interfaces.OfertaService;
+import com.tucasa.backend.payload.ApiResponse;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @Service
 public class OfertaServiceImpl implements OfertaService {
@@ -29,6 +58,9 @@ public class OfertaServiceImpl implements OfertaService {
 
     @Autowired
     private TiendaRepository tiendaRepository;
+
+    @Autowired
+    private LoteRepository loteRepository;
 
     @Autowired
     private InmuebleRepository inmuebleRepository;
@@ -45,6 +77,7 @@ public class OfertaServiceImpl implements OfertaService {
     @Autowired
     private EntityManager entityManager;
 
+    // ---------------------- CRUD OFERTAS ----------------------
     @Override
     public ResponseEntity<?> findAll() {
         String successMessage = Constants.RECORDS_FOUND;
@@ -83,8 +116,6 @@ public class OfertaServiceImpl implements OfertaService {
     @Transactional
     public ResponseEntity<?> create(OfertaRequestDto dto) {
         try {
-            // Llamada a funcion auxiliar
-            System.out.println(dto.getInmueble());
             Inmueble inmueble = createInmuebleByDto(dto.getInmueble());
 
             Oferta oferta = new Oferta();
@@ -95,9 +126,7 @@ public class OfertaServiceImpl implements OfertaService {
             oferta.setMoneda(dto.getMoneda());
             oferta.setDuracion(dto.getDuracion());
             oferta.setTipoPago(dto.getTipoPago());
-
             oferta.setEstadoPublicacion("En revision");
-
             oferta.setActivo(true);
 
             Oferta ofertaSaved = ofertaRepository.save(oferta);
@@ -107,7 +136,6 @@ public class OfertaServiceImpl implements OfertaService {
             return apiResponse.responseDataError(Constants.RECORD_NOT_CREATED, e.getMessage());
         }
     }
-
 
     @Override
     @Transactional
@@ -119,7 +147,6 @@ public class OfertaServiceImpl implements OfertaService {
             Oferta oferta = ofertaRepository.findById(ofertaId)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
 
-            // Actualiza solo los campos no nulos
             if (dto.getDescripcion() != null) oferta.setDescripcion(dto.getDescripcion());
             if (dto.getTipoOperacion() != null) oferta.setTipo(dto.getTipoOperacion());
             if (dto.getPrecio() != null) oferta.setPrecio(dto.getPrecio());
@@ -135,14 +162,11 @@ public class OfertaServiceImpl implements OfertaService {
 
             Oferta updated = ofertaRepository.save(oferta);
 
-            // Update inmueble pendiente
-
             return apiResponse.responseSuccess(successMessage, mapToDto(updated));
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }
     }
-
 
     @Override
     @Transactional
@@ -163,10 +187,8 @@ public class OfertaServiceImpl implements OfertaService {
         }
     }
 
-
-
+    // ---------------------- CREAR INMUEBLE SEGÚN DTO ----------------------
     private Inmueble createInmuebleByDto(InmuebleRequestDto dto) {
-        System.out.println("Tipo: "+ dto.getTipo());
         if (dto.getTipo() == null) {
             throw new RuntimeException("El tipo de inmueble es obligatorio");
         }
@@ -178,8 +200,8 @@ public class OfertaServiceImpl implements OfertaService {
                 Casa casa = new Casa();
                 casa.setDireccion(dto.getDireccion());
                 casa.setSuperficie(dto.getSuperficie());
-                casa.setLongitud(dto.getLongitud());
                 casa.setLatitud(dto.getLatitud());
+                casa.setLongitud(dto.getLongitud());
                 casa.setIdPropietario(dto.getIdPropietario());
                 casa.setDescripcion(dto.getDescripcion());
                 casa.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
@@ -207,8 +229,8 @@ public class OfertaServiceImpl implements OfertaService {
                 Tienda tienda = new Tienda();
                 tienda.setDireccion(dto.getDireccion());
                 tienda.setSuperficie(dto.getSuperficie());
-                tienda.setLongitud(dto.getLongitud());
                 tienda.setLatitud(dto.getLatitud());
+                tienda.setLongitud(dto.getLongitud());
                 tienda.setIdPropietario(dto.getIdPropietario());
                 tienda.setDescripcion(dto.getDescripcion());
                 tienda.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
@@ -262,9 +284,31 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = departamentoRepository.save(departamento);
             }
-            //  */
-            // case TIENDA -> ...
-            // case LOTE -> ...
+            
+            
+            case LOTE -> {
+                Lote lote = new Lote();
+                lote.setDireccion(dto.getDireccion());
+                lote.setSuperficie(dto.getSuperficie());
+                lote.setLongitud(dto.getLongitud());
+                lote.setLatitud(dto.getLatitud());
+                lote.setIdPropietario(dto.getIdPropietario());
+                lote.setDescripcion(dto.getDescripcion());
+                lote.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+                lote.setTipo(dto.getTipo());
+
+                if (dto instanceof LoteRequestDto loteDto) {
+                    lote.setTamanio(loteDto.getTamanio());
+                    lote.setMuroPerimetral(loteDto.getMuroPerimetral() != null && loteDto.getMuroPerimetral());
+                }
+
+                if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
+                    Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
+                    lote.setServicios(servicios);
+                }
+
+                inmueble = loteRepository.save(lote);
+            }
             // Etc.
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
@@ -273,9 +317,9 @@ public class OfertaServiceImpl implements OfertaService {
         return inmueble;
     }
 
+    // ---------------------- BÚSQUEDA DINÁMICA ----------------------
     @Override
     public ResponseEntity<?> search(Map<String, String> params) {
-        // Consulta base en SQL nativo - Complementar con los tipos de inmueble
         StringBuilder sql = new StringBuilder(
                 "SELECT o.id " +
                 "FROM ofertas o " +
@@ -283,10 +327,9 @@ public class OfertaServiceImpl implements OfertaService {
                 "LEFT JOIN casas c ON i.id = c.id " +
                 "LEFT JOIN tiendas t ON i.id = t.id " +
                 "LEFT JOIN departamentos d ON i.id = d.id " +
-                // LEFT JOIN lotes l ON i.id = l.id " +
+                "LEFT JOIN lote l ON i.id = l.id " +
                 "WHERE o.activo = true AND i.activo = true ");
 
-        // Campos permitidos para filtro por tipos - Complementar con los tipos de inmueble
         Map<String, String> camposTexto = Map.of(
                 "tipoOperacion", "o.tipo_operacion",
                 "tipoInmueble", "i.tipo_inmueble"
@@ -298,7 +341,10 @@ public class OfertaServiceImpl implements OfertaService {
                 "numPisos", "c.num_pisos",
                 "numAmbientes", "t.num_ambientes",
                 "precioMin", "o.precio",
-                "precioMax", "o.precio"
+                "precioMax", "o.precio",
+                "tamanio", "l.tamanio",
+                "superficieInterna", "d.superficie_interna",
+                "montoExpensas", "d.monto_expensas"
         );
 
         Map<String, String> camposBooleanos = Map.of(
@@ -307,34 +353,36 @@ public class OfertaServiceImpl implements OfertaService {
                 "amoblado", "c.amoblado",
                 "sotano", "c.sotano",
                 "banoPrivado", "t.bano_privado",
-                "deposito", "t.deposito"
+                "deposito", "t.deposito",
+                "muroPerimetral", "l.muro_perimetral",
+                "mascotasPermitidas", "d.mascotas_permitidas",
+                "parqueo", "d.parqueo",
+                "ascensor", "d.ascensor"
+                // "balcon", "d.balcon" // Map solo permite 10 K,V 
         );
 
-        // Aplicar filtros por campos
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            // Si el campo viene sin valor se ignora
             if (value == null || value.isBlank()) continue;
 
-            if (camposTexto.containsKey(key)) {     // Se construye el AND WHERE para texto
+            if (camposTexto.containsKey(key)) {
                 sql.append(" AND ").append(camposTexto.get(key))
-                        .append(" ILIKE '%").append(value.replace("'", "''")).append("%'"); // Busca coincidencias con ILIKE
-            } else if (camposNumericos.containsKey(key)) {  // Construye para campos numericos
+                        .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
+            } else if (camposNumericos.containsKey(key)) {
                 try {
                     BigDecimal num = new BigDecimal(value);
                     String campo = camposNumericos.get(key);
-                    if (key.equals("precioMin")) sql.append(" AND ").append(campo).append(" >= ").append(value);    // Para rango de precios
+                    if (key.equals("precioMin")) sql.append(" AND ").append(campo).append(" >= ").append(value);
                     else if (key.equals("precioMax")) sql.append(" AND ").append(campo).append(" <= ").append(value);
-                    else sql.append(" AND ").append(campo).append(" = ").append(value); // Para cualquier numero (dormitorios por ejemplo)
+                    else sql.append(" AND ").append(campo).append(" = ").append(value);
                 } catch (NumberFormatException ignored) {}
-            } else if (camposBooleanos.containsKey(key)) {  // Contruye AND WHERE para booleanos (Si tiene deposito, sotano, garaje, etc.)
+            } else if (camposBooleanos.containsKey(key)) {
                 if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
                     sql.append(" AND ").append(camposBooleanos.get(key)).append(" = ").append(value);
             }
         }
 
-        // Filtrado por proximidad - Tendria que ser obligatorio (No interesa recibir ofertas fuera del rango escogido)
         Double latitud = params.containsKey("latitud") ? Double.valueOf(params.get("latitud")) : null;
         Double longitud = params.containsKey("longitud") ? Double.valueOf(params.get("longitud")) : null;
         Double proximidad = params.containsKey("proximidad") ? Double.valueOf(params.get("proximidad")) : null;
@@ -349,9 +397,7 @@ public class OfertaServiceImpl implements OfertaService {
                     .append(") <= ").append(proximidad);
         }
 
-        // Ordenamiento
         String orderBy = params.get("orderBy");
-
         Map<String, String> camposOrdenables = Map.of(
                 "precio", "o.precio",
                 "fechaPublicacionInicio", "o.fecha_publicacion_inicio",
@@ -362,14 +408,9 @@ public class OfertaServiceImpl implements OfertaService {
             String[] parts = orderBy.split(",");
             String campo = parts[0].trim();
             String direccion = (parts.length > 1 ? parts[1].trim() : "asc").toUpperCase();
-
-            if (!direccion.equals("ASC") && !direccion.equals("DESC")) {
-                direccion = "DESC";
-            }
-
+            if (!direccion.equals("ASC") && !direccion.equals("DESC")) direccion = "DESC";
             if (camposOrdenables.containsKey(campo)) {
-                sql.append(" ORDER BY ").append(camposOrdenables.get(campo))
-                        .append(" ").append(direccion);
+                sql.append(" ORDER BY ").append(camposOrdenables.get(campo)).append(" ").append(direccion);
             } else {
                 sql.append(" ORDER BY o.fecha_publicacion_inicio DESC");
             }
@@ -377,9 +418,6 @@ public class OfertaServiceImpl implements OfertaService {
             sql.append(" ORDER BY o.fecha_publicacion_inicio DESC");
         }
 
-        System.out.println("SQL generada: " + sql);
-
-        // Consulta nativa de los ids
         Query query = entityManager.createNativeQuery(sql.toString());
         List<Long> ofertaIds = query.getResultList().stream()
                 .map(id -> ((Number) id).longValue())
@@ -389,10 +427,8 @@ public class OfertaServiceImpl implements OfertaService {
             return apiResponse.responseSuccess(Constants.RECORDS_FOUND, List.of());
         }
 
-        // Logica para mapeo de subtipos (no funciona con sql nativo)
         List<Oferta> resultados = ofertaRepository.findAllCompletoByIds(ofertaIds);
 
-        // Conservar el orden
         Map<Long, Oferta> ofertasFinded = resultados.stream()
                 .collect(Collectors.toMap(Oferta::getId, Function.identity()));
 
@@ -405,26 +441,22 @@ public class OfertaServiceImpl implements OfertaService {
         return apiResponse.responseSuccess(Constants.RECORDS_FOUND, response);
     }
 
-
-    // --- Mapeo a DTO ---
+    // ---------------------- MAPEOS DTO ----------------------
     private OfertaResponseDto mapToDto(Oferta oferta) {
         if (oferta == null) return null;
 
         InmuebleResponseDto inmuebleDto;
-
         Inmueble inmueble = oferta.getInmueble();
+
         if (inmueble instanceof Casa casa) {
             inmuebleDto = new CasaResponseDto(casa);
-        }/*
-        else if (inmueble instanceof Departamento departamento) {
-            inmuebleDto = new DepartamentoResponseDto(departamento);
-        }*/ else if (inmueble instanceof Tienda tienda) {
+        } else if (inmueble instanceof Tienda tienda) {
             inmuebleDto = new TiendaResponseDto(tienda);
-        }/* else if (inmueble instanceof Lote lote) {
+        } else if (inmueble instanceof Departamento departamento){
+            inmuebleDto = new DepartamentoResponseDto(departamento);
+        } else if (inmueble instanceof Lote lote) {
             inmuebleDto = new LoteResponseDto(lote);
-        } else if (inmueble instanceof Cuarto cuarto) {
-            inmuebleDto = new CuartoResponseDto(cuarto);
-        }*/ else {
+        } else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
         }
 

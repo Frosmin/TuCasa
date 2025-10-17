@@ -16,10 +16,12 @@ export default function VenderPage() {
     handleOperationSelect,
     handleToggle,
     handleImageUpload,
+    handleServiciosChange, 
     handleImageRemove,
     handleSubmit,
     resetToStep1,
   } = usePropertyForm();
+  
 
   // Paso 1: Selección de tipo de operación
   if (step === 1) {
@@ -57,6 +59,7 @@ export default function VenderPage() {
               onToggle={handleToggle}
               onImageUpload={handleImageUpload}
               onImageRemove={handleImageRemove}
+              onServiciosChange={handleServiciosChange}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
             />
