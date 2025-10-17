@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.service.implement;
 
 import com.tucasa.backend.Constants.Constants;
+import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.ServicioService;
@@ -48,6 +49,23 @@ public class ServicioServiceImpl implements ServicioService {
             Servicio servicio = servicioRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
             return apiResponse.responseSuccess(successMessage, servicio);
+        } catch (Exception e) {
+            return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> create(ServicioResponseDto dto) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = "Servicio no encontrado";
+
+        try {
+            if(dto.getNombre() == null || dto.getNombre().isBlank()){
+                return apiResponse.responseCreateError("El nombre del servicio es necesario");
+            }
+            Servicio servicio = new Servicio();
+            servicio.setNombre(dto.getNombre());
+            return apiResponse.responseSuccess(successMessage, servicioRepository.save(servicio));
         } catch (Exception e) {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }

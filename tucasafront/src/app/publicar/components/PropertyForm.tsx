@@ -5,6 +5,7 @@ import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constan
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
+import LoteFields from './LoteFields';
 import ImageUploader from './ImageUploader';
 
 interface PropertyFormProps {
@@ -54,6 +55,14 @@ export default function PropertyForm({
           onChange={onInputChange}
           onToggle={onToggle}
           onServiciosChange={onServiciosChange}
+        />
+      )}
+      {/* Campos específicos para Lote */}
+      {formData.propertyType === 'LOTE' && (
+        <LoteFields
+          formData={formData}
+          onChange={onInputChange}
+          onToggle={onToggle}
         />
       )}
 

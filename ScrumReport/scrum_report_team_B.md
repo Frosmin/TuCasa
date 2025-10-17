@@ -24,9 +24,9 @@
 # Scrum Report #2 — Oct 10
 
 ## Pablo
-- **Y:** Trabajé en ...  
-- **T:** Hoy voy a trabajar en ...  
-- **B:** He tenido problemas de ...  
+- **Y:** Trabajé en subir el backend y crear la entidad "Inmueble"
+- **T:** Hoy voy a trabajar en definir los atributos para la entidad "Casa"
+- **B:** No he tenido problemas
 
 ---
 
