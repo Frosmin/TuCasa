@@ -203,6 +203,65 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
             </div>
           )}
 
+          {/* Características de Departamento */}
+          {formData.propertyType === 'DEPARTAMENTO' && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+              {formData.piso && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Piso:</span>
+                  <span className="font-semibold text-gray-900 ml-1">{formData.piso}</span>
+                </div>
+              )}
+              {formData.superficieInterna && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Superficie interna:</span>
+                  <span className="font-semibold text-gray-900 ml-1">{formData.superficieInterna} m²</span>
+                </div>
+              )}
+              <div className="text-sm">
+                <span className="text-gray-600">Ascensor:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.ascensor ? 'Sí' : 'No'}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-600">Balcón:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.balcon ? 'Sí' : 'No'}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-600">Parqueo:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.parqueo ? 'Sí' : 'No'}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-600">Mascotas permitidas:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.mascotasPermitidas ? 'Sí' : 'No'}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-600">Amoblado:</span>
+                <span className="font-semibold text-gray-900 ml-1">{formData.amoblado ? 'Sí' : 'No'}</span>
+              </div>
+              {formData.montoExpensas && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Expensas:</span>
+                  <span className="font-semibold text-gray-900 ml-1">{formData.montoExpensas}</span>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Características de Lote*/}
+          {formData.propertyType === 'LOTE' && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+              {formData.tamanio && (
+              <p className="text-gray-600">
+                tamaño: <span className="font-semibold">{formData.tamanio} m²</span>
+              </p>
+            )}
+              <div className="text-sm">
+                <span className="text-gray-600">Muro Perimetral: </span>
+                <span className="font-semibold text-gray-900 ml-1">
+                  {formData.muroPerimetral ? 'Sí' : 'No'}
+                </span>
+              </div>
+            </div>
+          )}
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-semibold text-gray-900 mb-2">Descripción del Inmueble</h3>
             <p className="text-gray-600 text-sm leading-relaxed">

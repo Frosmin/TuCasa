@@ -1,4 +1,4 @@
-// publicar/types/property.types.ts
+// src/app/publicar/types/property.types.ts
 
 export type PropertyType = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA';
 export type OperationType = 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
@@ -6,7 +6,7 @@ export type Currency = 'Bs' | '$';
 export type PaymentType = 'mensual' | 'anual' | 'unico';
 
 export interface PropertyFormData {
-  // Datos del inmueble
+  // Datos generales del inmueble
   operacion: OperationType | '';
   propertyType: PropertyType;
   direccion: string;
@@ -36,18 +36,32 @@ export interface PropertyFormData {
   deposito: boolean;
   banoPrivado: boolean;
 
+  // Campos específicos para Departamento
+  piso: string;
+  superficieInterna: string;
+  ascensor: boolean;
+  balcon: boolean;
+  parqueo: boolean;
+  mascotasPermitidas: boolean;
+  montoExpensas: string;
+
+  // Campos específicos para Lote
+  tamanio: string;
+  muroPerimetral: boolean;
+
   images: string[];
 }
 
-export interface PropertyPayload {
-  inmueble: InmuebleData;
-  descripcion: string;
-  tipo: OperationType;
+
+export type PropertyPayload = {
+  inmueble: InmuebleData,
+  descripcion: string;  
+  tipoOperacion: OperationType;   
   precio: number;
   moneda: Currency;
   duracion: number | null;
   tipoPago: PaymentType;
-}
+};
 
 export interface InmuebleData {
   direccion: string;
@@ -58,7 +72,8 @@ export interface InmuebleData {
   descripcion: string;
   tipo: PropertyType;
   serviciosIds: number[];
-  // Casa fields
+
+  // Campos Casa opcionales
   numDormitorios?: number;
   numBanos?: number;
   numPisos?: number;
@@ -66,8 +81,21 @@ export interface InmuebleData {
   patio?: boolean;
   amoblado?: boolean;
   sotano?: boolean;
-  // Tienda fields
+
+  // Campos Tienda opcionales
   numAmbientes?: number;
   deposito?: boolean;
   banoPrivado?: boolean;
+  // Departamento fields
+  piso?: number;
+  superficieInterna?: number;
+  ascensor?: boolean;
+  balcon?: boolean;
+  parqueo?: boolean;
+  mascotasPermitidas?: boolean;
+  montoExpensas?: number;
+
+  // Campos Lote opcionales
+  tamanio?: number;
+  muroPerimetral?: boolean;
 }

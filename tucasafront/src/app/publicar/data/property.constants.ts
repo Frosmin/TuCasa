@@ -58,7 +58,7 @@ export const INITIAL_FORM_DATA = {
   descripcion: '',
   descripcionOferta: '',
   idPropietario: 1,
-  serviciosIds: [],
+  serviciosIds: [] as number[],
   dormitorios: '',
   banos: '',
   numPisos: '',
@@ -66,8 +66,26 @@ export const INITIAL_FORM_DATA = {
   patio: false,
   amoblado: false,
   sotano: false,
+
+  // Campos Tienda
   numAmbientes: '',
   deposito: false,
   banoPrivado: false,
+
+  // Campos específicos para Departamento
+  piso: '',
+  superficieInterna: '',
+  ascensor: false,
+  balcon: false,
+  parqueo: false,
+  mascotasPermitidas: false,
+  //amoblado: false,
+  montoExpensas: '',
+
+
+  // Campos Lote
+  tamanio: '',
+  muroPerimetral: false,
+
   images: [],
 };

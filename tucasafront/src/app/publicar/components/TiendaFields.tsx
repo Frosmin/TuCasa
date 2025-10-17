@@ -1,15 +1,17 @@
-// vender/components/TiendaFields.tsx
+// publicar/components/TiendaFields.tsx
 
 import { PropertyFormData } from '../types/property.types';
 import ToggleSwitch from './ToggleSwitch';
+import ServiciosSelector from './ServiciosSelector';
 
 interface TiendaFieldsProps {
   formData: PropertyFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onToggle: (field: keyof PropertyFormData) => void;
+  onServiciosChange: (ids: number[]) => void;  
 }
 
-export default function TiendaFields({ formData, onChange, onToggle }: TiendaFieldsProps) {
+export default function TiendaFields({ formData, onChange, onToggle, onServiciosChange }: TiendaFieldsProps) {
   return (
     <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
       <h3 className="font-semibold text-gray-900 mb-3">Detalles de la tienda</h3>
@@ -40,6 +42,15 @@ export default function TiendaFields({ formData, onChange, onToggle }: TiendaFie
           label="¿Tiene baño privado?"
           checked={formData.banoPrivado}
           onChange={() => onToggle('banoPrivado')}
+          color="purple"
+        />
+      </div>
+
+      {/* Selector de Servicios */}
+      <div className="pt-4 border-t border-purple-300">
+        <ServiciosSelector
+          selectedIds={formData.serviciosIds}
+          onChange={onServiciosChange}
           color="purple"
         />
       </div>
