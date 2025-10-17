@@ -45,9 +45,9 @@
 # Scrum Report #3 — Oct 14
 
 ## Simon
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Refactorize el backend para que permita el uso de .env para la base de datos
+- **T:** Cree una base de datos en la nube para que mi equipo pueda usarla 
+- **B:** problemas con las credenciales de la base de datos, el spooler no permite muchos usurios conectados
 
 ---
 
@@ -66,9 +66,9 @@
 # Scrum Report #4 — Oct 17
 
 ## Simon
-- **Y:** ...
-- **T:** ...
-- **B:** ... 
+- **Y:** Creacion del endpoint para el registro de departamentos
+- **T:** solucion de problemas de la base de datos en la nube
+- **B:** sin nigun problema 
 
 ---
 
