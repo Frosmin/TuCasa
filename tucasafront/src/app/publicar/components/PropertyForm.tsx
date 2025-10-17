@@ -1,19 +1,20 @@
 // publicar/components/PropertyForm.tsx
 
 import { PropertyFormData } from '../types/property.types';
-import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS, SERVICIOS } from '../data/property.constants';
+import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constants';
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
 import DepartamentoFields from './DepartamentoFields';
+import LoteFields from './LoteFields';
 import ImageUploader from './ImageUploader';
-import ServiciosSelector from './ServiciosSelector';
 
 interface PropertyFormProps {
   formData: PropertyFormData;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onPropertyTypeChange: (type: any) => void;
   onToggle: (field: keyof PropertyFormData) => void;
+  onServiciosChange: (ids: number[]) => void;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove: (index: number) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -25,6 +26,7 @@ export default function PropertyForm({
   onInputChange,
   onPropertyTypeChange,
   onToggle,
+  onServiciosChange,
   onImageUpload,
   onImageRemove,
   onSubmit,
@@ -44,12 +46,21 @@ export default function PropertyForm({
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
         />
       )}
 
-      {/* Campos específicos para Tienda */}
       {formData.propertyType === 'TIENDA' && (
         <TiendaFields
+          formData={formData}
+          onChange={onInputChange}
+          onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
+        />
+      )}
+      {/* Campos específicos para Lote */}
+      {formData.propertyType === 'LOTE' && (
+        <LoteFields
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
@@ -62,6 +73,7 @@ export default function PropertyForm({
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange}
         />
       )}
 
@@ -147,17 +159,6 @@ export default function PropertyForm({
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
           />
         </div>
-      </div>
-      <div>
-        <ServiciosSelector
-          servicios={SERVICIOS}
-          selectedIds={formData.serviciosIds}
-          onChange={(ids) =>
-            onInputChange({
-              target: { name: 'serviciosIds', value: ids },
-            } as any)
-          }
-        />
       </div>
 
       {/* Moneda y Tipo de Pago */}

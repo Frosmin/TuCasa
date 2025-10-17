@@ -34,11 +34,11 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
   
   // Agregar campos específicos de DEPARTAMENTO
   if (formData.propertyType === 'DEPARTAMENTO') {
-    inmuebleData.piso = Number(formData.piso) || 0;
-    inmuebleData.superficieInterna = Number((formData as any).superficieInterna) || 0;
-    inmuebleData.numDormitorios = Number(formData.dormitorios) || 0;
-    inmuebleData.numBanos = Number(formData.banos) || 0;
-    inmuebleData.montoExpensas = Number((formData as any).montoExpensas) || 0;
+    inmuebleData.piso = parseInt(formData.piso) || 0;
+    inmuebleData.superficieInterna = parseFloat(formData.superficieInterna) || 0;
+    inmuebleData.numDormitorios = parseInt(formData.dormitorios) || 0;
+    inmuebleData.numBanos = parseInt(formData.banos) || 0;
+    inmuebleData.montoExpensas = parseFloat(formData.montoExpensas) || 0;
     inmuebleData.ascensor = !!formData.ascensor;
     inmuebleData.balcon = !!formData.balcon;
     inmuebleData.parqueo = !!formData.parqueo;

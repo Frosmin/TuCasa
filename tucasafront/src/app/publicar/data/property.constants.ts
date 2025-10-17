@@ -58,7 +58,7 @@ export const INITIAL_FORM_DATA = {
   descripcion: '',
   descripcionOferta: '',
   idPropietario: 1,
-  serviciosIds: [],
+  serviciosIds: [] as number[],
   dormitorios: '',
   banos: '',
   numPisos: '',
@@ -66,6 +66,8 @@ export const INITIAL_FORM_DATA = {
   patio: false,
   amoblado: false,
   sotano: false,
+
+  // Campos Tienda
   numAmbientes: '',
   deposito: false,
   banoPrivado: false,
@@ -80,14 +82,10 @@ export const INITIAL_FORM_DATA = {
   //amoblado: false,
   montoExpensas: '',
 
+
+  // Campos Lote
+  tamanio: '',
+  muroPerimetral: false,
+
   images: [],
 };
-
-export const SERVICIOS = [
-  { id: 1, nombre: 'Luz' },
-  { id: 2, nombre: 'Agua' },
-  { id: 3, nombre: 'Gas' },
-  { id: 4, nombre: 'Internet' },
-  { id: 5, nombre: 'Recoleccion de Basura' },
-  { id: 6, nombre: 'Seguridad 24h' },
-];

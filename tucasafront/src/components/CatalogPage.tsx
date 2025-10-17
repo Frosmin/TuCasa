@@ -26,6 +26,8 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     dormitorios: '',
     garaje: null,
     amoblado: null,
+    sotano: null,
+    patio: null,
     servicios: [],
   })
   const [searchTerm, setSearchTerm] = useState('')
@@ -72,11 +74,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
   // Filtrar ofertas
   const ofertasFiltradas = useMemo(() => {
     return ofertas.filter(oferta => {
-      // Solo ofertas publicadas y activas
-      if (oferta.estadoPublicacion !== 'PUBLICADO' || !oferta.activo) {
-        return false
-      }
-
       // Filtro por tipo de inmueble
       if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
         return false
@@ -124,10 +121,20 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       if (filters.amoblado === true && !oferta.inmueble.amoblado) {
         return false
       }
+      // Filtro por patio
+      if (filters.patio === true && !oferta.inmueble.patio) {
+        return false
+      }
+
+      // Filtro por sotano
+      if (filters.sotano === true && !oferta.inmueble.sotano) {
+        return false
+      }
 
       // Filtro por servicios
       if (filters.servicios && filters.servicios.length > 0) {
-        const serviciosInmueble = oferta.inmueble.servicios.map(s => s.nombre)
+        const servicios = oferta.inmueble.servicios || []
+        const serviciosInmueble = servicios.map(s => s.nombre)
         const tieneServicios = filters.servicios.every(servicio =>
           serviciosInmueble.includes(servicio)
         )
@@ -189,8 +196,8 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
                 key={id}
                 onClick={() => setTipoInmuebleSeleccionado(id)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
                   }`}
               >
                 <Icon className="w-5 h-5" />
