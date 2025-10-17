@@ -62,3 +62,26 @@
 - **Y:** Trabaje en en la integracion de la api de ofertas de casas
 - **T:** Hoy voy a corregir algunos problemas que tuve
 - **B:** tuve problemas en el paginado de ofertas y sus filtros de casas
+
+# Scrum Report #4 — Oct 17
+
+## Pablo
+- **Y:** Trabajé en el filtrado dinamico y pruebas
+- **T:** Hoy voy a integrar la rama "team-b" a develop
+- **B:** Tuve algunos problemas coordinando el uso uniforme de servicios compartidos del backend
+
+---
+
+## Diego
+- **Y:** Trabajé en 
+- **T:** Hoy voy a 
+- **B:** No he tenido problemas
+
+---
+
+## Jhunior
+- **Y:** Trabajé en 
+- **T:** Hoy voy a 
+- **B:** No he tenido problemas
+
+
