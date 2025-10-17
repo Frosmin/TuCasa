@@ -202,7 +202,22 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
               </div>
             </div>
           )}
-
+          {/* Características de Lote*/}
+          {formData.propertyType === 'LOTE' && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+              {formData.tamanio && (
+              <p className="text-gray-600">
+                tamaño: <span className="font-semibold">{formData.tamanio} m²</span>
+              </p>
+            )}
+              <div className="text-sm">
+                <span className="text-gray-600">Muro Perimetral: </span>
+                <span className="font-semibold text-gray-900 ml-1">
+                  {formData.muroPerimetral ? 'Sí' : 'No'}
+                </span>
+              </div>
+            </div>
+          )}
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-semibold text-gray-900 mb-2">Descripción del Inmueble</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
