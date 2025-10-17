@@ -14,7 +14,6 @@ import com.tucasa.backend.model.dto.LoteResponseDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Servicio;
-import com.tucasa.backend.model.enums.TipoInmueble;
 import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.LoteService;
@@ -47,7 +46,7 @@ public class LoteServiceImpl implements LoteService {
             lote.setIdPropietario(dto.getIdPropietario());
             lote.setDescripcion(dto.getDescripcion());
             lote.setActivo(true);
-            lote.setTipo(TipoInmueble.LOTE);
+            lote.setTipo(dto.getTipo());
             lote.setTamanio(dto.getTamanio());
             lote.setMuroPerimetral(dto.getMuroPerimetral());
 
