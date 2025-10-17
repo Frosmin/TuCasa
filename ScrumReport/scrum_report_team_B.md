@@ -84,4 +84,26 @@
 - **T:** Hoy voy a 
 - **B:** No he tenido problemas
 
+# Scrum Report #5 — Oct 21
+
+## Pablo
+- **Y:** Trabajé en 
+- **T:** Hoy voy a
+- **B:** No he tenido problemas
+
+---
+
+## Diego
+- **Y:** Trabajé en 
+- **T:** Hoy voy a 
+- **B:** No he tenido problemas
+
+---
+
+## Jhunior
+- **Y:** Trabajé en 
+- **T:** Hoy voy a 
+- **B:** No he tenido problemas
+
+
 
