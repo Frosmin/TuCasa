@@ -1,4 +1,5 @@
 import { PropertyFormData } from '../types/property.types';
+import ServiciosSelector from './ServiciosSelector';
 import ToggleSwitch from './ToggleSwitch';
 
 interface DepartamentoFieldsProps {
