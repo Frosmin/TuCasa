@@ -126,7 +126,7 @@ public class OfertaServiceImpl implements OfertaService {
             oferta.setMoneda(dto.getMoneda());
             oferta.setDuracion(dto.getDuracion());
             oferta.setTipoPago(dto.getTipoPago());
-            oferta.setEstadoPublicacion("En revision");
+            oferta.setEstadoPublicacion("EN REVISION");
             oferta.setActivo(true);
 
             Oferta ofertaSaved = ofertaRepository.save(oferta);
