@@ -1,22 +1,23 @@
 package com.tucasa.backend.model.dto;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tucasa.backend.model.enums.TipoInmueble;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.util.Set;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -26,7 +27,7 @@ import java.util.Set;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CasaRequestDto.class, name = "CASA"),
         //@JsonSubTypes.Type(value = DepartamentoRequestDto.class, name = "DEPARTAMENTO")
-        //@JsonSubTypes.Type(value = LoteRequestDto.class, name = "LOTE")
+        @JsonSubTypes.Type(value = LoteRequestDto.class, name = "LOTE"),
         @JsonSubTypes.Type(value = TiendaRequestDto.class, name = "TIENDA")
         // LOS TIPOS QUE FALTEN Y SUS REQUEST DTO
 })

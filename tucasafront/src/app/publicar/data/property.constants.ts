@@ -66,8 +66,15 @@ export const INITIAL_FORM_DATA = {
   patio: false,
   amoblado: false,
   sotano: false,
+
+  // Campos Tienda
   numAmbientes: '',
   deposito: false,
   banoPrivado: false,
+
+  // Campos Lote
+  tamanio: '',
+  muroPerimetral: false,
+
   images: [],
 };

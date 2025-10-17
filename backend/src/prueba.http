@@ -1,0 +1,32 @@
+###  crear lote
+POST http://localhost:8000/tucasabackend/api/lotes
+Content-Type: application/json
+
+{
+  "direccion": "Av. Lomas de Zamora 123",
+  "latitud": -34.6037,
+  "longitud": -58.3816,
+  "superficie": 600,
+  "idPropietario": 1,
+  "descripcion": "Lote amplio con servicios de agua y luz",
+  "tamanio": 600,
+  "muroPerimetral": true,
+  "serviciosIds": [1, 2]
+}
+
+###  
+PUT http://localhost:8000/tucasabackend/api/lotes/2 HTTP/1.1
+Content-Type: application/json
+
+{
+  "direccion": "Av. Lomas de Zamora 123",
+  "latitud": -34.6037,
+  "longitud": -58.3816,
+  "superficie": 650,
+  "descripcion": "Lote amplio con servicios de agua, luz y gas",
+  "activo": true,
+  "tamanio": 650,
+  "muroPerimetral": true,
+  "serviciosIds": [1, 2,3]
+}
+
