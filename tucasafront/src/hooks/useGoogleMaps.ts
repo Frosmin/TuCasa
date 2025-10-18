@@ -3,18 +3,26 @@
 
 import { useEffect, useState } from 'react';
 
+declare global {
+  interface Window {
+    google: typeof google;
+    initGoogleMaps?: () => void;
+  }
+}
+
 export function useGoogleMaps() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Si ya está cargado
     if (window.google?.maps) {
       setIsLoaded(true);
       return;
     }
 
     // Si ya existe el script, esperar a que termine de cargar
-    const existingScript = document.querySelector('#google-maps-script');
+    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
     if (existingScript) {
       const checkInterval = setInterval(() => {
         if (window.google?.maps) {
@@ -42,15 +50,15 @@ export function useGoogleMaps() {
       return;
     }
 
-    const script = document.createElement('script');
-    script.id = 'google-maps-script';
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding`;
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
+    // Función de callback que se ejecutará cuando Maps esté listo
+    window.initGoogleMaps = () => {
       setIsLoaded(true);
     };
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding&callback=initGoogleMaps&loading=async`;
+    script.async = true;
+    script.defer = true;
 
     script.onerror = () => {
       setLoadError('Error al cargar Google Maps API');
@@ -60,6 +68,8 @@ export function useGoogleMaps() {
     document.head.appendChild(script);
 
     return () => {
+      // Cleanup: remover la función global
+      delete window.initGoogleMaps;
     };
   }, []);
 
