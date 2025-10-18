@@ -73,8 +73,8 @@
 ---
 
 ## Diego
-- **Y:** Trabajé en 
-- **T:** Hoy voy a 
+- **Y:** Trabajé en la integración de servicios en casa y tienda
+- **T:** Hoy voy a corregir los formularios para quitar numeros en negativos
 - **B:** No he tenido problemas
 
 ---
