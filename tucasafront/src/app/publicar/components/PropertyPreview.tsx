@@ -119,16 +119,6 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
             <p className="text-gray-700 font-medium">
               {formData.direccion || 'Dirección no especificada'}
             </p>
-            {(formData.latitud || formData.longitud) && (
-              <p className="text-gray-600 text-sm">
-                Coordenadas: {formData.latitud || '0'}, {formData.longitud || '0'}
-              </p>
-            )}
-            {formData.superficie && (
-              <p className="text-gray-600">
-                Superficie: <span className="font-semibold">{formData.superficie} m²</span>
-              </p>
-            )}
           </div>
 
           {/* Características de Casa */}
