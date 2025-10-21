@@ -80,6 +80,6 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Revise el avance en la UI de otros equipos
+- **T:** Buscar soluciones a los problemas de integracion
+- **B:** Use agentes y provoque mas problemas
