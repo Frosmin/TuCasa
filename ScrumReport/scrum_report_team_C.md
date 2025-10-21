@@ -73,9 +73,9 @@
 ---
 
 ## Ricardo
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Avance del upload de imagenes
+- **T:** Integración del trabajo realizado para la demostración
+- **B:** Conflictos en la integración de las ramas
 
 ---
 
