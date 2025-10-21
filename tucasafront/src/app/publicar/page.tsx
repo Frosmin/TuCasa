@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { ArrowLeft } from 'lucide-react';
-import { usePropertyForm } from './hooks/usePropertyForm';
-import OperationSelector from './components/OperationSelector';
-import PropertyForm from './components/PropertyForm';
-import PropertyPreview from './components/PropertyPreview';
+import { ArrowLeft } from "lucide-react";
+import { usePropertyForm } from "./hooks/usePropertyForm";
+import OperationSelector from "./components/OperationSelector";
+import PropertyForm from "./components/PropertyForm";
+import PropertyPreview from "./components/PropertyPreview";
 
 export default function VenderPage() {
   const {
@@ -16,12 +16,11 @@ export default function VenderPage() {
     handleOperationSelect,
     handleToggle,
     handleImageUpload,
-    handleServiciosChange, 
+    handleServiciosChange,
     handleImageRemove,
     handleSubmit,
     resetToStep1,
   } = usePropertyForm();
-  
 
   // Paso 1: Selección de tipo de operación
   if (step === 1) {
@@ -47,10 +46,14 @@ export default function VenderPage() {
               ¿Qué tipo de propiedad quieres publicar?
             </h1>
             <p className="text-gray-600 mb-2">
-              Operación:{' '}
-              <span className="font-semibold text-blue-600">{formData.operacion}</span>
+              Operación:{" "}
+              <span className="font-semibold text-blue-600">
+                {formData.operacion}
+              </span>
             </p>
-            <p className="text-gray-600 mb-8">Selecciona el tipo de propiedad.</p>
+            <p className="text-gray-600 mb-8">
+              Selecciona el tipo de propiedad.
+            </p>
 
             <PropertyForm
               formData={formData}
