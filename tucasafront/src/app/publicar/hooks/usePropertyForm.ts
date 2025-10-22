@@ -36,7 +36,6 @@ export function usePropertyForm() {
     setFormData((prev) => ({ ...prev, serviciosIds: ids }));
   };
 
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -52,6 +51,22 @@ export function usePropertyForm() {
     }));
   };
 
+  const handleLocationChange = (lat: number, lng: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitud: lat.toString(),
+      longitud: lng.toString(),
+    }));
+  };
+
+  // NUEVA FUNCIÓN: Actualizar dirección desde el mapa
+  const handleAddressChange = (address: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      direccion: address,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -59,7 +74,7 @@ export function usePropertyForm() {
     try {
       const payload = buildPropertyPayload(formData);
       const data = await PropertyService.createProperty(payload);
-      
+
       console.log('Respuesta del servidor:', data);
       showSuccess('¡Propiedad publicada exitosamente!');
 
@@ -68,7 +83,7 @@ export function usePropertyForm() {
       setFormData(INITIAL_FORM_DATA);
     } catch (error: any) {
       console.error('Error:', error);
-      
+
       if (error.data) {
         const errorMessage = handleApiError(error.data);
         showError(`Errores de validación:\n${errorMessage}`);
@@ -97,5 +112,7 @@ export function usePropertyForm() {
     handleImageRemove,
     handleSubmit,
     resetToStep1,
+    handleLocationChange,
+    handleAddressChange, // AGREGAR AQUÍ
   };
 }
