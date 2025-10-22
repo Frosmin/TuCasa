@@ -36,6 +36,15 @@ export interface PropertyFormData {
   deposito: boolean;
   banoPrivado: boolean;
 
+  // Campos específicos para Departamento
+  piso: string;
+  superficieInterna: string;
+  ascensor: boolean;
+  balcon: boolean;
+  parqueo: boolean;
+  mascotasPermitidas: boolean;
+  montoExpensas: string;
+
   // Campos específicos para Lote
   tamanio: string;
   muroPerimetral: boolean;
@@ -43,15 +52,16 @@ export interface PropertyFormData {
   images: string[];
 }
 
-export interface PropertyPayload {
-  inmueble: InmuebleData;
-  descripcion: string;
-  tipo: OperationType;
+
+export type PropertyPayload = {
+  inmueble: InmuebleData,
+  descripcion: string;  
+  tipoOperacion: OperationType;   
   precio: number;
   moneda: Currency;
   duracion: number | null;
   tipoPago: PaymentType;
-}
+};
 
 export interface InmuebleData {
   direccion: string;
@@ -76,6 +86,14 @@ export interface InmuebleData {
   numAmbientes?: number;
   deposito?: boolean;
   banoPrivado?: boolean;
+  // Departamento fields
+  piso?: number;
+  superficieInterna?: number;
+  ascensor?: boolean;
+  balcon?: boolean;
+  parqueo?: boolean;
+  mascotasPermitidas?: boolean;
+  montoExpensas?: number;
 
   // Campos Lote opcionales
   tamanio?: number;
