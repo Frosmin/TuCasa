@@ -2,7 +2,23 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
-import { MapPin } from 'lucide-react';
+import { 
+  MapPin, 
+  Home, 
+  Store, 
+  Square, 
+  Building2, 
+  Bed, 
+  Bath, 
+  Car, 
+  Trees, 
+  Sofa, 
+  Package,
+  Maximize,
+  Layers,
+  AlertCircle
+} from 'lucide-react';
+import ReactDOMServer from 'react-dom/server';
 
 interface Servicio {
   id: number;
@@ -32,42 +48,71 @@ interface Inmueble {
   deposito?: boolean;
 }
 
+type TipoInmueble = 'CASA' | 'TIENDA' | 'LOTE' | 'DEPARTAMENTO';
+
+const TIPO_CONFIG = {
+  CASA: {
+    icon: Home,
+    color: '#3b82f6',
+    label: 'Casas'
+  },
+  TIENDA: {
+    icon: Store,
+    color: '#f59e0b',
+    label: 'Tiendas'
+  },
+  DEPARTAMENTO: {
+    icon: Building2,
+    color: '#8b5cf6',
+    label: 'Deptos'
+  },
+  LOTE: {
+    icon: Square,
+    color: '#10b981',
+    label: 'Lotes'
+  }
+} as const;
+
+const COCHABAMBA_CENTER = { lat: -17.3895, lng: -66.1568 };
+const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
+
 export default function MapaPage() {
   const { isLoaded, loadError } = useGoogleMaps();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
-  
+  const initAttemptedRef = useRef(false);
+
   const [inmuebles, setInmuebles] = useState<Inmueble[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapType, setMapType] = useState<'roadmap' | 'satellite'>('satellite');
+  const [mapInitialized, setMapInitialized] = useState(false);
+  const [domReady, setDomReady] = useState(false);
 
   // Cargar inmuebles desde la API
   useEffect(() => {
     const fetchInmuebles = async () => {
       try {
-        const response = await fetch('http://localhost:8000/tucasabackend/api/inmueble');
+        const response = await fetch(`${API_BASE_URL}/inmueble`);
         const result = await response.json();
-        
+
         if (result.error) {
           throw new Error(result.message);
         }
-        
-        console.log('✅ Inmuebles cargados:', result.data.length);
-        
-        // Filtrar inmuebles con coordenadas válidas
+
         const validInmuebles = result.data.filter(
-          (inmueble: Inmueble) => inmueble.latitud !== 0 && inmueble.longitud !== 0
+          (inmueble: Inmueble) => 
+            inmueble.latitud !== 0 && 
+            inmueble.longitud !== 0 &&
+            inmueble.activo
         );
-        
-        console.log('✅ Inmuebles con coordenadas válidas:', validInmuebles.length);
+
         setInmuebles(validInmuebles);
-        setLoading(false);
       } catch (err) {
-        console.error('❌ Error al cargar inmuebles:', err);
         setError(err instanceof Error ? err.message : 'Error al cargar inmuebles');
+      } finally {
         setLoading(false);
       }
     };
@@ -75,26 +120,30 @@ export default function MapaPage() {
     fetchInmuebles();
   }, []);
 
-  // Inicializar el mapa cuando Google Maps esté listo Y el ref esté disponible
+  // Asegurar que el DOM esté listo
   useEffect(() => {
-    // Esperar un frame para asegurar que el DOM esté listo
+    if (mapRef.current) {
+      setDomReady(true);
+    }
+  }, []);
+
+  // Inicializar el mapa
+  useEffect(() => {
+    if (!isLoaded || !domReady || !mapRef.current || mapInstanceRef.current || initAttemptedRef.current) {
+      return;
+    }
+
+    initAttemptedRef.current = true;
+
     const timeoutId = setTimeout(() => {
-      if (!isLoaded) {
-        return;
-      }
-
-      if (!mapRef.current) {
-        return;
-      }
-
-      if (mapInstanceRef.current) {
-        return;
-      }
       try {
+        if (!mapRef.current) return;
+
         const map = new google.maps.Map(mapRef.current, {
-          center: { lat: -17.3895, lng: -66.1568 },
+          center: COCHABAMBA_CENTER,
           zoom: 13,
-          mapTypeId: mapType,
+          mapTypeId: 'satellite',
+          mapId: 'DEMO_MAP_ID',
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
@@ -103,94 +152,52 @@ export default function MapaPage() {
 
         mapInstanceRef.current = map;
         infoWindowRef.current = new google.maps.InfoWindow();
+        setMapInitialized(true);
       } catch (err) {
-        console.error('❌ Error al inicializar mapa:', err);
+        console.error('Error al inicializar el mapa:', err);
         setError('Error al inicializar el mapa');
+        initAttemptedRef.current = false;
       }
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [isLoaded, mapType]);
+  }, [isLoaded, domReady]);
 
   // Crear marcadores para cada inmueble
   useEffect(() => {
-    if (!mapInstanceRef.current) {
-      console.log('⏳ Esperando inicialización del mapa...');
+    if (!mapInitialized || !mapInstanceRef.current || inmuebles.length === 0) {
       return;
     }
-
-    if (inmuebles.length === 0) {
-      console.log('⏳ No hay inmuebles para mostrar');
-      return;
-    }
-
-    console.log('📍 Creando', inmuebles.length, 'marcadores...');
 
     // Limpiar marcadores anteriores
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach(marker => {
+      marker.map = null;
+    });
     markersRef.current = [];
 
     const bounds = new google.maps.LatLngBounds();
 
-    inmuebles.forEach((inmueble, index) => {
+    inmuebles.forEach((inmueble) => {
       const position = { lat: inmueble.latitud, lng: inmueble.longitud };
+      const config = TIPO_CONFIG[inmueble.tipo];
       
-      const marker = new google.maps.Marker({
+      // Crear elemento del marcador usando Lucide icons
+      const markerElement = createMarkerElement(config.icon, config.color);
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
         position,
         map: mapInstanceRef.current,
         title: inmueble.direccion,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: inmueble.tipo === 'CASA' ? '#3b82f6' : '#f59e0b',
-          fillOpacity: 0.9,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-        },
+        content: markerElement,
       });
 
-      const contentString = `
-        <div style="padding: 12px; max-width: 280px; font-family: system-ui, -apple-system, sans-serif;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <div style="background: ${inmueble.tipo === 'CASA' ? '#3b82f6' : '#f59e0b'}; 
-                        color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-              ${inmueble.tipo}
-            </div>
-          </div>
-          
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold; color: #1f2937;">
-            ${inmueble.direccion}
-          </h3>
-          
-          <p style="margin: 0 0 12px 0; font-size: 14px; color: #6b7280;">
-            ${inmueble.descripcion}
-          </p>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: 13px;">
-            ${inmueble.tipo === 'CASA' ? `
-              <div>🛏️ ${inmueble.numDormitorios} dorm.</div>
-              <div>🚿 ${inmueble.numBanos} baños</div>
-              ${inmueble.garaje ? '<div>🚗 Garaje</div>' : ''}
-              ${inmueble.patio ? '<div>🌳 Patio</div>' : ''}
-            ` : `
-              <div>📐 ${inmueble.numAmbientes} ambientes</div>
-              ${inmueble.deposito ? '<div>📦 Depósito</div>' : ''}
-            `}
-            <div>📏 ${inmueble.superficie} m²</div>
-          </div>
-          
-          <a href="http://localhost:3000/oferta/${inmueble.id}" 
-             style="display: block; text-align: center; background: #3b82f6; color: white; 
-                    padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500;">
-            Ver detalles
-          </a>
-        </div>
-      `;
-
       marker.addListener('click', () => {
-        if (infoWindowRef.current) {
-          infoWindowRef.current.setContent(contentString);
-          infoWindowRef.current.open(mapInstanceRef.current, marker);
+        if (infoWindowRef.current && mapInstanceRef.current) {
+          infoWindowRef.current.setContent(createInfoWindowContent(inmueble));
+          infoWindowRef.current.open({
+            map: mapInstanceRef.current,
+            anchor: marker,
+          });
         }
       });
 
@@ -200,54 +207,215 @@ export default function MapaPage() {
 
     if (inmuebles.length > 0) {
       mapInstanceRef.current.fitBounds(bounds);
-      console.log('✅ Marcadores creados y mapa ajustado');
     }
-  }, [inmuebles, mapInstanceRef.current]);
+  }, [inmuebles, mapInitialized]);
 
-  const toggleMapType = () => {
-    const newType = mapType === 'roadmap' ? 'satellite' : 'roadmap';
-    setMapType(newType);
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setMapTypeId(newType);
-    }
+  // Crear elemento del marcador con Lucide icon
+  const createMarkerElement = (Icon: typeof Home, color: string): HTMLDivElement => {
+    const markerDiv = document.createElement('div');
+    markerDiv.style.cssText = `
+      width: 48px;
+      height: 48px;
+      background: ${color};
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    `;
+
+    const iconContainer = document.createElement('div');
+    iconContainer.style.cssText = `
+      transform: rotate(45deg);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    const iconSvg = ReactDOMServer.renderToString(<Icon size={20} />);
+    iconContainer.innerHTML = iconSvg;
+    markerDiv.appendChild(iconContainer);
+
+    markerDiv.addEventListener('mouseenter', () => {
+      markerDiv.style.transform = 'rotate(-45deg) scale(1.1)';
+    });
+
+    markerDiv.addEventListener('mouseleave', () => {
+      markerDiv.style.transform = 'rotate(-45deg) scale(1)';
+    });
+
+    return markerDiv;
   };
 
-  // Pantallas de estado
+  // Crear contenido del InfoWindow con Lucide icons
+  const createInfoWindowContent = (inmueble: Inmueble): string => {
+    const config = TIPO_CONFIG[inmueble.tipo];
+    
+    const renderIcon = (Icon: typeof Bed) => 
+      ReactDOMServer.renderToString(<Icon size={14} color="#6b7280" />);
+
+    let amenitiesHtml = '';
+
+    if (inmueble.tipo === 'CASA') {
+      amenitiesHtml = `
+        ${inmueble.numDormitorios ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Bed)}
+            <span>${inmueble.numDormitorios} dorm.</span>
+          </div>
+        ` : ''}
+        ${inmueble.numBanos ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Bath)}
+            <span>${inmueble.numBanos} baños</span>
+          </div>
+        ` : ''}
+        ${inmueble.garaje ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Car)}
+            <span>Garaje</span>
+          </div>
+        ` : ''}
+        ${inmueble.patio ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Trees)}
+            <span>Patio</span>
+          </div>
+        ` : ''}
+      `;
+    } else if (inmueble.tipo === 'DEPARTAMENTO') {
+      amenitiesHtml = `
+        ${inmueble.numDormitorios ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Bed)}
+            <span>${inmueble.numDormitorios} dorm.</span>
+          </div>
+        ` : ''}
+        ${inmueble.numBanos ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Bath)}
+            <span>${inmueble.numBanos} baños</span>
+          </div>
+        ` : ''}
+        ${inmueble.amoblado ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Sofa)}
+            <span>Amoblado</span>
+          </div>
+        ` : ''}
+        ${inmueble.banoPrivado ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Bath)}
+            <span>Baño privado</span>
+          </div>
+        ` : ''}
+      `;
+    } else if (inmueble.tipo === 'TIENDA') {
+      amenitiesHtml = `
+        ${inmueble.numAmbientes ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Square)}
+            <span>${inmueble.numAmbientes} ambientes</span>
+          </div>
+        ` : ''}
+        ${inmueble.deposito ? `
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Package)}
+            <span>Depósito</span>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    return `
+      <div style="padding: 16px; max-width: 300px; font-family: system-ui, -apple-system, sans-serif;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+          <div style="background: ${config.color}; color: white; padding: 6px 12px; border-radius: 6px; 
+                      font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+            ${inmueble.tipo}
+          </div>
+        </div>
+        
+        <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 600; color: #111827; line-height: 1.4;">
+          ${inmueble.direccion}
+        </h3>
+        
+        <p style="margin: 0 0 16px 0; font-size: 14px; color: #6b7280; line-height: 1.5;">
+          ${inmueble.descripcion || 'Sin descripción'}
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; 
+                    font-size: 13px; color: #4b5563;">
+          ${amenitiesHtml}
+          <div style="display: flex; align-items: center; gap: 6px;">
+            ${renderIcon(Maximize)}
+            <span>${inmueble.superficie} m²</span>
+          </div>
+        </div>
+        
+        <a href="/oferta/${inmueble.id}" 
+           style="display: block; text-align: center; background: ${config.color}; color: white; 
+                  padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500;
+                  font-size: 14px; transition: opacity 0.2s;"
+           onmouseover="this.style.opacity='0.9'"
+           onmouseout="this.style.opacity='1'">
+          Ver detalles
+        </a>
+      </div>
+    `;
+  };
+
+  const toggleMapType = () => {
+    if (!mapInstanceRef.current) return;
+
+    const newType = mapType === 'roadmap' ? 'satellite' : 'roadmap';
+    setMapType(newType);
+    mapInstanceRef.current.setMapTypeId(newType);
+  };
+
+  // Pantalla de error de carga de Google Maps
   if (loadError) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-red-50">
-        <div className="text-center text-red-600 p-8">
-          <MapPin className="w-12 h-12 mx-auto mb-4" />
-          <p className="font-semibold text-lg">Error al cargar Google Maps</p>
-          <p className="text-sm mt-2">{loadError}</p>
+        <div className="text-center text-red-600 p-8 max-w-md">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4" />
+          <p className="font-semibold text-xl mb-2">Error al cargar Google Maps</p>
+          <p className="text-sm mt-2 text-red-500">{loadError}</p>
           <p className="text-xs mt-4 text-gray-600">
-            Verifica que NEXT_PUBLIC_GOOGLE_MAPS_API_KEY esté configurada
+            Verifica que NEXT_PUBLIC_GOOGLE_MAPS_API_KEY esté configurada correctamente
           </p>
         </div>
       </div>
     );
   }
 
+  // Pantalla de carga
   if (!isLoaded || loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Cargando mapa y propiedades...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-700 font-semibold text-lg">Cargando mapa y propiedades...</p>
           <p className="text-sm text-gray-500 mt-2">
-            {!isLoaded ? 'Cargando Google Maps...' : 'Cargando propiedades...'}
+            {!isLoaded ? 'Inicializando Google Maps...' : 'Obteniendo propiedades...'}
           </p>
         </div>
       </div>
     );
   }
 
+  // Pantalla de error
   if (error) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-red-50">
-        <div className="text-center text-red-600 p-8">
-          <MapPin className="w-12 h-12 mx-auto mb-4" />
-          <p className="font-semibold text-lg">Error al cargar propiedades</p>
+        <div className="text-center text-red-600 p-8 max-w-md">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4" />
+          <p className="font-semibold text-xl mb-2">Error al cargar propiedades</p>
           <p className="text-sm mt-2">{error}</p>
         </div>
       </div>
@@ -257,38 +425,56 @@ export default function MapaPage() {
   return (
     <>
       {/* Controles del mapa */}
-      <div className="fixed top-44 left-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-44 left-4 z-50 flex flex-col gap-3">
+        {/* Botón de cambio de vista */}
         <button
           onClick={toggleMapType}
-          className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-lg 
-                     flex items-center gap-2 transition-colors"
+          className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-4 rounded-lg shadow-lg 
+                     flex items-center gap-2 transition-all duration-200 hover:shadow-xl"
+          aria-label={mapType === 'roadmap' ? 'Cambiar a vista satélite' : 'Cambiar a vista de mapa'}
         >
-          <MapPin className="w-4 h-4" />
+          <Layers className="w-5 h-5" />
           {mapType === 'roadmap' ? 'Vista Satélite' : 'Vista Mapa'}
         </button>
-        
+
+        {/* Leyenda de tipos de inmuebles */}
         <div className="bg-white rounded-lg shadow-lg px-4 py-3">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <span className="text-sm font-medium">
-                Casas ({inmuebles.filter(i => i.tipo === 'CASA').length})
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-              <span className="text-sm font-medium">
-                Tiendas ({inmuebles.filter(i => i.tipo === 'TIENDA').length})
-              </span>
-            </div>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            Tipos de Propiedades
+          </h3>
+          <div className="flex flex-col gap-2.5">
+            {Object.entries(TIPO_CONFIG).map(([tipo, config]) => {
+              const count = inmuebles.filter(i => i.tipo === tipo).length;
+              const Icon = config.icon;
+              
+              return (
+                <div key={tipo} className="flex items-center gap-2.5">
+                  <div 
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: config.color }}
+                  >
+                    <Icon className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {config.label} ({count})
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* Contenedor del mapa */}
-      <div 
-        ref={mapRef} 
+      <div
+        ref={(el) => {
+          mapRef.current = el;
+          if (el && !domReady) {
+            setDomReady(true);
+          }
+        }}
         className="fixed inset-0 w-screen h-screen"
+        style={{ background: '#e5e7eb' }}
       />
     </>
   );
