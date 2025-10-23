@@ -72,6 +72,17 @@ export const INITIAL_FORM_DATA = {
   deposito: false,
   banoPrivado: false,
 
+  // Campos específicos para Departamento
+  piso: '',
+  superficieInterna: '',
+  ascensor: false,
+  balcon: false,
+  parqueo: false,
+  mascotasPermitidas: false,
+  //amoblado: false,
+  montoExpensas: '',
+
+
   // Campos Lote
   tamanio: '',
   muroPerimetral: false,
