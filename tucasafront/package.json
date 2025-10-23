@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.4",
     "@googlemaps/js-api-loader": "^2.0.1",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
