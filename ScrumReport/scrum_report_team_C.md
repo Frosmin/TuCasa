@@ -83,3 +83,45 @@
 - **Y:** Revise el avance en la UI de otros equipos
 - **T:** Buscar soluciones a los problemas de integracion
 - **B:** Use agentes y provoque mas problemas
+
+# Scrum Report #5 — Oct 21
+
+## Simon
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+---
+
+## Ricardo
+- **Y:** Reunión interna entre Team C 
+- **T:** Reunión del integration team, quedar de acuerdo con las historias a realizar el segundo sprint
+- **B:** Quien hará la vista del inmueble detallado
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+# Scrum Report #6 — Oct 24
+
+## Simon
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+---
+
+## Ricardo
+- **Y:** Investigación para saber cual es la buena practica para subir imagenes (hacerlo desde el front)
+- **T:** Revisión de código para la lógica del upload de imágenes
+- **B:** Ninguno
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
