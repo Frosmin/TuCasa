@@ -108,9 +108,9 @@
 # Scrum Report #6 — Oct 24
 
 ## Simon
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Investigacion para saber como subir multimedia de forma correcta 
+- **T:** Implementacion del guardado de las urls de multimendia en el backend
+- **B:** fallo en los nombres de las tabla por no consultar el MER, no coloque los campos previstos
 
 ---
 
