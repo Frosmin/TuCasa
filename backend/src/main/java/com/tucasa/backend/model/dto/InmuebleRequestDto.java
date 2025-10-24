@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -61,4 +62,6 @@ public class InmuebleRequestDto {
     private TipoInmueble tipo;
 
     private Set<Long> serviciosIds;
+
+    private List<String> imagenes;
 }

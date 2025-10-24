@@ -33,6 +33,7 @@ import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.entity.Tienda;
+import com.tucasa.backend.model.entity.Imagen;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
@@ -42,6 +43,8 @@ import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
+
+import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -222,6 +225,17 @@ public class OfertaServiceImpl implements OfertaService {
                     casa.setServicios(servicios);
                 }
 
+                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
+                    List<Imagen> imagenes = new ArrayList<>();
+                    for (String url : dto.getImagenes()) {
+                        Imagen imagen = new Imagen();
+                        imagen.setUrl(url);
+                        imagen.setInmueble(casa);
+                        imagenes.add(imagen);
+                    }
+                    casa.setImagenes(imagenes);
+                }
+
                 inmueble = casaRepository.save(casa);
             }
 
@@ -245,6 +259,17 @@ public class OfertaServiceImpl implements OfertaService {
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                     tienda.setServicios(servicios);
+                }
+
+                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
+                    List<Imagen> imagenes = new ArrayList<>();
+                    for (String url : dto.getImagenes()) {
+                        Imagen imagen = new Imagen();
+                        imagen.setUrl(url);
+                        imagen.setInmueble(tienda);
+                        imagenes.add(imagen);
+                    }
+                    tienda.setImagenes(imagenes);
                 }
 
                 inmueble = tiendaRepository.save(tienda);
@@ -282,6 +307,17 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setServicios(servicios);
                 }
 
+                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
+                    List<Imagen> imagenes = new ArrayList<>();
+                    for (String url : dto.getImagenes()) {
+                        Imagen imagen = new Imagen();
+                        imagen.setUrl(url);
+                        imagen.setInmueble(departamento);
+                        imagenes.add(imagen);
+                    }
+                    departamento.setImagenes(imagenes);
+                }
+
                 inmueble = departamentoRepository.save(departamento);
             }
             
@@ -305,6 +341,17 @@ public class OfertaServiceImpl implements OfertaService {
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                     lote.setServicios(servicios);
+                }
+
+                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
+                    List<Imagen> imagenes = new ArrayList<>();
+                    for (String url : dto.getImagenes()) {
+                        Imagen imagen = new Imagen();
+                        imagen.setUrl(url);
+                        imagen.setInmueble(lote);
+                        imagenes.add(imagen);
+                    }
+                    lote.setImagenes(imagenes);
                 }
 
                 inmueble = loteRepository.save(lote);
