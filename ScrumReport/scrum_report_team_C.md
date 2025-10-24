@@ -122,6 +122,6 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Investigacion para saber como el frontend gestiona el subir imagenes
+- **T:** Buscar soluciones al dilema de la carga de imagenes en nuestro proyecto en especifico
+- **B:** El backend esta un paso por delante
