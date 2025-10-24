@@ -1,5 +1,7 @@
 package com.tucasa.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.tucasa.backend.model.enums.TipoMultimedia;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,8 +18,14 @@ public class Multimedia {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String url;
 
-    // @Column(nullable = false, columnDefinition = "TEXT")
-    // private String descripcion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false)
+    private TipoMultimedia multimedia;
+
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String descripcion = "Descripcion para el futuro";
 
     @Column(nullable = false)
     private Boolean activo = true;

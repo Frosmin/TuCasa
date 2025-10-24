@@ -225,15 +225,15 @@ public class OfertaServiceImpl implements OfertaService {
                     casa.setServicios(servicios);
                 }
 
-                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Multimedia> imagenes = new ArrayList<>();
-                    for (String url : dto.getImagenes()) {
-                        Multimedia imagen = new Multimedia();
-                        imagen.setUrl(url);
-                        imagen.setInmueble(casa);
-                        imagenes.add(imagen);
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (String url : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(url);
+                        multimedia.setInmueble(casa);
+                        multimedias.add(multimedia);
                     }
-                    casa.setImagenes(imagenes);
+                    casa.setMultimedias(multimedias);
                 }
 
                 inmueble = casaRepository.save(casa);
@@ -261,15 +261,15 @@ public class OfertaServiceImpl implements OfertaService {
                     tienda.setServicios(servicios);
                 }
 
-                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Multimedia> imagenes = new ArrayList<>();
-                    for (String url : dto.getImagenes()) {
-                        Multimedia imagen = new Multimedia();
-                        imagen.setUrl(url);
-                        imagen.setInmueble(tienda);
-                        imagenes.add(imagen);
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (String url : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(url);
+                        multimedia.setInmueble(tienda);
+                        multimedias.add(multimedia);
                     }
-                    tienda.setImagenes(imagenes);
+                    tienda.setMultimedias(multimedias);
                 }
 
                 inmueble = tiendaRepository.save(tienda);
@@ -307,15 +307,15 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setServicios(servicios);
                 }
 
-                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Multimedia> imagenes = new ArrayList<>();
-                    for (String url : dto.getImagenes()) {
-                        Multimedia imagen = new Multimedia();
-                        imagen.setUrl(url);
-                        imagen.setInmueble(departamento);
-                        imagenes.add(imagen);
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (String url : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(url);
+                        multimedia.setInmueble(departamento);
+                        multimedias.add(multimedia);
                     }
-                    departamento.setImagenes(imagenes);
+                    departamento.setMultimedias(multimedias);
                 }
 
                 inmueble = departamentoRepository.save(departamento);
@@ -343,15 +343,15 @@ public class OfertaServiceImpl implements OfertaService {
                     lote.setServicios(servicios);
                 }
 
-                if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Multimedia> imagenes = new ArrayList<>();
-                    for (String url : dto.getImagenes()) {
-                        Multimedia imagen = new Multimedia();
-                        imagen.setUrl(url);
-                        imagen.setInmueble(lote);
-                        imagenes.add(imagen);
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (String url : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(url);
+                        multimedia.setInmueble(lote);
+                        multimedias.add(multimedia);
                     }
-                    lote.setImagenes(imagenes);
+                    lote.setMultimedias(multimedias);
                 }
 
                 inmueble = loteRepository.save(lote);

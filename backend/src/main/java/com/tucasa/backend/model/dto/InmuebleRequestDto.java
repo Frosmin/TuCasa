@@ -63,5 +63,5 @@ public class InmuebleRequestDto {
 
     private Set<Long> serviciosIds;
 
-    private List<String> imagenes;
+    private List<String> multimedia;
 }
