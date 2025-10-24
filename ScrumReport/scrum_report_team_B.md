@@ -100,8 +100,8 @@
 
 ## Pablo
 
--   **Y:** Trabajé en
--   **T:** Hoy voy a
+-   **Y:** Trabajé en refactorizar la funcion de busqueda de ofertas y aumentar campos filtrables
+-   **T:** Hoy voy a crear el servicio de filtrado de inmuebles para el mapa
 -   **B:** No he tenido problemas
 
 ---
