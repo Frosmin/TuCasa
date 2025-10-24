@@ -108,8 +108,8 @@
 
 ## Diego
 
--   **Y:** Trabajé en
--   **T:** Hoy voy a
+-   **Y:** Trabajé en la implementación del mapa a la hora de registrar una propiedad
+-   **T:** Hoy voy a guardar las coordenadas de la ubicación seleccionada
 -   **B:** No he tenido problemas
 
 ---
