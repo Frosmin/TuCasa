@@ -22,6 +22,7 @@ import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.dto.LoteResponseDto;
+import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
@@ -225,16 +226,22 @@ public class OfertaServiceImpl implements OfertaService {
                     casa.setServicios(servicios);
                 }
 
-                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
                     List<Multimedia> multimedias = new ArrayList<>();
-                    for (String url : dto.getMultimedia()) {
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
                         Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(url);
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
                         multimedia.setInmueble(casa);
                         multimedias.add(multimedia);
                     }
                     casa.setMultimedias(multimedias);
                 }
+
+
 
                 inmueble = casaRepository.save(casa);
             }
@@ -263,14 +270,20 @@ public class OfertaServiceImpl implements OfertaService {
 
                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
                     List<Multimedia> multimedias = new ArrayList<>();
-                    for (String url : dto.getMultimedia()) {
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
                         Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(url);
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
                         multimedia.setInmueble(tienda);
                         multimedias.add(multimedia);
                     }
                     tienda.setMultimedias(multimedias);
                 }
+
+
 
                 inmueble = tiendaRepository.save(tienda);
             }
@@ -309,14 +322,20 @@ public class OfertaServiceImpl implements OfertaService {
 
                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
                     List<Multimedia> multimedias = new ArrayList<>();
-                    for (String url : dto.getMultimedia()) {
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
                         Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(url);
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
                         multimedia.setInmueble(departamento);
                         multimedias.add(multimedia);
                     }
                     departamento.setMultimedias(multimedias);
                 }
+
+
 
                 inmueble = departamentoRepository.save(departamento);
             }
@@ -343,16 +362,22 @@ public class OfertaServiceImpl implements OfertaService {
                     lote.setServicios(servicios);
                 }
 
-                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
                     List<Multimedia> multimedias = new ArrayList<>();
-                    for (String url : dto.getMultimedia()) {
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
                         Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(url);
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
                         multimedia.setInmueble(lote);
                         multimedias.add(multimedia);
                     }
                     lote.setMultimedias(multimedias);
                 }
+
+
 
                 inmueble = loteRepository.save(lote);
             }
