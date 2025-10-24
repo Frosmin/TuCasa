@@ -3,6 +3,7 @@ import { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
 
 import { useToast } from "@/components/Toast";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const { showSuccess, showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -71,6 +73,9 @@ export default function RegisterPage() {
           rol: "CLIENTE",
         });
         setConfirmPassword("");
+        // This might redirect to login page.
+        router.push("/");
+        // change the header from links to sign-in and login to favorites and user profile.
       }
     } catch (err) {
       console.error("Error al enviar los datos:", err);
@@ -238,7 +243,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-600 mt-6">
           ¿Ya tienes una cuenta?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-blue-600 hover:underline">
             Inicia sesión
           </a>
         </p>
