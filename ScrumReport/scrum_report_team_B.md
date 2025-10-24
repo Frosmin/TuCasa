@@ -96,7 +96,7 @@
 -   **T:** Hoy voy a agregar los filtros que faltaban en casas
 -   **B:** No he tenido problemas
 
-# Scrum Report #5 — Oct 21
+# Scrum Report #5 — Oct 24
 
 ## Pablo
 
