@@ -61,7 +61,7 @@ public abstract class Inmueble {
 
 
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Imagen> imagenes;
+    private List<Multimedia> multimedias;
 
     @Column(nullable = false)
     private boolean activo = true;

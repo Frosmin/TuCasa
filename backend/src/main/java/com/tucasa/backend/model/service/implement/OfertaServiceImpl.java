@@ -33,7 +33,7 @@ import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.entity.Tienda;
-import com.tucasa.backend.model.entity.Imagen;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
@@ -226,9 +226,9 @@ public class OfertaServiceImpl implements OfertaService {
                 }
 
                 if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Imagen> imagenes = new ArrayList<>();
+                    List<Multimedia> imagenes = new ArrayList<>();
                     for (String url : dto.getImagenes()) {
-                        Imagen imagen = new Imagen();
+                        Multimedia imagen = new Multimedia();
                         imagen.setUrl(url);
                         imagen.setInmueble(casa);
                         imagenes.add(imagen);
@@ -262,9 +262,9 @@ public class OfertaServiceImpl implements OfertaService {
                 }
 
                 if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Imagen> imagenes = new ArrayList<>();
+                    List<Multimedia> imagenes = new ArrayList<>();
                     for (String url : dto.getImagenes()) {
-                        Imagen imagen = new Imagen();
+                        Multimedia imagen = new Multimedia();
                         imagen.setUrl(url);
                         imagen.setInmueble(tienda);
                         imagenes.add(imagen);
@@ -308,9 +308,9 @@ public class OfertaServiceImpl implements OfertaService {
                 }
 
                 if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Imagen> imagenes = new ArrayList<>();
+                    List<Multimedia> imagenes = new ArrayList<>();
                     for (String url : dto.getImagenes()) {
-                        Imagen imagen = new Imagen();
+                        Multimedia imagen = new Multimedia();
                         imagen.setUrl(url);
                         imagen.setInmueble(departamento);
                         imagenes.add(imagen);
@@ -344,9 +344,9 @@ public class OfertaServiceImpl implements OfertaService {
                 }
 
                 if (dto.getImagenes() != null && !dto.getImagenes().isEmpty()) {
-                    List<Imagen> imagenes = new ArrayList<>();
+                    List<Multimedia> imagenes = new ArrayList<>();
                     for (String url : dto.getImagenes()) {
-                        Imagen imagen = new Imagen();
+                        Multimedia imagen = new Multimedia();
                         imagen.setUrl(url);
                         imagen.setInmueble(lote);
                         imagenes.add(imagen);
