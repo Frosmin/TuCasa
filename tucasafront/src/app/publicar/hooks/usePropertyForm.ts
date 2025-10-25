@@ -5,6 +5,7 @@ import { INITIAL_FORM_DATA } from '../data/property.constants';
 import { PropertyService } from '../services/property.service';
 import { buildPropertyPayload, handleApiError } from '../utils/property.utils';
 import { useToast } from '@/components/Toast';
+import { UploadService } from '../services/upload.service';
 
 export function usePropertyForm() {
   const [step, setStep] = useState(1);
@@ -37,11 +38,22 @@ export function usePropertyForm() {
   };
 
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
-      setFormData((prev) => ({ ...prev, images: [...prev.images, ...newImages] }));
+    if (!files || files.length === 0) return;
+
+    try {
+      setIsSubmitting(true);
+      const assets = await UploadService.uploadImages(Array.from(files));
+      const urls = assets.map((a) => a.url);
+      setFormData((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
+      showSuccess(`Imágenes subidas (${urls.length})`);
+    } catch (err) {
+      console.error(err);
+      showError('Error al subir imágenes. Intenta nuevamente.');
+    } finally {
+      setIsSubmitting(false);
+      e.target.value = '';
     }
   };
 
