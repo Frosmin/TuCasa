@@ -52,6 +52,14 @@ export interface PropertyFormData {
   images: string[];
 }
 
+export interface MultimediaItem {
+  url: string;
+  tipo: 'FOTO' | 'VIDEO';
+  descripcion: string;
+  activo: boolean;
+  esPortada: boolean;
+}
+
 
 export type PropertyPayload = {
   inmueble: InmuebleData,
@@ -98,4 +106,7 @@ export interface InmuebleData {
   // Campos Lote opcionales
   tamanio?: number;
   muroPerimetral?: boolean;
+
+  // Multimedia
+  multimedia?: MultimediaItem[];
 }

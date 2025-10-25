@@ -29,7 +29,7 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
             Arrastra y suelta o haz clic para seleccionar
           </p>
           <p className="text-xs text-gray-400 mt-2">
-            (Las imágenes no se enviarán por ahora)
+            (Las imágenes se suben al seleccionarlas :D)
           </p>
         </label>
       </div>
