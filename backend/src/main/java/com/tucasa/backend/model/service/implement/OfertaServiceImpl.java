@@ -22,6 +22,7 @@ import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.dto.LoteResponseDto;
+import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
@@ -33,6 +34,7 @@ import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.entity.Tienda;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
@@ -42,6 +44,8 @@ import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
+
+import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -222,6 +226,23 @@ public class OfertaServiceImpl implements OfertaService {
                     casa.setServicios(servicios);
                 }
 
+                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
+                        multimedia.setInmueble(casa);
+                        multimedias.add(multimedia);
+                    }
+                    casa.setMultimedias(multimedias);
+                }
+
+
+
                 inmueble = casaRepository.save(casa);
             }
 
@@ -246,6 +267,23 @@ public class OfertaServiceImpl implements OfertaService {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                     tienda.setServicios(servicios);
                 }
+
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
+                        multimedia.setInmueble(tienda);
+                        multimedias.add(multimedia);
+                    }
+                    tienda.setMultimedias(multimedias);
+                }
+
+
 
                 inmueble = tiendaRepository.save(tienda);
             }
@@ -282,6 +320,23 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setServicios(servicios);
                 }
 
+                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
+                        multimedia.setInmueble(departamento);
+                        multimedias.add(multimedia);
+                    }
+                    departamento.setMultimedias(multimedias);
+                }
+
+
+
                 inmueble = departamentoRepository.save(departamento);
             }
             
@@ -306,6 +361,23 @@ public class OfertaServiceImpl implements OfertaService {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                     lote.setServicios(servicios);
                 }
+
+                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
+                        multimedia.setInmueble(lote);
+                        multimedias.add(multimedia);
+                    }
+                    lote.setMultimedias(multimedias);
+                }
+
+
 
                 inmueble = loteRepository.save(lote);
             }
