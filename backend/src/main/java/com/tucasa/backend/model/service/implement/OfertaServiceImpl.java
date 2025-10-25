@@ -226,23 +226,6 @@ public class OfertaServiceImpl implements OfertaService {
                     casa.setServicios(servicios);
                 }
 
-                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
-                    List<Multimedia> multimedias = new ArrayList<>();
-                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
-                        Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(multimediaDto.getUrl());
-                        multimedia.setMultimedia(multimediaDto.getTipo());
-                        multimedia.setDescripcion(multimediaDto.getDescripcion());
-                        multimedia.setActivo(multimediaDto.getActivo());
-                        multimedia.setEs_portada(multimediaDto.getEsPortada());
-                        multimedia.setInmueble(casa);
-                        multimedias.add(multimedia);
-                    }
-                    casa.setMultimedias(multimedias);
-                }
-
-
-
                 inmueble = casaRepository.save(casa);
             }
 
@@ -267,22 +250,6 @@ public class OfertaServiceImpl implements OfertaService {
                     Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                     tienda.setServicios(servicios);
                 }
-
-                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
-                    List<Multimedia> multimedias = new ArrayList<>();
-                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
-                        Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(multimediaDto.getUrl());
-                        multimedia.setMultimedia(multimediaDto.getTipo());
-                        multimedia.setDescripcion(multimediaDto.getDescripcion());
-                        multimedia.setActivo(multimediaDto.getActivo());
-                        multimedia.setEs_portada(multimediaDto.getEsPortada());
-                        multimedia.setInmueble(tienda);
-                        multimedias.add(multimedia);
-                    }
-                    tienda.setMultimedias(multimedias);
-                }
-
 
 
                 inmueble = tiendaRepository.save(tienda);
@@ -320,23 +287,6 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setServicios(servicios);
                 }
 
-                if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
-                    List<Multimedia> multimedias = new ArrayList<>();
-                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
-                        Multimedia multimedia = new Multimedia();
-                        multimedia.setUrl(multimediaDto.getUrl());
-                        multimedia.setMultimedia(multimediaDto.getTipo());
-                        multimedia.setDescripcion(multimediaDto.getDescripcion());
-                        multimedia.setActivo(multimediaDto.getActivo());
-                        multimedia.setEs_portada(multimediaDto.getEsPortada());
-                        multimedia.setInmueble(departamento);
-                        multimedias.add(multimedia);
-                    }
-                    departamento.setMultimedias(multimedias);
-                }
-
-
-
                 inmueble = departamentoRepository.save(departamento);
             }
             
@@ -362,7 +312,14 @@ public class OfertaServiceImpl implements OfertaService {
                     lote.setServicios(servicios);
                 }
 
-                 if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                inmueble = loteRepository.save(lote);
+            }
+            // Etc.
+
+            default -> throw new RuntimeException("Tipo de inmueble no soportado");
+        }
+
+        if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
                     List<Multimedia> multimedias = new ArrayList<>();
                     for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
                         Multimedia multimedia = new Multimedia();
@@ -371,20 +328,12 @@ public class OfertaServiceImpl implements OfertaService {
                         multimedia.setDescripcion(multimediaDto.getDescripcion());
                         multimedia.setActivo(multimediaDto.getActivo());
                         multimedia.setEs_portada(multimediaDto.getEsPortada());
-                        multimedia.setInmueble(lote);
+                        multimedia.setInmueble(inmueble);
                         multimedias.add(multimedia);
                     }
-                    lote.setMultimedias(multimedias);
-                }
-
-
-
-                inmueble = loteRepository.save(lote);
-            }
-            // Etc.
-
-            default -> throw new RuntimeException("Tipo de inmueble no soportado");
+                    inmueble.setMultimedias(multimedias);
         }
+
 
         return inmueble;
     }
