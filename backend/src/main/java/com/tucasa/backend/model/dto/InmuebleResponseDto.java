@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.dto;
 
 import com.tucasa.backend.model.entity.Inmueble;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.enums.TipoInmueble;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,14 @@ public class InmuebleResponseDto {
         this.descripcion = inmueble.getDescripcion();
         this.activo = inmueble.isActivo();
         this.tipo = inmueble.getTipo();
+
+        if (inmueble.getMultimedias() != null && !inmueble.getMultimedias().isEmpty()) {
+        this.url_imagen = inmueble.getMultimedias().stream()
+                .filter(Multimedia::getEs_portada)
+                .findFirst()
+                .map(Multimedia::getUrl)
+                .orElse(inmueble.getMultimedias().get(0).getUrl()); 
+    }
 
         if (inmueble.getServicios() != null && !inmueble.getServicios().isEmpty()) {
             this.servicios = inmueble.getServicios().stream()
