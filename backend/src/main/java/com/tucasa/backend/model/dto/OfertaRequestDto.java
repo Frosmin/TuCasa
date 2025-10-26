@@ -24,7 +24,7 @@ public class OfertaRequestDto {
     private String descripcion;
 
     @NotNull(message = "El tipo de operación es obligatorio", groups = Create.class)
-    private TipoOperacion tipo;
+    private TipoOperacion tipoOperacion;
 
     @NotNull(message = "El precio es obligatorio", groups = Create.class)
     @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor a 0", groups = Create.class)
