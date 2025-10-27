@@ -82,16 +82,6 @@ export default function PropertyForm({
         />
       )}
 
-      {/* Campos específicos para Departamento */}
-      {formData.propertyType === 'DEPARTAMENTO' && (
-        <DepartamentoFields
-          formData={formData}
-          onChange={onInputChange}
-          onToggle={onToggle}
-          onServiciosChange={onServiciosChange}
-        />
-      )}
-
       {/* Selector de Ubicación con Mapa */}
       <LocationPicker
         latitude={formData.latitud}

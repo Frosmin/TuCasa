@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.tucasa.backend.utils.CampoInmuebleBusqueda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -284,8 +285,8 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = departamentoRepository.save(departamento);
             }
-            
-            
+
+
             case LOTE -> {
                 Lote lote = new Lote();
                 lote.setDireccion(dto.getDireccion());
@@ -330,56 +331,32 @@ public class OfertaServiceImpl implements OfertaService {
                 "LEFT JOIN lote l ON i.id = l.id " +
                 "WHERE o.activo = true AND i.activo = true ");
 
-        Map<String, String> camposTexto = Map.of(
-                "tipoOperacion", "o.tipo_operacion",
-                "tipoInmueble", "i.tipo_inmueble"
-        );
-
-        Map<String, String> camposNumericos = Map.of(
-                "numDormitorios", "c.num_dormitorios",
-                "numBanos", "c.num_banos",
-                "numPisos", "c.num_pisos",
-                "numAmbientes", "t.num_ambientes",
-                "precioMin", "o.precio",
-                "precioMax", "o.precio",
-                "tamanio", "l.tamanio",
-                "superficieInterna", "d.superficie_interna",
-                "montoExpensas", "d.monto_expensas"
-        );
-
-        Map<String, String> camposBooleanos = Map.of(
-                "garaje", "c.garaje",
-                "patio", "c.patio",
-                "amoblado", "c.amoblado",
-                "sotano", "c.sotano",
-                "banoPrivado", "t.bano_privado",
-                "deposito", "t.deposito",
-                "muroPerimetral", "l.muro_perimetral",
-                "mascotasPermitidas", "d.mascotas_permitidas",
-                "parqueo", "d.parqueo",
-                "ascensor", "d.ascensor"
-                // "balcon", "d.balcon" // Map solo permite 10 K,V 
-        );
-
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
+
             if (value == null || value.isBlank()) continue;
 
-            if (camposTexto.containsKey(key)) {
-                sql.append(" AND ").append(camposTexto.get(key))
+            CampoInmuebleBusqueda campo = CampoInmuebleBusqueda.fromParam(key);
+
+            if (campo == null) continue;
+
+            switch (campo.getTipo()) {
+                case TEXTO -> sql.append(" AND ")
+                        .append(campo.getColumna())
                         .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
-            } else if (camposNumericos.containsKey(key)) {
-                try {
-                    BigDecimal num = new BigDecimal(value);
-                    String campo = camposNumericos.get(key);
-                    if (key.equals("precioMin")) sql.append(" AND ").append(campo).append(" >= ").append(value);
-                    else if (key.equals("precioMax")) sql.append(" AND ").append(campo).append(" <= ").append(value);
-                    else sql.append(" AND ").append(campo).append(" = ").append(value);
-                } catch (NumberFormatException ignored) {}
-            } else if (camposBooleanos.containsKey(key)) {
-                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
-                    sql.append(" AND ").append(camposBooleanos.get(key)).append(" = ").append(value);
+                case NUMERICO -> {
+                    try {
+                        new BigDecimal(value);
+                        if (key.equals("precioMin")) sql.append(" AND ").append(campo.getColumna()).append(" >= ").append(value);
+                        else if (key.equals("precioMax")) sql.append(" AND ").append(campo.getColumna()).append(" <= ").append(value);
+                        else sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                    } catch (NumberFormatException ignored) {}
+                }
+                case BOOLEANO -> {
+                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+                        sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                }
             }
         }
 
