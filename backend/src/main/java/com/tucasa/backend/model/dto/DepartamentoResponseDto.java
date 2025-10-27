@@ -21,6 +21,7 @@ public class DepartamentoResponseDto extends InmuebleResponseDto {
     private Boolean amoblado;
     private Boolean ascensor;
     private Boolean balcon;
+    private Boolean baulera;
 
     public DepartamentoResponseDto(Departamento departamento) {
         super(departamento);
@@ -33,5 +34,6 @@ public class DepartamentoResponseDto extends InmuebleResponseDto {
         this.amoblado = departamento.getAmoblado();
         this.ascensor = departamento.getAscensor();
         this.balcon = departamento.getBalcon();
+        this.baulera = departamento.getBaulera();
     }
 }

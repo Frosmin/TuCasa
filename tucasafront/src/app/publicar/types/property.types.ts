@@ -39,11 +39,12 @@ export interface PropertyFormData {
   // Campos específicos para Departamento
   piso: string;
   superficieInterna: string;
+  montoExpensas: string;
+  mascotasPermitidas: boolean;
+  parqueo: boolean;
   ascensor: boolean;
   balcon: boolean;
-  parqueo: boolean;
-  mascotasPermitidas: boolean;
-  montoExpensas: string;
+  baulera: boolean;
 
   // Campos específicos para Lote
   tamanio: string;
@@ -102,6 +103,7 @@ export interface InmuebleData {
   parqueo?: boolean;
   mascotasPermitidas?: boolean;
   montoExpensas?: number;
+  baulera?: boolean;
 
   // Campos Lote opcionales
   tamanio?: number;

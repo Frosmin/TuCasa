@@ -15,7 +15,7 @@ export default function DepartamentoFields({ formData, onChange, onToggle, onSer
       <h3 className="font-semibold text-gray-900 mb-3">Detalles del departamento</h3>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Piso *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Número de departamento *</label>
           <input
             type="number"
             name="piso"
@@ -85,6 +85,7 @@ export default function DepartamentoFields({ formData, onChange, onToggle, onSer
         <ToggleSwitch label="Parqueo" checked={formData.parqueo} onChange={() => onToggle('parqueo')} />
         <ToggleSwitch label="Mascotas Permitidas" checked={formData.mascotasPermitidas} onChange={() => onToggle('mascotasPermitidas')} />
         <ToggleSwitch label="Amoblado" checked={formData.amoblado} onChange={() => onToggle('amoblado')} />
+        <ToggleSwitch label="Baulera" checked={formData.baulera} onChange={() => onToggle('baulera')} />
       </div>
       {/* Selector de Servicios */}
             <div className="pt-4 border-t border-blue-300">

@@ -280,6 +280,7 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setParqueo(departamentoDto.getParqueo());
                     departamento.setPiso(departamentoDto.getPiso());
                     departamento.setSuperficieInterna(departamentoDto.getSuperficieInterna());
+                    departamento.setBaulera(departamentoDto.getBaulera());
                 }
 
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
@@ -379,7 +380,8 @@ public class OfertaServiceImpl implements OfertaService {
                 "mascotasPermitidas", "d.mascotas_permitidas",
                 "parqueo", "d.parqueo",
                 "ascensor", "d.ascensor"
-                // "balcon", "d.balcon" // Map solo permite 10 K,V 
+                // "balcon", "d.balcon", // 
+                // "baulera", "d.baulera" // descomentar al integrar
         );
 
         for (var entry : params.entrySet()) {

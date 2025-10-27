@@ -43,4 +43,6 @@ public class Departamento extends Inmueble{
     @Column(nullable = false)
     private Boolean balcon = false;
     
+    @Column(nullable = false)
+    private Boolean baulera = false;
 }
