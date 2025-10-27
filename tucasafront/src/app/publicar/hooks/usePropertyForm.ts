@@ -6,7 +6,6 @@ import { PropertyService } from '../services/property.service';
 import { buildPropertyPayload, handleApiError } from '../utils/property.utils';
 import { useToast } from '@/components/Toast';
 import { UploadService } from '../services/upload.service';
-import { url } from 'inspector';
 
 export function usePropertyForm() {
   const [step, setStep] = useState(1);
@@ -14,12 +13,6 @@ export function usePropertyForm() {
   const [formData, setFormData] = useState<PropertyFormData>(INITIAL_FORM_DATA);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { showSuccess, showError } = useToast();
-
-  useEffect(() => {
-    return () => {
-      formData.images.forEach(url => URL.revokeObjectURL(url));
-    };
-  }, [formData.images]);
 
 
   const handleInputChange = (
@@ -67,7 +60,9 @@ export function usePropertyForm() {
 
   const handleImageRemove = (indexToRemove: number) => {
     const urlToRemove = formData.images[indexToRemove];
-    URL.revokeObjectURL(urlToRemove);
+    if (urlToRemove?.startsWith('blob:')){
+      URL.revokeObjectURL(urlToRemove);
+    }
     setFormData((prev) => ({
       ...prev,
       images: prev.images.filter((_, idx) => idx !== indexToRemove),
