@@ -43,7 +43,6 @@ export function useGoogleMaps() {
 
     // Cargar el script por primera vez
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    
     if (!apiKey) {
       setLoadError('API Key de Google Maps no configurada');
       console.error('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY no está definida');
@@ -56,7 +55,7 @@ export function useGoogleMaps() {
     };
 
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding&callback=initGoogleMaps&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding,marker&callback=initGoogleMaps&loading=async`;
     script.async = true;
     script.defer = true;
 
