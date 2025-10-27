@@ -37,9 +37,6 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
       {/* Imágenes Cargadas */}
       {images.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Imágenes cargadas ({images.length})
-          </h3>
           <div className="grid grid-cols-4 gap-3">
             {images.map((img, idx) => (
               <div
