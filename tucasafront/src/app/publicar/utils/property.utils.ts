@@ -44,6 +44,7 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.parqueo = !!formData.parqueo;
     inmuebleData.mascotasPermitidas = !!formData.mascotasPermitidas;
     inmuebleData.amoblado = !!formData.amoblado;
+    inmuebleData.baulera = !!formData.baulera;
   }
 
   // Mapear imágenes a "multimedia" que requiere el backend

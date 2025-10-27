@@ -58,7 +58,7 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
                   <X className="w-4 h-4" />
                 </button>
                 <div className="absolute bottom-1 left-1 bg-black/60 text-white px-2 py-0.5 rounded text-xs font-medium">
-                  {idx + 1}
+                  {idx+1==1? "Portada":idx+1}
                 </div>
               </div>
             ))}
