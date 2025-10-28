@@ -64,6 +64,7 @@ export default function PropertyForm({
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange} 
         />
       )}
 
