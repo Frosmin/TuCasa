@@ -8,11 +8,11 @@ import { useRouter } from "next/navigation";
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
-    apellido: "",
-    telefono: "",
     email: "",
-    direccion: "",
+    apellido: "",
     password: "",
+    direccion: "",
+    telefono: "",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -51,14 +51,13 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
+      const API_BASE_URL = "http://localhost:8000/tucasabackend";
 
       const res = await fetch(API_BASE_URL + "/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
       if (data.error) {
         showError(data.message);
@@ -69,11 +68,11 @@ export default function RegisterPage() {
           apellido: "",
           email: "",
           telefono: "",
-          direccion:"",
+          direccion: "",
           password: "",
         });
         setConfirmPassword("");
-        router.push("/");
+        router.push("/login");
       }
     } catch (err) {
       console.error("Error al enviar los datos:", err);
@@ -155,12 +154,14 @@ export default function RegisterPage() {
             />
           </div>
 
-          
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Dirección
             </label>
-            <BookUser className="absolute left-3 top-11 text-gray-400" size={18} />
+            <BookUser
+              className="absolute left-3 top-11 text-gray-400"
+              size={18}
+            />
             <input
               type="text"
               name="direccion"

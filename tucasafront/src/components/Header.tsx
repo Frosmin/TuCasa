@@ -96,7 +96,7 @@ export default function Header() {
                     <User className="w-4 h-4" /> Perfil
                   </Link>
                   <Link
-                    href={"/configuracion"}
+                    href={"/publicaciones"}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones

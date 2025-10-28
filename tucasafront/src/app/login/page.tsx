@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { showSuccess, showError } = useToast();
   const router = useRouter();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       if (success) {
         showSuccess("Inicio Correcto.");
-        router.push("/publicar");
+        router.push("/");
       } else {
         setError("Credenciales Incorrectas.");
         showError("Credenciales Incorrectas.");

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-
+import { useRouter } from "next/navigation";
 interface User {
   id: number;
   nombre: string;
@@ -21,7 +21,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
+  const API_BASE_URL = "http://localhost:8000/tucasabackend";
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(API_BASE_URL + "/login", {
+      const response = await fetch(API_BASE_URL + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -44,14 +45,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      console.log(data, "respuesta");
 
-      setUser(data.user);
+      setUser(data.data);
       setToken(data.token);
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      console.log("Sesión iniciada", token, user);
+      localStorage.setItem("user", JSON.stringify(data.data));
 
       return true;
     } catch (error) {
@@ -65,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    console.log("Sesión cerrada");
+    router.push("/");
   };
 
   return (
