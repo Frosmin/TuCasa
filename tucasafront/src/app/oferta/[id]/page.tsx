@@ -1,8 +1,8 @@
-// src/app/oferta/[id]/page.tsx
 import { URL_BACKEND } from "@/config/constants";
 import type { ApiResponse } from "@/api/api";
 import Image from 'next/image';
 import Link from 'next/link';
+import EditarFotosInmueble from '@/components/EditarFotosInmueble'
 
 // Tipos mínimos para el GET
 type Multimedia = {
@@ -17,7 +17,6 @@ type InmuebleDetalle = {
   multimedias?: Multimedia[];
 };
 
-// GET: /api/inmueble/{id}
 async function fetchInmuebleDetalle(id: string): Promise<InmuebleDetalle | null> {
   try {
     const url = `${URL_BACKEND}/api/inmueble/${id}`;
@@ -33,7 +32,6 @@ async function fetchInmuebleDetalle(id: string): Promise<InmuebleDetalle | null>
   }
 }
 
-// Toma solo fotos (sin validar activo/portada)
 function colectarFotos(inmueble: InmuebleDetalle): string[] {
   return (inmueble.multimedias ?? [])
     .filter(m => (m.multimedia ?? '').toUpperCase() === 'FOTO')
@@ -98,8 +96,16 @@ export default async function OfertaDetallePage({ params }: { params: { id: stri
               ))}
             </div>
           </div>
+
+          {/* Botón editar */}
+          <div className="p-4 border-t">
+            <EditarFotosInmueble
+              inmuebleId={params.id}
+              initialUrls={imagenes}
+            />
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
