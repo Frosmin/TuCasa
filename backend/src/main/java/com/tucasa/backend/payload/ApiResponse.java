@@ -93,5 +93,13 @@ public class ApiResponse {
         return new ResponseEntity<>( response, HttpStatus.NOT_FOUND );
     }
 
-
+    public ResponseEntity<Object> responseBadRequest(String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", true);
+        response.put("message", message);
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("code", HttpStatus.BAD_REQUEST.value());
+        response.put("data", null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

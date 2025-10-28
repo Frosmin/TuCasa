@@ -2,6 +2,7 @@ package com.tucasa.backend.security.auth.config;
 import com.tucasa.backend.payload.ApiResponse; 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -18,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Object> handleEmailAlreadyExists(EmailAlreadyExistsException ex, WebRequest request) {
         return apiResponse.responseDataError( 
-            ex.getMessage(),  
+            "El correo ya existe",
             null       
         );
     }
@@ -40,5 +41,10 @@ public class GlobalExceptionHandler {
             null,
             true
         );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+        return apiResponse.responseBadRequest("Credenciales inválidas: Correo o contraseña incorrectos.");
     }
 }
