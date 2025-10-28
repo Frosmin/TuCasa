@@ -119,3 +119,28 @@
 -   **Y:** Trabajé en agregar los filtros faltantes
 -   **T:** Hoy voy a agregar los filtros de inmuebles y operaciones en el mapa
 -   **B:** No he tenido problemas
+
+# Scrum Report #6 — Oct 28
+
+## Pablo
+
+-   **Y:** Trabajé en el endpoint de filtrado para reducido para mapas
+-   **T:** Hoy voy agregar servicios para inmuebles
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabajé en implementar el mapa para mostrar los inmuebles
+-   **T:** Hoy voy a implementar el filtrado reducido para el mapa y agregar iconos a los nuevos servicios
+-   **B:** No he tenido problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en agregar los filtros de inmuebles y operaciones en el mapa
+-   **T:** Hoy voy a agregar un modal de las propiedades en el mapa
+-   **B:** No he tenido problemas
+
