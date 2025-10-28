@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { usePropertyForm } from "../../publicar/hooks/usePropertyForm";
 import { fecthOferta, updateOferta } from "../editar.service";
 import { mapOfertaFormData } from "./mapOferta";
@@ -16,6 +17,7 @@ export default function EditarPage() {
     const params = useParams();
     const { showSuccess, showError } = useToast();
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
     const id = Number(params.id);
 
     const {
@@ -53,6 +55,11 @@ export default function EditarPage() {
             const result = await updateOferta(payload, id);
             console.log('Respuesta del servidor:', result);
             showSuccess('Oferta actualizada con éxito');
+
+            setTimeout(() =>{
+                router.back();
+            }, 1000);
+
         } catch (error: any) {
             console.error('Error al actualizar la oferta:', error);
             if (error.data) {
@@ -100,6 +107,7 @@ export default function EditarPage() {
                             onServiciosChange={handleServiciosChange}
                             onSubmit={handleSubmit}
                             isSubmitting={isSubmitting}
+                            mode= 'edicion'
                         />
                     </div>
 

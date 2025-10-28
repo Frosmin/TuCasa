@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
@@ -9,6 +9,7 @@ import { URL_BACKEND } from '@/config/constants'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
+  const router = useRouter()
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
@@ -288,6 +289,16 @@ export default function DetalleOfertaPage() {
             ))}
         </div>
       )}
+
+      <div className="pt-4 mt-6">
+        <button
+          type='button'
+          onClick={()=>{router.push(`/editar/${id}`)}}
+          className="w-3xs px-3 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+         Editar oferta
+        </button>
+      </div>
     </div>
   )
 }
