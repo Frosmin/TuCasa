@@ -310,7 +310,6 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = loteRepository.save(lote);
             }
-            // Etc.
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
         }
@@ -320,7 +319,7 @@ public class OfertaServiceImpl implements OfertaService {
 
     // ---------------------- BÚSQUEDA DINÁMICA ----------------------
     @Override
-    public ResponseEntity<?> search(Map<String, String> params) {
+    public ResponseEntity<?> search(Map<String, String> params, Boolean compact) {
         StringBuilder sql = new StringBuilder(
                 "SELECT o.id " +
                 "FROM ofertas o " +
@@ -414,12 +413,15 @@ public class OfertaServiceImpl implements OfertaService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        List<OfertaResponseDto> response = ofertasList.stream().map(this::mapToDto).toList();
-        return apiResponse.responseSuccess(Constants.RECORDS_FOUND, response);
+        List<OfertaResponseDto> response = ofertasList.stream()
+                .map(o -> mapToDto(o, compact != null && compact))
+                .toList();
+
+        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size());
     }
 
     // ---------------------- MAPEOS DTO ----------------------
-    private OfertaResponseDto mapToDto(Oferta oferta) {
+    private OfertaResponseDto mapToDto(Oferta oferta, Boolean resumida) {
         if (oferta == null) return null;
 
         InmuebleResponseDto inmuebleDto;
@@ -435,6 +437,14 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new LoteResponseDto(lote);
         } else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
+        }
+
+        // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
+        // -> Usese por optimizacion
+
+        if (resumida) {
+            inmuebleDto.setDescripcion(null);
+            oferta.setDescripcion(null);
         }
 
         OfertaResponseDto dto = new OfertaResponseDto();
@@ -453,4 +463,9 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+
+    private OfertaResponseDto mapToDto(Oferta oferta) {
+        return mapToDto(oferta, false);
+    }
+
 }
