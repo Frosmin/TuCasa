@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { showSuccess, showError } = useToast();
+  const router = useRouter();
+  const { login } = useAuth(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,29 +33,20 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8070/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
 
-      if (!response.ok) {
-        showError("Credenciales incorrectas.")
-        throw new Error("Credenciales incorrectas");
+      const success = await login(formData.email, formData.password);
+
+      if (success) {
+        showSuccess("Inicio Correcto.");
+        router.push("/publicar");
+      } else {
+        setError("Credenciales Incorrectas.");
+        showError("Credenciales Incorrectas.");
       }
-
-      const data = await response.json();
-      const token = data.token;
-      localStorage.setItem("token", token);
-      console.log(token);
-      
-      showSuccess("Inicio de sesión exitoso.")
-      
     } catch (err: any) {
+      console.error(err);
       setError(err.message || "Error al iniciar sesión");
-      showError("Error al iniciar sesión")
+      showError("Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -85,7 +80,7 @@ export default function LoginPage() {
           />
         </div>
 
-        {/*Contraseña */}
+        {/*Contrasena */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contraseña
@@ -114,9 +109,7 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <button
           type="submit"
@@ -129,7 +122,10 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-500">
           ¿No tienes una cuenta?{" "}
-          <a href="/pages/registrar/cliente" className="text-blue-600 hover:underline">
+          <a
+            href="/pages/registrar/cliente"
+            className="text-blue-600 hover:underline"
+          >
             Regístrate
           </a>
         </p>

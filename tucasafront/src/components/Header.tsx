@@ -2,11 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User } from "lucide-react";
-import { useState } from "react";
+import { Heart, User, LogOut, Settings, LayoutList } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useState, useRef, useEffect } from "react";
 
 export default function Header() {
-  const [logged, setLogged] = useState(false);
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -45,26 +58,57 @@ export default function Header() {
             Anticrético
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
-          <Link
-            href={"/publicar"}
-            className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
-          >
-            Publicar
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
-          </Link>
+
+          {user ? (
+            <Link
+              href={"/publicar"}
+              className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+            >
+              Publicar
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+            </Link>
+          ) : (
+            <></>
+          )}
         </div>
 
         {/* User Actions */}
         <div className="flex items-center gap-3">
-          {logged ? (
+          {user ? (
             <>
               <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-105">
                 <Heart className="w-5 h-5" />
                 <span className="text-sm font-medium">Favoritos</span>
               </button>
-              <button className="p-2 bg-gray-200 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-110">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="p-2 bg-gray-200 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-110"
+              >
                 <User className="w-5 h-5 text-gray-600 hover:text-white transition-colors duration-300" />
               </button>
+
+              {menuOpen && (
+                <div className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                  <Link
+                    href={"/perfil"}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    <User className="w-4 h-4" /> Perfil
+                  </Link>
+                  <Link
+                    href={"/configuracion"}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    <LayoutList className="w-4 h-4" /> Ver Publicaciones
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    <LogOut className="w-4 h-4" /> Cerrar sesión
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <div className="flex items-center gap-8 text-sm font-medium">
