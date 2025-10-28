@@ -1,16 +1,16 @@
 // publicar/utils/property.utils.ts
 
-import { PropertyFormData, PropertyPayload, InmuebleData } from '../types/property.types';
+import { PropertyFormData, PropertyPayload, InmuebleData, OperationType } from '../types/property.types';
 
 export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayload => {
   const inmuebleData: InmuebleData = {
+    tipo: formData.propertyType,
     direccion: formData.direccion,
     latitud: parseFloat(formData.latitud),
     longitud: parseFloat(formData.longitud),
     superficie: parseFloat(formData.superficie),
     idPropietario: formData.idPropietario,
     descripcion: formData.descripcion,
-    tipo: formData.propertyType,
     serviciosIds: formData.serviciosIds,
   };
 
@@ -31,18 +31,33 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.deposito = formData.deposito;
     inmuebleData.banoPrivado = formData.banoPrivado;
   }
+  
+  // Agregar campos específicos de DEPARTAMENTO
+  if (formData.propertyType === 'DEPARTAMENTO') {
+    inmuebleData.piso = parseInt(formData.piso) || 0;
+    inmuebleData.superficieInterna = parseFloat(formData.superficieInterna) || 0;
+    inmuebleData.numDormitorios = parseInt(formData.dormitorios) || 0;
+    inmuebleData.numBanos = parseInt(formData.banos) || 0;
+    inmuebleData.montoExpensas = parseFloat(formData.montoExpensas) || 0;
+    inmuebleData.ascensor = !!formData.ascensor;
+    inmuebleData.balcon = !!formData.balcon;
+    inmuebleData.parqueo = !!formData.parqueo;
+    inmuebleData.mascotasPermitidas = !!formData.mascotasPermitidas;
+    inmuebleData.amoblado = !!formData.amoblado;
+  }
 
   return {
     inmueble: inmuebleData,
     descripcion: formData.descripcionOferta,
-    tipo: formData.operacion as any,
+    tipoOperacion: formData.operacion as OperationType,
     precio: parseFloat(formData.precio),
     moneda: formData.moneda,
-    duracion: formData.operacion === 'ANTICRETICO' && formData.duracion 
-      ? parseInt(formData.duracion) 
+    duracion: formData.operacion === 'ANTICRETICO' && formData.duracion
+      ? parseInt(formData.duracion)
       : null,
     tipoPago: formData.operacion === 'VENTA' ? 'unico' : formData.tipoPago,
   };
+
 };
 
 export const handleApiError = (errorData: any): string => {
