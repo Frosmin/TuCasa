@@ -46,7 +46,6 @@ export interface PropertyFormData {
   montoExpensas: string;
 
   // Campos específicos para Lote
-  tamanio: string;
   muroPerimetral: boolean;
 
   images: string[];

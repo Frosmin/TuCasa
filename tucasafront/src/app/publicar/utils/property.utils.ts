@@ -46,6 +46,10 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.amoblado = !!formData.amoblado;
   }
 
+  if (formData.propertyType === 'LOTE') {
+    inmuebleData.muroPerimetral = formData.muroPerimetral;
+  }
+
   return {
     inmueble: inmuebleData,
     descripcion: formData.descripcionOferta,

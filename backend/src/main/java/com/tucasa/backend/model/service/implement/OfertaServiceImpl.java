@@ -147,24 +147,141 @@ public class OfertaServiceImpl implements OfertaService {
             Oferta oferta = ofertaRepository.findById(ofertaId)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
 
-            if (dto.getDescripcion() != null) oferta.setDescripcion(dto.getDescripcion());
-            if (dto.getTipoOperacion() != null) oferta.setTipo(dto.getTipoOperacion());
-            if (dto.getPrecio() != null) oferta.setPrecio(dto.getPrecio());
-            if (dto.getMoneda() != null) oferta.setMoneda(dto.getMoneda());
-            if (dto.getDuracion() != null) oferta.setDuracion(dto.getDuracion());
-            if (dto.getTipoPago() != null) oferta.setTipoPago(dto.getTipoPago());
+            if (dto.getDescripcion() != null)
+                oferta.setDescripcion(dto.getDescripcion());
+            if (dto.getTipoOperacion() != null)
+                oferta.setTipo(dto.getTipoOperacion());
+            if (dto.getPrecio() != null)
+                oferta.setPrecio(dto.getPrecio());
+            if (dto.getMoneda() != null)
+                oferta.setMoneda(dto.getMoneda());
+            if (dto.getDuracion() != null)
+                oferta.setDuracion(dto.getDuracion());
+            if (dto.getTipoPago() != null)
+                oferta.setTipoPago(dto.getTipoPago());
             if (dto.getFechaPublicacionInicio() != null)
                 oferta.setFechaPublicacionInicio(dto.getFechaPublicacionInicio());
             if (dto.getFechaPublicacionFin() != null)
                 oferta.setFechaPublicacionFin(dto.getFechaPublicacionFin());
-            if (dto.getEstadoPublicacion() != null) oferta.setEstadoPublicacion(dto.getEstadoPublicacion());
-            if (dto.getActivo() != null) oferta.setActivo(dto.getActivo());
+            if (dto.getEstadoPublicacion() != null)
+                oferta.setEstadoPublicacion(dto.getEstadoPublicacion());
+            if (dto.getActivo() != null)
+                oferta.setActivo(dto.getActivo());
+
+            if (dto.getInmueble() != null) {
+                Inmueble inmueble = oferta.getInmueble();
+                InmuebleRequestDto inmuebleDto = dto.getInmueble();
+
+                switch (inmueble.getTipo()) {
+                    case CASA -> {
+                        Casa casa = casaRepository.findById(inmueble.getId())
+                                .orElseThrow(
+                                        () -> new RuntimeException("Casa no encontrada con ID: " + inmueble.getId()));
+
+                        updateCommonInmuebleFields(casa, inmuebleDto);
+                        if (inmuebleDto instanceof CasaRequestDto casaDto) {
+                            casa.setNumDormitorios(casaDto.getNumDormitorios());
+                            casa.setNumBanos(casaDto.getNumBanos());
+                            casa.setNumPisos(casaDto.getNumPisos());
+                            casa.setGaraje(casaDto.getGaraje() != null && casaDto.getGaraje());
+                            casa.setPatio(casaDto.getPatio() != null && casaDto.getPatio());
+                            casa.setAmoblado(casaDto.getAmoblado() != null && casaDto.getAmoblado());
+                            casa.setSotano(casaDto.getSotano() != null && casaDto.getSotano());
+                        }
+                        updateServicios(casa, inmuebleDto.getServiciosIds());
+                        casaRepository.save(casa);
+
+                    }
+
+                    case TIENDA -> {
+                        Tienda tienda = tiendaRepository.findById(inmueble.getId())
+                                .orElseThrow(
+                                        () -> new RuntimeException("tienda no encontrada con ID: " + inmueble.getId()));
+
+                        updateCommonInmuebleFields(tienda, inmuebleDto);
+                        if (inmuebleDto instanceof TiendaRequestDto tiendaDto) {
+                            tienda.setNumAmbientes(tiendaDto.getNumAmbientes());
+                            tienda.setDeposito(tiendaDto.getDeposito());
+                            tienda.setBanoPrivado(tiendaDto.getBanoPrivado());
+                        }
+                        updateServicios(tienda, inmuebleDto.getServiciosIds());
+                        tiendaRepository.save(tienda);
+
+                    }
+
+                    case DEPARTAMENTO -> {
+                        Departamento departamento = departamentoRepository.findById(inmueble.getId())
+                                .orElseThrow(() -> new RuntimeException(
+                                        "departamento no encontrada con ID: " + inmueble.getId()));
+
+                        updateCommonInmuebleFields(departamento, inmuebleDto);
+                        if (inmuebleDto instanceof DepartamentoRequestDto depDto) {
+                            departamento.setNumDormitorios(depDto.getNumDormitorios());
+                            departamento.setNumBanos(depDto.getNumBanos());
+                            departamento.setPiso(depDto.getPiso());
+                            departamento.setAmoblado(depDto.getAmoblado());
+                            departamento.setAscensor(depDto.getAscensor());
+                            departamento.setBalcon(depDto.getBalcon());
+                            departamento.setMascotasPermitidas(depDto.getMascotasPermitidas());
+                            departamento.setMontoExpensas(depDto.getMontoExpensas());
+                            departamento.setParqueo(depDto.getParqueo());
+                            departamento.setSuperficieInterna(depDto.getSuperficieInterna());
+                        }
+                        updateServicios(departamento, inmuebleDto.getServiciosIds());
+                        departamentoRepository.save(departamento);
+
+                    }
+
+                    case LOTE -> {
+                        Lote lote = loteRepository.findById(inmueble.getId())
+                                .orElseThrow(
+                                        () -> new RuntimeException("lote no encontrada con ID: " + inmueble.getId()));
+
+                        updateCommonInmuebleFields(lote, inmuebleDto);
+                        if (inmuebleDto instanceof LoteRequestDto loteDto) {
+                            lote.setTamanio(loteDto.getTamanio());
+                            lote.setMuroPerimetral(loteDto.getMuroPerimetral());
+                        }
+                        updateServicios(lote, inmuebleDto.getServiciosIds());
+                        loteRepository.save(lote);
+
+                    }
+
+                    default -> throw new RuntimeException(
+                            "Tipo de inmueble no soportado para actualización: " + inmueble.getTipo());
+                }
+
+            }
 
             Oferta updated = ofertaRepository.save(oferta);
 
             return apiResponse.responseSuccess(successMessage, mapToDto(updated));
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    private void updateCommonInmuebleFields(Inmueble inmueble, InmuebleRequestDto dto) {
+        if (dto.getDireccion() != null)
+            inmueble.setDireccion(dto.getDireccion());
+        if (dto.getSuperficie() != null)
+            inmueble.setSuperficie(dto.getSuperficie());
+        if (dto.getLatitud() != null)
+            inmueble.setLatitud(dto.getLatitud());
+        if (dto.getLongitud() != null)
+            inmueble.setLongitud(dto.getLongitud());
+        if (dto.getDescripcion() != null)
+            inmueble.setDescripcion(dto.getDescripcion());
+        if (dto.getActivo() != null)
+            inmueble.setActivo(dto.getActivo());
+        if (dto.getIdPropietario() != null)
+            inmueble.setIdPropietario(dto.getIdPropietario());
+    }
+
+    private void updateServicios(Inmueble inmueble, Set<Long> serviciosIds) {
+        if (serviciosIds != null) {
+            Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(serviciosIds));
+            inmueble.setServicios(servicios);
         }
     }
 
@@ -284,8 +401,7 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = departamentoRepository.save(departamento);
             }
-            
-            
+
             case LOTE -> {
                 Lote lote = new Lote();
                 lote.setDireccion(dto.getDireccion());
@@ -322,18 +438,17 @@ public class OfertaServiceImpl implements OfertaService {
     public ResponseEntity<?> search(Map<String, String> params) {
         StringBuilder sql = new StringBuilder(
                 "SELECT o.id " +
-                "FROM ofertas o " +
-                "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
-                "LEFT JOIN casas c ON i.id = c.id " +
-                "LEFT JOIN tiendas t ON i.id = t.id " +
-                "LEFT JOIN departamentos d ON i.id = d.id " +
-                "LEFT JOIN lote l ON i.id = l.id " +
-                "WHERE o.activo = true AND i.activo = true ");
+                        "FROM ofertas o " +
+                        "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
+                        "LEFT JOIN casas c ON i.id = c.id " +
+                        "LEFT JOIN tiendas t ON i.id = t.id " +
+                        "LEFT JOIN departamentos d ON i.id = d.id " +
+                        "LEFT JOIN lote l ON i.id = l.id " +
+                        "WHERE o.activo = true AND i.activo = true ");
 
         Map<String, String> camposTexto = Map.of(
                 "tipoOperacion", "o.tipo_operacion",
-                "tipoInmueble", "i.tipo_inmueble"
-        );
+                "tipoInmueble", "i.tipo_inmueble");
 
         Map<String, String> camposNumericos = Map.of(
                 "numDormitorios", "c.num_dormitorios",
@@ -344,8 +459,7 @@ public class OfertaServiceImpl implements OfertaService {
                 "precioMax", "o.precio",
                 "tamanio", "l.tamanio",
                 "superficieInterna", "d.superficie_interna",
-                "montoExpensas", "d.monto_expensas"
-        );
+                "montoExpensas", "d.monto_expensas");
 
         Map<String, String> camposBooleanos = Map.of(
                 "garaje", "c.garaje",
@@ -358,13 +472,14 @@ public class OfertaServiceImpl implements OfertaService {
                 "mascotasPermitidas", "d.mascotas_permitidas",
                 "parqueo", "d.parqueo",
                 "ascensor", "d.ascensor"
-                // "balcon", "d.balcon" // Map solo permite 10 K,V 
+        // "balcon", "d.balcon" // Map solo permite 10 K,V
         );
 
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (value == null || value.isBlank()) continue;
+            if (value == null || value.isBlank())
+                continue;
 
             if (camposTexto.containsKey(key)) {
                 sql.append(" AND ").append(camposTexto.get(key))
@@ -373,10 +488,14 @@ public class OfertaServiceImpl implements OfertaService {
                 try {
                     BigDecimal num = new BigDecimal(value);
                     String campo = camposNumericos.get(key);
-                    if (key.equals("precioMin")) sql.append(" AND ").append(campo).append(" >= ").append(value);
-                    else if (key.equals("precioMax")) sql.append(" AND ").append(campo).append(" <= ").append(value);
-                    else sql.append(" AND ").append(campo).append(" = ").append(value);
-                } catch (NumberFormatException ignored) {}
+                    if (key.equals("precioMin"))
+                        sql.append(" AND ").append(campo).append(" >= ").append(value);
+                    else if (key.equals("precioMax"))
+                        sql.append(" AND ").append(campo).append(" <= ").append(value);
+                    else
+                        sql.append(" AND ").append(campo).append(" = ").append(value);
+                } catch (NumberFormatException ignored) {
+                }
             } else if (camposBooleanos.containsKey(key)) {
                 if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
                     sql.append(" AND ").append(camposBooleanos.get(key)).append(" = ").append(value);
@@ -401,14 +520,14 @@ public class OfertaServiceImpl implements OfertaService {
         Map<String, String> camposOrdenables = Map.of(
                 "precio", "o.precio",
                 "fechaPublicacionInicio", "o.fecha_publicacion_inicio",
-                "fechaPublicacionFin", "o.fecha_publicacion_fin"
-        );
+                "fechaPublicacionFin", "o.fecha_publicacion_fin");
 
         if (orderBy != null && !orderBy.isBlank()) {
             String[] parts = orderBy.split(",");
             String campo = parts[0].trim();
             String direccion = (parts.length > 1 ? parts[1].trim() : "asc").toUpperCase();
-            if (!direccion.equals("ASC") && !direccion.equals("DESC")) direccion = "DESC";
+            if (!direccion.equals("ASC") && !direccion.equals("DESC"))
+                direccion = "DESC";
             if (camposOrdenables.containsKey(campo)) {
                 sql.append(" ORDER BY ").append(camposOrdenables.get(campo)).append(" ").append(direccion);
             } else {
@@ -443,7 +562,8 @@ public class OfertaServiceImpl implements OfertaService {
 
     // ---------------------- MAPEOS DTO ----------------------
     private OfertaResponseDto mapToDto(Oferta oferta) {
-        if (oferta == null) return null;
+        if (oferta == null)
+            return null;
 
         InmuebleResponseDto inmuebleDto;
         Inmueble inmueble = oferta.getInmueble();
@@ -452,7 +572,7 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new CasaResponseDto(casa);
         } else if (inmueble instanceof Tienda tienda) {
             inmuebleDto = new TiendaResponseDto(tienda);
-        } else if (inmueble instanceof Departamento departamento){
+        } else if (inmueble instanceof Departamento departamento) {
             inmuebleDto = new DepartamentoResponseDto(departamento);
         } else if (inmueble instanceof Lote lote) {
             inmuebleDto = new LoteResponseDto(lote);
