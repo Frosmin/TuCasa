@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { Upload, X } from 'lucide-react'
 import { URL_BACKEND } from '@/config/constants'
 import { UploadService } from '@/app/publicar/services/upload.service'
+// IMPORTA EL HOOK DE TOAST (ajusta la ruta si tu hook está en otro archivo)
+import { useToast } from '@/components/Toast'
 
 type Multimedia = { id: number; url: string; multimedia: string; descripcion?: string }
 type InmuebleDetalle = { id: number; multimedias?: Multimedia[] }
@@ -28,6 +30,9 @@ export default function EditarFotosInmueble({
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Toast
+  const { showSuccess, showError } = useToast()
 
   // Estado de imágenes
   const [existing, setExisting] = useState<string[]>([]) // fotos del backend
@@ -63,12 +68,13 @@ export default function EditarFotosInmueble({
       } catch (e: any) {
         console.error(e)
         setError('No se pudieron cargar las fotos')
+        showError?.('No se pudieron cargar las fotos')
       } finally {
         setLoading(false)
       }
     }
     init()
-  }, [open, initialUrls, inmuebleId])
+  }, [open, initialUrls, inmuebleId, showError])
 
   // Lista combinada para la grilla
   const combined = useMemo(() => {
@@ -155,9 +161,11 @@ export default function EditarFotosInmueble({
       setNewFiles([])
       setOpen(false)
       onUpdated?.(finalUrls)
+      showSuccess?.('Imagenes actualizadas con exito! :D')
     } catch (e: any) {
       console.error(e)
       setError('Error al actualizar imágenes')
+      showError?.('Error al actualizar imágenes')
     } finally {
       setSubmitting(false)
     }
@@ -189,7 +197,7 @@ export default function EditarFotosInmueble({
                   <p className="text-sm text-gray-600">Cargando fotos…</p>
                 ) : (
                   <>
-                    {/* Upload Area (misma idea que ImageUploader) */}
+                    {/* Upload Area */}
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
                       <input
                         type="file"
