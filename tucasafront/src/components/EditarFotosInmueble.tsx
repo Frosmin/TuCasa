@@ -248,7 +248,6 @@ export default function EditarFotosInmueble({
                       >
                         Cancelar
                       </button>
-                      <span className="text-xs text-gray-500">La primera imagen se marcará como portada.</span>
                     </div>
                   </>
                 )}

@@ -1,75 +1,62 @@
-import { URL_BACKEND } from "@/config/constants";
-import type { ApiResponse } from "@/api/api";
-import Image from 'next/image';
-import Link from 'next/link';
+'use client'
+
+import { use, useEffect, useState } from 'react'
+import Image from 'next/image'
+import { URL_BACKEND } from '@/config/constants'
 import EditarFotosInmueble from '@/components/EditarFotosInmueble'
 
-// Tipos mínimos para el GET
 type Multimedia = {
-  id: number;
-  url: string;
-  multimedia: string; // 'FOTO', 'VIDEO', etc.
-  descripcion?: string;
-};
-
+    url: string;
+    multimedia: string
+}
 type InmuebleDetalle = {
-  id: number;
-  multimedias?: Multimedia[];
-};
-
-async function fetchInmuebleDetalle(id: string): Promise<InmuebleDetalle | null> {
-  try {
-    const url = `${URL_BACKEND}/api/inmueble/${id}`;
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) return null;
-
-    const data: ApiResponse<InmuebleDetalle> = await response.json();
-    if ((data as any).error || !data.data) return null;
-
-    return data.data;
-  } catch {
-    return null;
-  }
+    multimedias?: Multimedia[]
 }
 
-function colectarFotos(inmueble: InmuebleDetalle): string[] {
-  return (inmueble.multimedias ?? [])
-    .filter(m => (m.multimedia ?? '').toUpperCase() === 'FOTO')
-    .map(m => m.url)
-    .filter(Boolean);
-}
+export default function OfertaDetallePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
 
-export default async function OfertaDetallePage({ params }: { params: { id: string } }) {
-  const inmueble = await fetchInmuebleDetalle(params.id);
+  const [images, setImages] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!inmueble) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center p-8 bg-white shadow-md rounded-lg">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Inmueble no encontrado</h1>
-          <Link href="/" className="mt-6 inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    let active = true
+    const load = async () => {
+      try {
+        setLoading(true)
+        const res = await fetch(`${URL_BACKEND}/api/inmueble/${id}`, { cache: 'no-store' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const json = (await res.json()) as { data?: InmuebleDetalle }
+        const fotos = (json.data?.multimedias ?? [])
+          .filter(m => (m.multimedia ?? '').toUpperCase() === 'FOTO')
+          .map(m => m.url)
+          .filter(Boolean) as string[]
+        if (active) {
+          setImages(fotos)
+          setError(null)
+        }
+      } catch {
+        if (active) setError('No se pudieron cargar las fotos')
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+    load()
+    return () => { active = false }
+  }, [id])
 
-  const imagenes = colectarFotos(inmueble);
+  if (loading) return <div className="min-h-screen grid place-items-center"><p>Cargando…</p></div>
+  if (error) return <div className="min-h-screen grid place-items-center"><p className="text-red-600">{error}</p></div>
 
   return (
     <div className="min-h-screen bg-gray-100 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-          {/* Carrusel: scroll horizontal + snap + dots */}
+          {/* Carrusel */}
           <div className="relative w-full h-64 md:h-96">
-            <div
-              className="
-                flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth
-                [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-              "
-            >
-              {imagenes.map((url, i) => (
+            <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {images.map((url, i) => (
                 <div key={i} id={`img-${i + 1}`} className="relative min-w-full h-full snap-center">
                   <Image
                     src={url}
@@ -83,25 +70,20 @@ export default async function OfertaDetallePage({ params }: { params: { id: stri
                 </div>
               ))}
             </div>
-
-            {/* Dots */}
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-              {imagenes.map((_, i) => (
-                <a
-                  key={i}
-                  href={`#img-${i + 1}`}
-                  aria-label={`Ir a la imagen ${i + 1}`}
-                  className="h-2.5 w-2.5 rounded-full bg-white/70 hover:bg-white transition-colors"
-                />
+              {images.map((_, i) => (
+                <a key={i} href={`#img-${i + 1}`} aria-label={`Ir a la imagen ${i + 1}`} className="h-2.5 w-2.5 rounded-full bg-white/70 hover:bg-white transition-colors" />
               ))}
             </div>
           </div>
 
-          {/* Botón editar */}
+          {/* Botón editar: al guardar, actualiza el estado y el carrusel en vivo */}
           <div className="p-4 border-t">
             <EditarFotosInmueble
-              inmuebleId={params.id}
-              initialUrls={imagenes}
+              inmuebleId={id}
+              initialUrls={images}
+              onUpdated={(urls) => setImages(urls)}
+              buttonText="Editar fotos"
             />
           </div>
         </div>
