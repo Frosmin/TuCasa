@@ -23,6 +23,7 @@ import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.dto.LoteResponseDto;
 import com.tucasa.backend.model.dto.MultimediaRequestDto;
+import com.tucasa.backend.model.dto.MultimediaResponseDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
@@ -481,6 +482,15 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new LoteResponseDto(lote);
         } else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
+        }
+        if (inmuebleDto.getMultimedias() != null && !inmuebleDto.getMultimedias().isEmpty()) {
+            inmuebleDto.getMultimedias().stream()
+            .filter(MultimediaResponseDto::getEsPortada)
+            .findFirst()
+            .ifPresent(cover -> {
+                inmuebleDto.setUrl_imagen(cover.getUrl());
+                inmuebleDto.setMultimedias(List.of(cover));
+            });
         }
 
         OfertaResponseDto dto = new OfertaResponseDto();
