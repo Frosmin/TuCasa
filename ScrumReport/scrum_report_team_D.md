@@ -108,3 +108,68 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 - **B:**  no se tuvo problemas hasta el momento
 
 ---
+# 🧾 Scrum Report #1 — Oct 21
+
+## Johan
+- Y:
+- T:
+- B:
+
+---
+
+## Luis
+- **Y:** implemente y corregi los endpoints para obtener una oferta en especifica mediante "idOferta"
+- **T:**iniciare el flujo de navegacion(redirigir y cargar datos de la oferta en el formulario de registro) para actualizar datos de una oferta.
+- **B:** tuve problemas al hacer conexion con supabase(BD), pero logre solucionarlo
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+
+---
+# 🧾 Scrum Report #1 — Oct 24
+
+## Johan
+- Y:
+- T:
+- B:
+
+---
+
+## Luis
+- **Y:** Recupere los datos de una oferta en especifica mediante "idOferta" desde el backend y en el frontend cargue los datos recuperados al formulario de registro de oferta.
+- **T:** Hare la conexion con el backend y trabajare en la actualizacion de datos de inmueble para editar una oferta e inmueble.
+- **B:** No tuve ningun problema
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+
+---
+# 🧾 Scrum Report #1 — Oct 28
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** complete en el backend en el servicio de oferta, para actualizar los datos de un inmueble segun su tipo(Casa, departamento, tienda y lote) y en el frontend complete la funcion de editar los datos de oferta e inmueble.
+- **T:** haré la integracion con la pantalla de ver "detalles de inmueble" agregando un boton "editar oferta" para redirigir a la pantalla de edicion y completare la navegacion entre ambas pantallas.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+
+---
