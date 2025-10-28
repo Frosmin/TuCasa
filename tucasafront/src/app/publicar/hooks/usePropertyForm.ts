@@ -87,6 +87,7 @@ export function usePropertyForm() {
   return {
     step,
     formData,
+    setFormData,
     isSubmitting,
     handleInputChange,
     handlePropertyTypeChange,
