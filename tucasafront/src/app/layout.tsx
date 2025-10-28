@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
-import { ToastProvider, ToastContainer } from '@/components/Toast';
+import { ToastProvider, ToastContainer } from "@/components/Toast";
+import { AuthProvider } from "@/context/AuthContext";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -27,11 +28,13 @@ export default function RootLayout({
         className={`${nunito.variable} antialiased`}
         style={{ fontFamily: "var(--font-nunito)" }}
       >
-        <Header />
-        <ToastProvider>
-          {children}
-          <ToastContainer />
-        </ToastProvider>
+        <AuthProvider>
+          <Header />
+          <ToastProvider>
+            {children}
+            <ToastContainer />
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
