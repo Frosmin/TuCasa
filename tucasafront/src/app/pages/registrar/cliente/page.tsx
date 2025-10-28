@@ -1,18 +1,18 @@
 "use client";
 import { useState } from "react";
-import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Phone, Lock, Eye, EyeOff, BookUser } from "lucide-react";
 
 import { useToast } from "@/components/Toast";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    nombre: "",
+    name: "",
     apellido: "",
     telefono: "",
-    correo: "",
-    contrasena: "",
-    rol: "CLIENTE",
+    email: "",
+    direccion: "",
+    password: "",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -44,7 +44,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    if (formData.contrasena !== confirmPassword) {
+    if (formData.password !== confirmPassword) {
       showError("Las contraseñas no coinciden");
       return;
     }
@@ -53,7 +53,7 @@ export default function RegisterPage() {
     try {
       const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
 
-      const res = await fetch(API_BASE_URL + "/usuarios/registrar", {
+      const res = await fetch(API_BASE_URL + "/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -65,17 +65,15 @@ export default function RegisterPage() {
       } else {
         showSuccess(data.message);
         setFormData({
-          nombre: "",
+          name: "",
           apellido: "",
-          correo: "",
+          email: "",
           telefono: "",
-          contrasena: "",
-          rol: "CLIENTE",
+          direccion:"",
+          password: "",
         });
         setConfirmPassword("");
-        // This might redirect to login page.
         router.push("/");
-        // change the header from links to sign-in and login to favorites and user profile.
       }
     } catch (err) {
       console.error("Error al enviar los datos:", err);
@@ -109,10 +107,10 @@ export default function RegisterPage() {
               />
               <input
                 type="text"
-                name="nombre"
+                name="name"
                 placeholder="Ej: Michael"
                 required
-                value={formData.nombre}
+                value={formData.name}
                 onChange={handleChange}
                 className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -147,10 +145,28 @@ export default function RegisterPage() {
             <Mail className="absolute left-3 top-11 text-gray-400" size={18} />
             <input
               type="email"
-              name="correo"
+              name="email"
               placeholder="Correo Electrónico"
               required
-              value={formData.correo}
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+
+          
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Dirección
+            </label>
+            <BookUser className="absolute left-3 top-11 text-gray-400" size={18} />
+            <input
+              type="text"
+              name="direccion"
+              placeholder="Dirección"
+              required
+              value={formData.direccion}
               onChange={handleChange}
               className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -181,10 +197,10 @@ export default function RegisterPage() {
             <Lock className="absolute left-3 top-11 text-gray-400" size={18} />
             <input
               type={showPassword ? "text" : "password"}
-              name="contrasena"
+              name="password"
               placeholder="Contraseña"
               required
-              value={formData.contrasena}
+              value={formData.password}
               onChange={handleChange}
               className="w-full px-10 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
