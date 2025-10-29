@@ -483,13 +483,14 @@ public class OfertaServiceImpl implements OfertaService {
         } else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
         }
+
         if (inmuebleDto.getMultimedias() != null && !inmuebleDto.getMultimedias().isEmpty()) {
             inmuebleDto.getMultimedias().stream()
             .filter(MultimediaResponseDto::getEsPortada)
             .findFirst()
             .ifPresent(cover -> {
                 inmuebleDto.setUrl_imagen(cover.getUrl());
-                inmuebleDto.setMultimedias(List.of(cover));
+                // inmuebleDto.setMultimedias(List.of(cover));
             });
         }
 
