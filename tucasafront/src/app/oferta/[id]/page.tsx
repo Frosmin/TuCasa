@@ -20,7 +20,7 @@ export default function DetalleOfertaPage() {
   const [rawData, setRawData] = useState<any>(null) // Para debug
 
   const [images, setImages] = useState<string[]>([])
-  
+    
 
   type Multimedia = {
     url: string;
@@ -45,11 +45,11 @@ export default function DetalleOfertaPage() {
         
 
         const inmuebleData = data.data?.inmueble;
-        const fotos = (inmuebleData?.multimedias ?? [])
+        const fotos: Multimedia[] = (inmuebleData?.multimedias ?? [])
         //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
         const images = fotos.map(f => f.url);
         setImages(images);
-
+        
 
 
         console.log('📦 Datos crudos recibidos:', data)

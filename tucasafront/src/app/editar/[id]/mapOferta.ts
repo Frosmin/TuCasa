@@ -1,16 +1,27 @@
 
 
 export function mapOfertaFormData(oferta: any) {
+
+    type Multimedia = {
+        url: string;
+        esPortada: boolean;
+    }
+    
     console.log("oferta extraida",oferta)
     const inmueble = oferta.inmueble;
     const tipo = inmueble.tipo;
 
 
+
+
     const inmuebleData = oferta.inmueble;
-    const fotos = (inmuebleData?.multimedias ?? [])
-    //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
-    const images = fotos.map(f => f.url)
+    const fotos: Multimedia[] = (inmuebleData?.multimedias ?? [])
+        //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
+        const images = fotos.map(f => f.url);
     console.log("fotos :D", images)
+
+
+    
 
     const formData = {
         operacion: oferta.tipo,
