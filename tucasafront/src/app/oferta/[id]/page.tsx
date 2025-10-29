@@ -7,16 +7,22 @@ import EditarFotosInmueble from '@/components/EditarFotosInmueble'
 
 type Multimedia = {
     url: string;
-    multimedia: string
+    esPortada: boolean;
 }
-type InmuebleDetalle = {
-    multimedias?: Multimedia[]
+type Inmueble = {
+    id: number;
+    multimedias?: Multimedia[];
+}
+type OfertaDetalle = {
+    id: number;
+    inmueble: Inmueble;
 }
 
 export default function OfertaDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
 
   const [images, setImages] = useState<string[]>([])
+  const [inmuebleId, setInmuebleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,13 +31,16 @@ export default function OfertaDetallePage({ params }: { params: Promise<{ id: st
     const load = async () => {
       try {
         setLoading(true)
-        const res = await fetch(`${URL_BACKEND}/api/inmueble/${id}`, { cache: 'no-store' })
+        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, { cache: 'no-store' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const json = (await res.json()) as { data?: InmuebleDetalle }
-        const fotos = (json.data?.multimedias ?? [])
-          .filter(m => (m.multimedia ?? '').toUpperCase() === 'FOTO')
-          .map(m => m.url)
-          .filter(Boolean) as string[]
+
+        const json = (await res.json()) as { data?: OfertaDetalle }
+
+        const inmuebleData = json.data?.inmueble;
+        const fotos = (inmuebleData?.multimedias ?? [])
+        .map(m => m.url)
+        .filter(Boolean) as string[]
+
         if (active) {
           setImages(fotos)
           setError(null)
