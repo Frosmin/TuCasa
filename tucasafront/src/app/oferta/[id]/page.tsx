@@ -7,6 +7,8 @@ import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 
+import ImageCarousel from '@/components/ImageCarousel';
+
 export default function DetalleOfertaPage() {
   const { id } = useParams()
   const router = useRouter()
@@ -16,6 +18,14 @@ export default function DetalleOfertaPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null) // Para debug
+
+  const [images, setImages] = useState<string[]>([])
+  
+
+  type Multimedia = {
+    url: string;
+    esPortada: boolean;
+}
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +42,16 @@ export default function DetalleOfertaPage() {
         }
         
         const data = await res.json()
+        
+
+        const inmuebleData = data.data?.inmueble;
+        const fotos = (inmuebleData?.multimedias ?? [])
+        //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
+        const images = fotos.map(f => f.url);
+        setImages(images);
+
+
+
         console.log('📦 Datos crudos recibidos:', data)
         setRawData(data) 
         
@@ -181,21 +201,10 @@ export default function DetalleOfertaPage() {
         </button>
       </div>
 
-      {/* Imagen principal  */}
-      <div className="relative rounded-xl overflow-hidden shadow-md mb-6">
-        {imageError || !inmueble?.url_imagen ? (
-          <div className="w-full h-[400px] flex items-center justify-center bg-gray-100">
-            <p className="text-gray-400">Sin imagen disponible</p>
-          </div>
-        ) : (
-          <img
-            src={inmueble.url_imagen}
-            alt={oferta.descripcion}
-            onError={() => setImageError(true)}
-            className="w-full h-[400px] object-cover"
-          />
-        )}
-      </div>
+
+      {/* Componete que espera una lista de fotos solo URLs */}
+      <ImageCarousel images={images}/>
+
 
       {/* Título y precio */}
       <div className="mb-4">

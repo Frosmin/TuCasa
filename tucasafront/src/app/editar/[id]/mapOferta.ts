@@ -1,9 +1,16 @@
 
 
 export function mapOfertaFormData(oferta: any) {
-    console.log(oferta)
+    console.log("oferta extraida",oferta)
     const inmueble = oferta.inmueble;
     const tipo = inmueble.tipo;
+
+
+    const inmuebleData = oferta.inmueble;
+    const fotos = (inmuebleData?.multimedias ?? [])
+    //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
+    const images = fotos.map(f => f.url)
+    console.log("fotos :D", images)
 
     const formData = {
         operacion: oferta.tipo,
@@ -20,7 +27,10 @@ export function mapOfertaFormData(oferta: any) {
         descripcionOferta: oferta.descripcion,
         idPropietario: inmueble.idPropietario,
         serviciosIds: inmueble.servicios?.map((s: any) => s.id) ?? [],
-        images: [],
+
+
+
+        images: images,
 
         dormitorios: '',
         banos: '',

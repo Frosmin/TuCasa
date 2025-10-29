@@ -29,7 +29,7 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
             Arrastra y suelta o haz clic para seleccionar
           </p>
           <p className="text-xs text-gray-400 mt-2">
-            (Las imágenes no se enviarán por ahora)
+            (Las imágenes se suben al seleccionarlas :D)
           </p>
         </label>
       </div>
@@ -37,9 +37,6 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
       {/* Imágenes Cargadas */}
       {images.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Imágenes cargadas ({images.length})
-          </h3>
           <div className="grid grid-cols-4 gap-3">
             {images.map((img, idx) => (
               <div
@@ -61,7 +58,7 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
                   <X className="w-4 h-4" />
                 </button>
                 <div className="absolute bottom-1 left-1 bg-black/60 text-white px-2 py-0.5 rounded text-xs font-medium">
-                  {idx + 1}
+                  {idx+1==1? "Portada":idx+1}
                 </div>
               </div>
             ))}
