@@ -255,6 +255,25 @@ public class OfertaServiceImpl implements OfertaService {
                     default -> throw new RuntimeException(
                             "Tipo de inmueble no soportado para actualización: " + inmueble.getTipo());
                 }
+                List<MultimediaRequestDto> multimediaDtos = inmuebleDto.getMultimedia();
+                if (multimediaDtos != null) {
+                    // Elimina todas las imágenes actuales
+                    inmueble.getMultimedias().clear();
+
+                    // Si la lista no está vacía, agrega las nuevas
+                    if (!multimediaDtos.isEmpty()) {
+                        for (MultimediaRequestDto mDto : multimediaDtos) {
+                            Multimedia multimedia = new Multimedia();
+                            multimedia.setUrl(mDto.getUrl());
+                            multimedia.setMultimedia(mDto.getTipo());
+                            multimedia.setDescripcion(mDto.getDescripcion());
+                            multimedia.setActivo(mDto.getActivo());
+                            multimedia.setEs_portada(mDto.getEsPortada());
+                            multimedia.setInmueble(inmueble);
+                            inmueble.getMultimedias().add(multimedia);
+                        }
+                    }
+                }
 
             }
 
