@@ -1,6 +1,6 @@
 // publicar/utils/property.utils.ts
 
-import { PropertyFormData, PropertyPayload, InmuebleData, OperationType } from '../types/property.types';
+import { PropertyFormData, PropertyPayload, InmuebleData, OperationType, MultimediaItem } from '../types/property.types';
 
 export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayload => {
   const inmuebleData: InmuebleData = {
@@ -44,6 +44,19 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.parqueo = !!formData.parqueo;
     inmuebleData.mascotasPermitidas = !!formData.mascotasPermitidas;
     inmuebleData.amoblado = !!formData.amoblado;
+    inmuebleData.baulera = !!formData.baulera;
+  }
+
+  // Mapear imágenes a "multimedia" que requiere el backend
+  if (formData.images && formData.images.length > 0) {
+    const multimedia: MultimediaItem[] = formData.images.map((url, idx) => ({
+      url,
+      tipo: 'FOTO',
+      descripcion: `Imagen ${idx + 1}`,
+      activo: true,
+      esPortada: idx === 0, // primera como portada
+    }));
+    inmuebleData.multimedia = multimedia;
   }
 
   if (formData.propertyType === 'LOTE') {
