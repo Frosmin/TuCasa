@@ -256,6 +256,11 @@ export default function DetalleOfertaPage() {
         <p className="text-gray-700 leading-relaxed">{oferta.descripcion}</p>
       </div>
 
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Detalles de la oferta</h2>
+        <p className="text-gray-700 leading-relaxed">{oferta.descripcion_oferta}</p>
+      </div>
+
       {inmueble?.servicios && inmueble.servicios.length > 0 && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Servicios incluidos</h2>

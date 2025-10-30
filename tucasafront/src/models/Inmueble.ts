@@ -11,6 +11,7 @@ export interface Inmueble {
     superficie: number
     idPropietario: number
     descripcion: string
+    descripcion_oferta: string
     activo: boolean
     tipo: TipoPropiedad
     servicios?: Servicio[]
