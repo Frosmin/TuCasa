@@ -67,6 +67,10 @@ export default function EditarPage() {
 
 
     const handleLocalImageRemove = (index: number) => {
+        if (formData.images.length <=1){
+            showError('Los inmuebles deben tener almenos 1 imagen de referencia');
+            return;
+        }
         const urlToRemove = formData.images[index];
 
         setFormData(prev => {
