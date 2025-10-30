@@ -16,10 +16,9 @@ import { UploadService } from "@/app/publicar/services/upload.service";
 
 export default function EditarPage() {
     const params = useParams();
-    const { showSuccess, showError } = useToast();
+    const { showSuccess, showError, showInfo } = useToast();
     const [loading, setLoading] = useState(true);
     const [localImageFiles, setLocalImageFiles] = useState<{ file: File; url: string }[]>([]);
-    const [removedExistingUrls, setRemovedExistingUrls] = useState<string[]>([]);
     const router = useRouter();
     const id = Number(params.id);
 
@@ -75,9 +74,7 @@ export default function EditarPage() {
             return { ...prev, images: updatedImages };
         });
 
-        if (!urlToRemove.startsWith("blob:")) {
-            setRemovedExistingUrls(prev => [...prev, urlToRemove]);
-        } else {
+        if (urlToRemove.startsWith("blob:")) {
             URL.revokeObjectURL(urlToRemove);
             setLocalImageFiles(prev => prev.filter(img => img.url !== urlToRemove));
         }
@@ -98,14 +95,19 @@ export default function EditarPage() {
             }
 
             const finalImages = [...existingUrls, ...uploadedImageUrls];
-            const payloadImages = finalImages.length > 0 ? finalImages : [];
+
+            if (finalImages.length === 0) {
+                showInfo("Debes agregar al menos una imagen.");
+                return;
+            }
 
             const finalFormData = {
                 ...formData,
-                images: payloadImages,
+                images: finalImages,
             };
 
             const payload = buildPropertyPayload(finalFormData);
+            console.log(payload)
             const result = await updateOferta(payload, id);
             console.log('Respuesta del servidor:', result);
             showSuccess('Oferta actualizada con éxito');
