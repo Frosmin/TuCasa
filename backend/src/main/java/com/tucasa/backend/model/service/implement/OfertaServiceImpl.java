@@ -22,6 +22,8 @@ import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.LoteRequestDto;
 import com.tucasa.backend.model.dto.LoteResponseDto;
+import com.tucasa.backend.model.dto.MultimediaRequestDto;
+import com.tucasa.backend.model.dto.MultimediaResponseDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
@@ -33,6 +35,7 @@ import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.entity.Tienda;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
@@ -42,6 +45,8 @@ import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
+
+import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -250,6 +255,25 @@ public class OfertaServiceImpl implements OfertaService {
                     default -> throw new RuntimeException(
                             "Tipo de inmueble no soportado para actualización: " + inmueble.getTipo());
                 }
+                List<MultimediaRequestDto> multimediaDtos = inmuebleDto.getMultimedia();
+                if (multimediaDtos != null) {
+                    // Elimina todas las imágenes actuales
+                    inmueble.getMultimedias().clear();
+
+                    // Si la lista no está vacía, agrega las nuevas
+                    if (!multimediaDtos.isEmpty()) {
+                        for (MultimediaRequestDto mDto : multimediaDtos) {
+                            Multimedia multimedia = new Multimedia();
+                            multimedia.setUrl(mDto.getUrl());
+                            multimedia.setMultimedia(mDto.getTipo());
+                            multimedia.setDescripcion(mDto.getDescripcion());
+                            multimedia.setActivo(mDto.getActivo());
+                            multimedia.setEs_portada(mDto.getEsPortada());
+                            multimedia.setInmueble(inmueble);
+                            inmueble.getMultimedias().add(multimedia);
+                        }
+                    }
+                }
 
             }
 
@@ -364,6 +388,7 @@ public class OfertaServiceImpl implements OfertaService {
                     tienda.setServicios(servicios);
                 }
 
+
                 inmueble = tiendaRepository.save(tienda);
             }
 
@@ -392,6 +417,7 @@ public class OfertaServiceImpl implements OfertaService {
                     departamento.setParqueo(departamentoDto.getParqueo());
                     departamento.setPiso(departamentoDto.getPiso());
                     departamento.setSuperficieInterna(departamentoDto.getSuperficieInterna());
+                    departamento.setBaulera(departamentoDto.getBaulera());
                 }
 
                 if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
@@ -429,6 +455,22 @@ public class OfertaServiceImpl implements OfertaService {
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
         }
+
+        if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+                    List<Multimedia> multimedias = new ArrayList<>();
+                    for (MultimediaRequestDto multimediaDto : dto.getMultimedia()) {
+                        Multimedia multimedia = new Multimedia();
+                        multimedia.setUrl(multimediaDto.getUrl());
+                        multimedia.setMultimedia(multimediaDto.getTipo());
+                        multimedia.setDescripcion(multimediaDto.getDescripcion());
+                        multimedia.setActivo(multimediaDto.getActivo());
+                        multimedia.setEs_portada(multimediaDto.getEsPortada());
+                        multimedia.setInmueble(inmueble);
+                        multimedias.add(multimedia);
+                    }
+                    inmueble.setMultimedias(multimedias);
+        }
+
 
         return inmueble;
     }
@@ -486,7 +528,6 @@ public class OfertaServiceImpl implements OfertaService {
                         .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
             } else if (camposNumericos.containsKey(key)) {
                 try {
-                    BigDecimal num = new BigDecimal(value);
                     String campo = camposNumericos.get(key);
                     if (key.equals("precioMin"))
                         sql.append(" AND ").append(campo).append(" >= ").append(value);
@@ -497,8 +538,13 @@ public class OfertaServiceImpl implements OfertaService {
                 } catch (NumberFormatException ignored) {
                 }
             } else if (camposBooleanos.containsKey(key)) {
-                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
-                    sql.append(" AND ").append(camposBooleanos.get(key)).append(" = ").append(value);
+                try {
+                    boolean boolValue = Boolean.parseBoolean(value);
+                    if (boolValue) { // Solo aplicar filtro si el valor es true
+                        sql.append(" AND ").append(camposBooleanos.get(key)).append(" = true");
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
 
@@ -578,6 +624,16 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new LoteResponseDto(lote);
         } else {
             inmuebleDto = new InmuebleResponseDto(inmueble);
+        }
+
+        if (inmuebleDto.getMultimedias() != null && !inmuebleDto.getMultimedias().isEmpty()) {
+            inmuebleDto.getMultimedias().stream()
+            .filter(MultimediaResponseDto::getEsPortada)
+            .findFirst()
+            .ifPresent(cover -> {
+                inmuebleDto.setUrl_imagen(cover.getUrl());
+                // inmuebleDto.setMultimedias(List.of(cover));
+            });
         }
 
         OfertaResponseDto dto = new OfertaResponseDto();
