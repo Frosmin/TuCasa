@@ -12,11 +12,29 @@ interface CatalogPageProps {
   tipoOperacion: TipoOperacion
 }
 
+// Coordenadas de Cochabamba
+const COCHABAMBA_CENTER = { lat: -17.392902, lng: -66.144739 }
+
+
+// Función utilitaria para calcular distancia (Haversine)
+const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371 // Radio de la Tierra en km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLon = ((lon2 - lon1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
 export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
   const [ofertas, setOfertas] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
   const [tipoInmuebleSeleccionado, setTipoInmuebleSeleccionado] = useState('')
   const [filters, setFilters] = useState<Filtros>({
     precioMin: 0,
@@ -30,6 +48,9 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     patio: null,
     servicios: [],
     moneda: '',
+    proximidad: null,
+    latitud: COCHABAMBA_CENTER.lat,
+    longitud: COCHABAMBA_CENTER.lng,
   })
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -41,6 +62,22 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     { id: 'TIENDA', label: 'Tiendas', icon: Store },
   ] as const
 
+  // Validar y corregir coordenadas (detectar si están invertidas)
+  const validarCoordenadas = (lat: number, lng: number) => {
+    // Cochabamba debe estar aproximadamente entre -17 y -18 de latitud
+    // y entre -66 y -67 de longitud
+    if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+      return { lat: lng, lng: lat } // Invertir si están fuera de rango
+    }
+    
+    // Si la latitud parece más como longitud y viceversa (para Bolivia)
+    if (Math.abs(lat) > Math.abs(lng)) {
+      return { lat: lng, lng: lat } // Invertir
+    }
+    
+    return { lat, lng }
+  }
+
   // Cargar ofertas del backend
   useEffect(() => {
     const cargarOfertas = async () => {
@@ -48,12 +85,41 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         setLoading(true)
         setError(null)
         const data = await fetchOfertas(tipoOperacion)
-        setOfertas(data)
+
+        // Filtrar inmuebles con coordenadas válidas y corregidas
+        const datosValidos = data
+          .map(o => {
+            const { lat, lng } = validarCoordenadas(o.inmueble.latitud, o.inmueble.longitud)
+            return {
+              ...o,
+              inmueble: {
+                ...o.inmueble,
+                latitud: lat,
+                longitud: lng,
+              }
+            }
+          })
+          .filter(o => o.inmueble.latitud !== 0 && o.inmueble.longitud !== 0)
+        
+        setOfertas(datosValidos)
+
+        // Calcular el centro promedio de inmuebles válidos
+        if (datosValidos.length > 0) {
+          const latSum = datosValidos.reduce((sum, o) => sum + o.inmueble.latitud, 0)
+          const lngSum = datosValidos.reduce((sum, o) => sum + o.inmueble.longitud, 0)
+          const centerLat = latSum / datosValidos.length
+          const centerLng = lngSum / datosValidos.length
+          
+          setFilters(prev => ({
+            ...prev,
+            latitud: COCHABAMBA_CENTER.lat,
+            longitud: COCHABAMBA_CENTER.lng,
+          }))
+        } 
       } catch (err) {
         const mensaje =
           err instanceof Error ? err.message : 'Error desconocido'
         setError(mensaje)
-        console.error('Error cargando ofertas:', err)
       } finally {
         setLoading(false)
       }
@@ -72,83 +138,107 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     return Array.from(tipos).sort() as string[]
   }, [ofertas])
 
+  // Pre-calcular distancias para optimización
+  const ofertasConDistancia = useMemo(() => {
+    return ofertas.map(oferta => ({
+      oferta,
+      distancia: calcularDistancia(
+        filters.latitud,
+        filters.longitud,
+        oferta.inmueble.latitud,
+        oferta.inmueble.longitud
+      )
+    }))
+  }, [ofertas, filters.latitud, filters.longitud])
+
   // Filtrar ofertas
   const ofertasFiltradas = useMemo(() => {
-    return ofertas.filter(oferta => {
-      // Filtro por tipo de inmueble
-      if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
-        return false
-      }
-
-      // Filtro por búsqueda
-      if (searchTerm) {
-        const termo = searchTerm.toLowerCase()
-        const coincide =
-          oferta.descripcion.toLowerCase().includes(termo) ||
-          oferta.inmueble.descripcion.toLowerCase().includes(termo) ||
-          oferta.inmueble.direccion.toLowerCase().includes(termo)
-        if (!coincide) return false
-      }
-
-      // Filtro por precio
-      if (
-        oferta.precio < filters.precioMin ||
-        oferta.precio > filters.precioMax
-      ) {
-        return false
-      }
-
-      // Filtro por superficie
-      if (
-        oferta.inmueble.superficie < filters.superficieMin ||
-        oferta.inmueble.superficie > filters.superficieMax
-      ) {
-        return false
-      }
-
-      // Filtro por dormitorios
-      if (filters.dormitorios && oferta.inmueble.numDormitorios) {
-        if (oferta.inmueble.numDormitorios !== parseInt(filters.dormitorios)) {
+    return ofertasConDistancia
+      .filter(({ oferta, distancia }) => {
+        // Filtro por tipo de inmueble
+        if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
           return false
         }
-      }
 
-      // Filtro por garaje
-      if (filters.garaje === true && !oferta.inmueble.garaje) {
-        return false
-      }
+        // Filtro por búsqueda
+        if (searchTerm) {
+          const termo = searchTerm.toLowerCase()
+          const coincide =
+            oferta.descripcion.toLowerCase().includes(termo) ||
+            oferta.inmueble.descripcion.toLowerCase().includes(termo) ||
+            oferta.inmueble.direccion.toLowerCase().includes(termo)
+          if (!coincide) return false
+        }
 
-      // Filtro por amoblado
-      if (filters.amoblado === true && !oferta.inmueble.amoblado) {
-        return false
-      }
-      // Filtro por patio
-      if (filters.patio === true && !oferta.inmueble.patio) {
-        return false
-      }
+        // Filtro por proximidad - Validación mejorada
+        if (filters.proximidad && filters.proximidad > 0) {
+          if (distancia > filters.proximidad) {
+            return false
+          }
+        }
 
-      // Filtro por sotano
-      if (filters.sotano === true && !oferta.inmueble.sotano) {
-        return false
-      }
-      // Filtro por moneda
-      if (filters.moneda && oferta.moneda !== filters.moneda) {
-        return false
-      }
+        // Filtro por precio
+        if (
+          oferta.precio < filters.precioMin ||
+          oferta.precio > filters.precioMax
+        ) {
+          return false
+        }
 
-      // Filtro por servicios
-      if (filters.servicios && filters.servicios.length > 0) {
-        const servicios = oferta.inmueble.servicios || []
-        const serviciosInmueble = servicios.map(s => s.nombre)
-        const tieneServicios = filters.servicios.every(servicio =>
-          serviciosInmueble.includes(servicio)
-        )
-        if (!tieneServicios) return false
-      }
-  
-      return true
-    })
-  }, [ofertas, tipoInmuebleSeleccionado, searchTerm, filters])
+        // Filtro por superficie
+        if (
+          oferta.inmueble.superficie < filters.superficieMin ||
+          oferta.inmueble.superficie > filters.superficieMax
+        ) {
+          return false
+        }
+
+        // Filtro por dormitorios
+        if (filters.dormitorios && oferta.inmueble.numDormitorios) {
+          if (oferta.inmueble.numDormitorios !== parseInt(filters.dormitorios)) {
+            return false
+          }
+        }
+
+        // Filtro por garaje
+        if (filters.garaje === true && !oferta.inmueble.garaje) {
+          return false
+        }
+
+        // Filtro por amoblado
+        if (filters.amoblado === true && !oferta.inmueble.amoblado) {
+          return false
+        }
+
+        // Filtro por patio
+        if (filters.patio === true && !oferta.inmueble.patio) {
+          return false
+        }
+
+        // Filtro por sotano
+        if (filters.sotano === true && !oferta.inmueble.sotano) {
+          return false
+        }
+
+        // Filtro por moneda
+        if (filters.moneda && oferta.moneda !== filters.moneda) {
+          return false
+        }
+
+        // Filtro por servicios
+        if (filters.servicios && filters.servicios.length > 0) {
+          const servicios = oferta.inmueble.servicios || []
+          const serviciosInmueble = servicios.map(s => s.nombre)
+          const tieneServicios = filters.servicios.every(servicio =>
+            serviciosInmueble.includes(servicio)
+          )
+          if (!tieneServicios) return false
+        }
+
+        return true
+      })
+      .map(({ oferta }) => oferta)
+  }, [ofertasConDistancia, tipoInmuebleSeleccionado, searchTerm, filters])
 
   // Limpiar filtros
   const limpiarFiltrosCompleto = () => {
@@ -164,6 +254,9 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       patio: null,
       servicios: [],
       moneda: '',
+      proximidad: null,
+      latitud: COCHABAMBA_CENTER.lat,
+      longitud: COCHABAMBA_CENTER.lng,
     })
     setSearchTerm('')
     setTipoInmuebleSeleccionado('')
@@ -187,7 +280,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     )
   }
 
-
   // Mostrar loading
   if (loading) {
     return <Loading message="Cargando ofertas..." />
@@ -203,10 +295,11 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
               <button
                 key={id}
                 onClick={() => setTipoInmuebleSeleccionado(id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
-                  : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
-                  }`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${
+                  tipoInmuebleSeleccionado === id
+                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
+                }`}
               >
                 <Icon className="w-5 h-5" />
                 {label}
@@ -246,5 +339,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     </div>
   )
 }
+
+
 
 export default CatalogPage
