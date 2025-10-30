@@ -37,7 +37,7 @@ export default function EditarPage() {
             try {
                 const data = await fecthOferta(id);
                 const mapped = mapOfertaFormData(data);
-                // setFormData(mapped);
+                setFormData(mapped);
                 setLoading(false);
             } catch (error) {
                 console.error('Error al cargar la oferta:', error);
