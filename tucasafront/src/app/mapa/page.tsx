@@ -20,7 +20,7 @@ import {
   Circle
 } from 'lucide-react';
 import ReactDOMServer from 'react-dom/server';
-import type { Inmueble } from '@/models/Inmueble';
+import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
 
 
@@ -69,8 +69,8 @@ export default function MapaPage() {
   const [domReady, setDomReady] = useState(false);
 
   // Estados de filtros
-  const [tipoInmuebleSeleccionado, setTipoInmuebleSeleccionado] = useState<string>('');
-  const [tipoOperacion, setTipoOperacion] = useState<TipoOperacion>('TODOS');
+  const [tipoInmuebleSeleccionado, setTipoInmuebleSeleccionado] = useState<TipoPropiedad | ''>('DEPARTAMENTO');
+  const [tipoOperacion, setTipoOperacion] = useState<TipoOperacion>('ALQUILER');
 
   // Cargar inmuebles desde la API
   useEffect(() => {
@@ -499,7 +499,7 @@ export default function MapaPage() {
               const count = ofertas.filter(i => i.inmueble.tipo === tipo).length;
 
               return (
-                <button onClick={() => setTipoInmuebleSeleccionado(tipoInmuebleSeleccionado === tipo ? '' : tipo)} key={tipo} className={`flex items-center gap-2 cursor-pointer  p-2 rounded-xl ${tipoInmuebleSeleccionado === tipo
+                <button onClick={() => setTipoInmuebleSeleccionado(tipoInmuebleSeleccionado === tipo ? '' : tipo as TipoPropiedad)} key={tipo} className={`flex items-center gap-2 cursor-pointer  p-2 rounded-xl ${tipoInmuebleSeleccionado === tipo
                   ? 'bg-blue-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}>
