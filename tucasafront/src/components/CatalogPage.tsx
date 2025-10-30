@@ -29,6 +29,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     sotano: null,
     patio: null,
     servicios: [],
+    moneda: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -130,6 +131,10 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       if (filters.sotano === true && !oferta.inmueble.sotano) {
         return false
       }
+      // Filtro por moneda
+      if (filters.moneda && oferta.moneda !== filters.moneda) {
+        return false
+      }
 
       // Filtro por servicios
       if (filters.servicios && filters.servicios.length > 0) {
@@ -140,7 +145,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         )
         if (!tieneServicios) return false
       }
-
+  
       return true
     })
   }, [ofertas, tipoInmuebleSeleccionado, searchTerm, filters])
@@ -155,7 +160,10 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       dormitorios: '',
       garaje: null,
       amoblado: null,
+      sotano: null,
+      patio: null,
       servicios: [],
+      moneda: '',
     })
     setSearchTerm('')
     setTipoInmuebleSeleccionado('')
