@@ -2,7 +2,7 @@
 'use client'
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import type { Oferta } from '@/models/Oferta'
+import type { Oferta, MonedaType } from '@/models/Oferta'
 
 export interface Filtros {
   precioMin: number
@@ -10,6 +10,7 @@ export interface Filtros {
   superficieMin: number
   superficieMax: number
   dormitorios: string
+  moneda: MonedaType | ''
   garaje?: boolean | null
   amoblado?: boolean | null
   patio?: boolean | null
@@ -31,6 +32,7 @@ export const FiltroSidebar = ({
   ofertas,
 }: FiltroSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    moneda: true,
     precio: true,
     superficie: true,
     dormitorios: true,
@@ -44,6 +46,9 @@ export const FiltroSidebar = ({
       [section]: !prev[section],
     }))
   }
+
+  // Monedas disponibles
+  const monedasUnicas: MonedaType[] = ['$us', 'Bs']
 
   // Calcular rangos de la API
   const precios = ofertas.map(o => o.precio)
@@ -71,7 +76,7 @@ export const FiltroSidebar = ({
     )
   ).sort()
 
-  // Verificar si hay propiedades con garaje
+  // Verificar si hay propiedades con características
   const tieneGaraje = ofertas.some(o => o.inmueble.garaje === true)
   const tieneAmoblado = ofertas.some(o => o.inmueble.amoblado === true)
   const tienePatio = ofertas.some(o => o.inmueble.patio === true)
@@ -79,6 +84,60 @@ export const FiltroSidebar = ({
 
   return (
     <div className="space-y-4">
+      {/* Filtro por Moneda */}
+      {monedasUnicas.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('moneda')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900">Moneda</h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.moneda ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.moneda && (
+            <div className="px-4 py-3 border-t border-gray-200 space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="moneda"
+                  checked={filters.moneda === '' || !filters.moneda}
+                  onChange={() =>
+                    setFilters({
+                      ...filters,
+                      moneda: '',
+                    })
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700">Todas las monedas</span>
+              </label>
+
+              {monedasUnicas.map(moneda => (
+                <label key={moneda} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="moneda"
+                    value={moneda}
+                    checked={filters.moneda === moneda}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        moneda: moneda as MonedaType,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">{moneda}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filtro por Precio */}
       <div className="bg-white rounded-lg shadow-sm">
         <button
