@@ -286,7 +286,9 @@ export default function PropertyForm({
             disabled={isSubmitting}
             className="flex-1 max-w-50 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            Guardar Cambios
+            {mode === 'edicion'
+            ? (isSubmitting ? 'Guardando cambios...' : 'Guardar cambios')
+            : (isSubmitting ? 'Publicando…' : 'Publicar')}
           </button>
         </div>
       ) :
