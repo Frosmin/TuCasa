@@ -88,7 +88,10 @@ export default function Header() {
               </button>
 
               {menuOpen && (
-                <div className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                <div
+                  ref={menuRef}
+                  className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+                >
                   <Link
                     href={"/perfil"}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -102,7 +105,10 @@ export default function Header() {
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones
                   </Link>
                   <button
-                    onClick={logout}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      logout();
+                    }}
                     className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LogOut className="w-4 h-4" /> Cerrar sesión
