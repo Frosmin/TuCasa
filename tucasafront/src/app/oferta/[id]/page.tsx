@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart } from 'lucide-react'
+import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart, X, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
@@ -17,15 +17,18 @@ export default function DetalleOfertaPage() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [rawData, setRawData] = useState<any>(null) // Para debug
-
+  const [rawData, setRawData] = useState<any>(null)
   const [images, setImages] = useState<string[]>([])
-    
+  
+  // Estados para el modal de imagen
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
 
   type Multimedia = {
     url: string;
     esPortada: boolean;
-}
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,15 +46,11 @@ export default function DetalleOfertaPage() {
         
         const data = await res.json()
         
-
         const inmuebleData = data.data?.inmueble;
         const fotos: Multimedia[] = (inmuebleData?.multimedias ?? [])
-        //trasformar la lista compleja que tiene esportada, url a solo una lista de urls
         const images = fotos.map(f => f.url);
         setImages(images);
         
-
-
         console.log('📦 Datos crudos recibidos:', data)
         setRawData(data) 
         
@@ -85,6 +84,65 @@ export default function DetalleOfertaPage() {
       fetchData()
     }
   }, [id])
+
+  // Funciones para el modal
+  const openModal = (index: number = 0) => {
+    setCurrentImageIndex(index)
+    setIsModalOpen(true)
+    document.body.style.overflow = 'hidden'
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    document.body.style.overflow = 'auto'
+  }
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  // Manejar clic en el carrusel
+  const handleCarouselClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const isButton = target.closest('button') || 
+                    target.closest('[role="button"]') || 
+                    target.tagName === 'BUTTON' ||
+                    target.closest('.carousel-button') ||
+                    target.closest('.slick-arrow');
+    
+    if (!isButton) {
+      openModal(carouselCurrentIndex);
+    }
+  }
+
+  const handleCarouselIndexChange = (newIndex: number) => {
+    setCarouselCurrentIndex(newIndex);
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isModalOpen) return
+      
+      switch (e.key) {
+        case 'Escape':
+          closeModal()
+          break
+        case 'ArrowRight':
+          nextImage()
+          break
+        case 'ArrowLeft':
+          prevImage()
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isModalOpen])
 
   if (loading) {
     return (
@@ -184,16 +242,16 @@ export default function DetalleOfertaPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6">
       {/* Encabezado */}
       <div className="flex items-center justify-between mb-6">
-        <Link href="/ventas" className="flex items-center gap-2 text-blue-600 hover:underline">
+        <Link href="/ventas" className="flex items-center gap-2 text-blue-600 hover:underline bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <ArrowLeft className="h-4 w-4" />
-          Volver al catálogo
+          <span className="font-medium">Volver al catálogo</span>
         </Link>
         <button
           onClick={() => setIsFavorite(!isFavorite)}
-          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+          className="p-3 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
         >
           <Heart
             className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
@@ -201,117 +259,282 @@ export default function DetalleOfertaPage() {
         </button>
       </div>
 
+      {/* Carrusel clickeable */}
+      <div 
+        className="cursor-zoom-in mb-8 transition-transform hover:opacity-95 relative rounded-2xl overflow-hidden shadow-lg"
+        onClick={handleCarouselClick}
+      >
+        <ImageCarousel 
+          images={images}
+          onIndexChange={handleCarouselIndexChange}
+        />
+      </div>
 
-      {/* Componete que espera una lista de fotos solo URLs */}
-      <ImageCarousel images={images}/>
+      {/* Modal de imagen ampliada */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4">
+          {/* Botón cerrar */}
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70 transition-all"
+          >
+            <X className="h-6 w-6" />
+          </button>
 
-
-      {/* Título y precio */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {getInmuebleLabel(inmueble?.tipo || '')} en {getOfertaLabel(oferta.tipo)}
-        </h1>
-        <p className="text-3xl font-extrabold text-blue-600">
-          {oferta.moneda} {formatearPrecio(oferta.precio)}
-          {oferta.tipo !== 'VENTA' && (
-            <span className="text-lg font-normal"> / {getTipoPagoLabel(oferta.tipoPago)}</span>
+          {/* Botón anterior */}
+          {images.length > 1 && (
+            <button
+              onClick={prevImage}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-4 hover:bg-opacity-70 transition-all"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
           )}
-        </p>
-        {oferta.tipo === 'ALQUILER' && oferta.duracion && (
-          <p className="text-sm text-gray-500">
-            Duración: {oferta.duracion} días
-          </p>
-        )}
-        <p className="text-sm text-gray-500 mt-1">
-          Publicado el: {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO')}
-        </p>
+
+          {/* Imagen */}
+          <div className="relative max-w-7xl max-h-full flex items-center justify-center">
+            <img
+              src={images[currentImageIndex]}
+              alt={`Imagen ${currentImageIndex + 1} de la propiedad`}
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+          </div>
+
+          {/* Botón siguiente */}
+          {images.length > 1 && (
+            <button
+              onClick={nextImage}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-4 hover:bg-opacity-70 transition-all"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+
+          {/* Contador */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-70 rounded-full px-4 py-2 text-sm font-medium">
+            {currentImageIndex + 1} / {images.length}
+          </div>
+
+          {/* Miniaturas */}
+          {images.length > 1 && (
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 max-w-[90vw] px-4">
+              {images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg transition-all ${
+                    index === currentImageIndex ? 'border-blue-500 scale-110' : 'border-transparent opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`Miniatura ${index + 1}`}
+                    className="w-full h-full object-cover rounded"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Encabezado principal */}
+      <div className="mb-8">
+        {/* Badge de tipo de propiedad y oferta */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+            {getInmuebleLabel(inmueble?.tipo || '')}
+          </span>
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
+            {getOfertaLabel(oferta.tipo)}
+          </span>
+          {oferta.estadoPublicacion && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm font-medium">
+              {oferta.estadoPublicacion}
+            </span>
+          )}
+        </div>
+
+        {/* Título principal */}
+        <h1 className="text-3xl font-bold text-gray-900 mb-3 leading-tight">
+          {getInmuebleLabel(inmueble?.tipo || '')} en {getOfertaLabel(oferta.tipo)} - {inmueble?.direccion}
+        </h1>
+
+        {/* Precio destacado */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-4 border border-blue-100">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Precio de {getOfertaLabel(oferta.tipo).toLowerCase()}</p>
+              <p className="text-4xl font-extrabold text-blue-700">
+                {oferta.moneda} {formatearPrecio(oferta.precio)}
+                {oferta.tipo !== 'VENTA' && (
+                  <span className="text-lg font-normal text-gray-600"> / {getTipoPagoLabel(oferta.tipoPago)}</span>
+                )}
+              </p>
+              {oferta.tipo === 'ALQUILER' && oferta.duracion && (
+                <p className="text-sm text-gray-500 mt-2">
+                  📅 Duración: {oferta.duracion} días
+                </p>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">
+                🗓️ Publicado el {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Dirección con icono destacado */}
+        <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
+          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <MapPin className="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 font-medium">Ubicación</p>
+            <p className="text-lg font-semibold text-gray-900">{inmueble?.direccion || 'Dirección no especificada'}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Dirección */}
-      <div className="flex items-center gap-2 text-gray-700 mb-6">
-        <MapPin className="h-4 w-4 text-blue-500" />
-        <span>{inmueble?.direccion || 'Dirección no especificada'}</span>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 border-y border-gray-200 py-4 mb-6 text-sm">
+      {/* Características principales en cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {inmueble?.superficie && (
-          <div className="flex items-center gap-2">
-            <Maximize className="h-4 w-4 text-gray-500" />
-            <span>{inmueble.superficie} m²</span>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center hover:shadow-md transition-shadow">
+            <Maximize className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold text-gray-900">{inmueble.superficie}</p>
+            <p className="text-sm text-gray-600">m² totales</p>
           </div>
         )}
         {inmueble?.numDormitorios && (
-          <div className="flex items-center gap-2">
-            <Bed className="h-4 w-4 text-gray-500" />
-            <span>{inmueble.numDormitorios} Dormitorios</span>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center hover:shadow-md transition-shadow">
+            <Bed className="h-6 w-6 text-green-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold text-gray-900">{inmueble.numDormitorios}</p>
+            <p className="text-sm text-gray-600">Dormitorios</p>
           </div>
         )}
         {inmueble?.numBanos && (
-          <div className="flex items-center gap-2">
-            <Bath className="h-4 w-4 text-gray-500" />
-            <span>{inmueble.numBanos} Baños</span>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center hover:shadow-md transition-shadow">
+            <Bath className="h-6 w-6 text-purple-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold text-gray-900">{inmueble.numBanos}</p>
+            <p className="text-sm text-gray-600">Baños</p>
           </div>
         )}
         {inmueble?.garaje && (
-          <div className="flex items-center gap-2">
-            <Car className="h-4 w-4 text-gray-500" />
-            <span>Garaje</span>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center hover:shadow-md transition-shadow">
+            <Car className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold text-gray-900">Sí</p>
+            <p className="text-sm text-gray-600">Garaje</p>
+          </div>
+        )}
+        {inmueble?.numAmbientes && (
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center hover:shadow-md transition-shadow">
+            <LayoutGrid className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+            <p className="text-2xl font-bold text-gray-900">{inmueble?.numAmbientes}</p>
+            <p className="text-sm text-gray-600">Número de ambientes</p>
+          </div>
+        )}
+
+      </div>
+
+      {/* Descripciones */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm mb-8 overflow-hidden">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            <div className="flex-1 py-4 px-6 text-center font-medium text-sm border-b-2 border-blue-500 text-blue-600 bg-blue-50">
+              📋 Descripción General
+            </div>
+          </nav>
+        </div>
+        
+        <div className="p-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Sobre esta propiedad</h3>
+            <p className="text-gray-700 leading-relaxed text-lg">
+              {inmueble?.descripcion || oferta.descripcion || 'No hay descripción disponible'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Servicios y características */}
+      <div className="grid md:grid-cols-2 gap-8 mb-8">
+        {/* Servicios incluidos */}
+        {inmueble?.servicios && inmueble.servicios.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              🛠️ Servicios incluidos
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              {inmueble.servicios.map(servicio => (
+                <div key={servicio.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-700 font-medium">{servicio.nombre}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Características adicionales */}
+        {inmueble && (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              ⚡ Características
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Amoblado', value: inmueble.amoblado, icon: '🪑' },
+                { label: 'Ascensor', value: inmueble.ascensor, icon: '🛗' },
+                { label: 'Baulera', value: inmueble.baulera, icon: '📦' },
+                { label: 'Mascotas', value: inmueble.mascotasPermitidas, icon: '🐕' },
+                { label: 'Balcón', value: inmueble.balcon, icon: '🌳' },
+                { label: 'Parqueo', value: inmueble.parqueo, icon: '🚗' },
+                { label: 'Muro perimetral', value: inmueble.muroPerimetral, icon: '🧱' },
+                { label: 'Baño privado', value: inmueble.banoPrivado, icon: '🚿' },
+                { label: 'Deposito', value: inmueble.deposito, icon: '🏚️' },
+
+              ]
+                .filter(({ value }) => value !== undefined && value !== null)
+                .map(({ label, value, icon }) => (
+                  <div key={label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{icon}</span>
+                      <span className="text-gray-700 font-medium">{label}</span>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {value ? 'Sí' : 'No'}
+                    </span>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>
 
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Descripción</h2>
-        <p className="text-gray-700 leading-relaxed">{oferta.descripcion}</p>
-      </div>
-
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Detalles de la oferta</h2>
-        <p className="text-gray-700 leading-relaxed">{oferta.descripcion_oferta}</p>
-      </div>
-
-      {inmueble?.servicios && inmueble.servicios.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Servicios incluidos</h2>
-          <div className="flex flex-wrap gap-2">
-            {inmueble.servicios.map(servicio => (
-              <span
-                key={servicio.id}
-                className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm"
-              >
-                {servicio.nombre}
-              </span>
-            ))}
-          </div>
+      {/* Botón de acción destacado */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
+        <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
+        <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            type='button'
+            onClick={()=>{router.push(`/editar/${id}`)}}
+            className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
+          >
+            ✏️ Editar oferta
+          </button>
+          <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
+            📞 Contactar
+          </button>
         </div>
-      )}
-
-      {inmueble && (
-        <div className="grid grid-cols-2 gap-3 text-sm border-t border-gray-200 pt-4">
-          {[
-            ['Patio', inmueble.patio],
-            ['Amoblado', inmueble.amoblado],
-            ['Depósito', inmueble.deposito],
-            ['Sótano', inmueble.sotano],
-          ]
-            .filter(([, val]) => val !== undefined)
-            .map(([label, val]) => (
-              <div key={String(label)} className="flex justify-between">
-                <span className="text-gray-600">{label}:</span>
-                <span className="font-medium">{val ? 'Sí' : 'No'}</span>
-              </div>
-            ))}
-        </div>
-      )}
-
-      <div className="pt-4 mt-6">
-        <button
-          type='button'
-          onClick={()=>{router.push(`/editar/${id}`)}}
-          className="w-3xs px-3 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-         Editar oferta
-        </button>
       </div>
     </div>
   )

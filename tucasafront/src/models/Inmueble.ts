@@ -26,5 +26,11 @@ export interface Inmueble {
     numAmbientes?: number
     banoPrivado?: boolean
     deposito?: boolean
+    muroPerimetral?: boolean
+    parqueo?: boolean
+    balcon?: boolean
+    mascotasPermitidas?: boolean
+    baulera?: boolean
+    ascensor?: boolean
 }
 
