@@ -38,7 +38,7 @@ export default function ImageUploader({ images, onUpload, onRemove }: ImageUploa
       {images.length > 0 && (
         <div>
           <div className="grid grid-cols-4 gap-3">
-            {images.map((img, idx) => (
+            {images.filter((img) => img && img.trim() !== "").map((img, idx) => (
               <div
                 key={idx}
                 className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 group"
