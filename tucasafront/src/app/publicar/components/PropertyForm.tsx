@@ -39,10 +39,13 @@ export default function PropertyForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Tipo de Propiedad */}
-      <PropertyTypeSelector
+      {mode === "registro" && (
+        <PropertyTypeSelector
         selectedType={formData.propertyType}
         onChange={onPropertyTypeChange}
       />
+      )}
+      
 
       {/* Campos específicos para Casa */}
       {formData.propertyType === 'CASA' && (

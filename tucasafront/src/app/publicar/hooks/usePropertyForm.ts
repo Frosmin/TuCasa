@@ -124,6 +124,7 @@ export function usePropertyForm() {
     step,
     formData,
     setFormData,
+    imageFiles,
     isSubmitting,
     handleInputChange,
     handlePropertyTypeChange,

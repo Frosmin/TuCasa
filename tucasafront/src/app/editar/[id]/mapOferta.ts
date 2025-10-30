@@ -63,6 +63,7 @@ export function mapOfertaFormData(oferta: any) {
         balcon: false,
         parqueo: false,
         mascotasPermitidas: false,
+        baulera: false,
         //amoblado: false,
         montoExpensas: '',
 

@@ -11,12 +11,15 @@ import { useToast } from '@/components/Toast';
 import PropertyForm from "../../publicar/components/PropertyForm";
 import PropertyPreview from "../../publicar/components/PropertyPreview";
 import LoadingSpinner from "@/components/Loading";
+import { UploadService } from "@/app/publicar/services/upload.service";
 
 
 export default function EditarPage() {
     const params = useParams();
     const { showSuccess, showError } = useToast();
     const [loading, setLoading] = useState(true);
+    const [localImageFiles, setLocalImageFiles] = useState<{ file: File; url: string }[]>([]);
+    const [removedExistingUrls, setRemovedExistingUrls] = useState<string[]>([]);
     const router = useRouter();
     const id = Number(params.id);
 
@@ -27,9 +30,7 @@ export default function EditarPage() {
         handleInputChange,
         handlePropertyTypeChange,
         handleToggle,
-        handleImageUpload,
         handleServiciosChange,
-        handleImageRemove,
     } = usePropertyForm();
 
     useEffect(() => {
@@ -48,15 +49,68 @@ export default function EditarPage() {
 
     }, [id, setFormData]);
 
+    const handleLocalImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+        const newFiles = Array.from(files);
+        const newImageObjs = newFiles.map((file) => ({
+            file,
+            url: URL.createObjectURL(file),
+        }));
+        setLocalImageFiles(prev => [...prev, ...newImageObjs]);
+        setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, ...newImageObjs.map((i) => i.url)],
+        }));
+
+        e.target.value = "";
+    }
+
+
+    const handleLocalImageRemove = (index: number) => {
+        const urlToRemove = formData.images[index];
+
+        setFormData(prev => {
+            const updatedImages = prev.images.filter((_, i) => i !== index);
+            return { ...prev, images: updatedImages };
+        });
+
+        if (!urlToRemove.startsWith("blob:")) {
+            setRemovedExistingUrls(prev => [...prev, urlToRemove]);
+        } else {
+            URL.revokeObjectURL(urlToRemove);
+            setLocalImageFiles(prev => prev.filter(img => img.url !== urlToRemove));
+        }
+    }
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const payload = buildPropertyPayload(formData);
+            const existingUrls = formData.images.filter(url => !url.startsWith("blob:"));
+
+            const newLocalImages = localImageFiles.filter(img => formData.images.includes(img.url));
+
+            let uploadedImageUrls: string[] = [];
+            if (newLocalImages.length > 0) {
+                const assets = await UploadService.uploadImages(newLocalImages.map(i => i.file));
+                uploadedImageUrls = assets.map(a => a.url);
+            }
+
+            const finalImages = [...existingUrls, ...uploadedImageUrls];
+            const payloadImages = finalImages.length > 0 ? finalImages : [];
+
+            const finalFormData = {
+                ...formData,
+                images: payloadImages,
+            };
+
+            const payload = buildPropertyPayload(finalFormData);
             const result = await updateOferta(payload, id);
             console.log('Respuesta del servidor:', result);
             showSuccess('Oferta actualizada con éxito');
 
-            setTimeout(() =>{
+            setTimeout(() => {
                 router.back();
             }, 1000);
 
@@ -71,8 +125,8 @@ export default function EditarPage() {
         }
     }
 
-    if(loading) {
-        return <LoadingSpinner/>
+    if (loading) {
+        return <LoadingSpinner />
     }
 
 
@@ -85,7 +139,7 @@ export default function EditarPage() {
                     {/* Formulario */}
                     <div className="bg-white rounded-2xl shadow-lg p-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            ¿Qué tipo de propiedad quieres publicar?
+                            Cambia los datos de tu oferta
                         </h1>
                         <p className="text-gray-600 mb-2">
                             Operación:{" "}
@@ -94,7 +148,9 @@ export default function EditarPage() {
                             </span>
                         </p>
                         <p className="text-gray-600 mb-8">
-                            Selecciona el tipo de propiedad.
+                            tipo de propiedad: <span className="font-semibold text-blue-600">
+                                {formData.propertyType}
+                            </span>
                         </p>
 
                         <PropertyForm
@@ -102,12 +158,12 @@ export default function EditarPage() {
                             onInputChange={handleInputChange}
                             onPropertyTypeChange={handlePropertyTypeChange}
                             onToggle={handleToggle}
-                            onImageUpload={handleImageUpload}
-                            onImageRemove={handleImageRemove}
+                            onImageUpload={handleLocalImageUpload}
+                            onImageRemove={handleLocalImageRemove}
                             onServiciosChange={handleServiciosChange}
                             onSubmit={handleSubmit}
                             isSubmitting={isSubmitting}
-                            mode= 'edicion'
+                            mode='edicion'
                         />
                     </div>
 
