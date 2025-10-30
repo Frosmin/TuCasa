@@ -54,10 +54,12 @@ export function useGoogleMaps() {
       setIsLoaded(true);
     };
 
+    // Crear el script después de definir el callback
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding,marker&callback=initGoogleMaps&loading=async`;
     script.async = true;
     script.defer = true;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geocoding,marker&callback=initGoogleMaps`;
+
 
     script.onerror = () => {
       setLoadError('Error al cargar Google Maps API');
