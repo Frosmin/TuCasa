@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,10 +22,10 @@ public abstract class Inmueble {
     @Column(nullable = false)
     private String direccion;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 18, scale = 15)
     private BigDecimal latitud;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 18, scale = 15)
     private BigDecimal longitud;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -57,6 +58,10 @@ public abstract class Inmueble {
             inverseJoinColumns = @JoinColumn(name = "servicio_id")
     )
     private Set<Servicio> servicios;
+
+
+    @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Multimedia> multimedias;
 
     @Column(nullable = false)
     private boolean activo = true;

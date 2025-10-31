@@ -1,6 +1,6 @@
 import type { Servicio } from "./Servicio"
 
-export type TipoPropiedad = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA' | ''
+export type TipoPropiedad = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA'
 
 
 export interface Inmueble {
@@ -11,6 +11,7 @@ export interface Inmueble {
     superficie: number
     idPropietario: number
     descripcion: string
+    descripcion_oferta: string
     activo: boolean
     tipo: TipoPropiedad
     servicios?: Servicio[]
@@ -25,5 +26,11 @@ export interface Inmueble {
     numAmbientes?: number
     banoPrivado?: boolean
     deposito?: boolean
+    muroPerimetral?: boolean
+    parqueo?: boolean
+    balcon?: boolean
+    mascotasPermitidas?: boolean
+    baulera?: boolean
+    ascensor?: boolean
 }
 

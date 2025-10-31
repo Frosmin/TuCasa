@@ -43,7 +43,14 @@ public class OfertaController {
 
     @GetMapping("")
     public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
-        return ofertaService.search(params);
+        return ofertaService.search(params, false);
     }
+
+    @GetMapping("/map")
+    public ResponseEntity<?> searchOnMap(@RequestParam Map<String, String> params) {
+        return ofertaService.search(params, true);
+    }
+
+    // 
 
 }
