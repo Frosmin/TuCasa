@@ -5,6 +5,7 @@ INSERT INTO servicios (nombre_servicio) VALUES ('Gas domiciliario');
 INSERT INTO servicios (nombre_servicio) VALUES ('Internet');
 INSERT INTO servicios (nombre_servicio) VALUES ('Recolección de basura');
 INSERT INTO servicios (nombre_servicio) VALUES ('Seguridad 24h');
+INSERT INTO servicios (nombre_servicio) VALUES ('Alcantarillado');
 
 -- Inmueble
 -- INSERT INTO inmuebles (direccion, superficie, id_propietario, tipo_inmueble, descripcion, activo, longitud, latitud) VALUES ('Av. Ejemplo 231', 120.50, 100, 'CASA', 'Casa con jardín y garage', true, 0.0, 0.0);

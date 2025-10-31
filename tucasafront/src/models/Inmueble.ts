@@ -1,6 +1,6 @@
 import type { Servicio } from "./Servicio"
 
-export type TipoPropiedad = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA' | ''
+export type TipoPropiedad = 'CASA' | 'DEPARTAMENTO' | 'LOTE' | 'TIENDA'
 
 
 export interface Inmueble {
