@@ -47,7 +47,6 @@ export interface PropertyFormData {
   baulera: boolean;
 
   // Campos específicos para Lote
-  tamanio: string;
   muroPerimetral: boolean;
 
   images: string[];

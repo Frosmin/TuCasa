@@ -123,6 +123,8 @@ export function usePropertyForm() {
   return {
     step,
     formData,
+    setFormData,
+    imageFiles,
     isSubmitting,
     handleInputChange,
     handlePropertyTypeChange,

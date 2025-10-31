@@ -85,7 +85,6 @@ export const INITIAL_FORM_DATA = {
 
 
   // Campos Lote
-  tamanio: '',
   muroPerimetral: false,
 
   images: [],

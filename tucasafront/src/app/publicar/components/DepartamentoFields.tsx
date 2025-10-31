@@ -30,8 +30,8 @@ export default function DepartamentoFields({ formData, onChange, onToggle, onSer
           <label className="block text-sm font-medium text-gray-700 mb-2">Superficie interna (m²) *</label>
           <input
             type="number"
-            name="superficieInterna"
-            value={formData.superficieInterna}
+            name="superficie"
+            value={formData.superficie}
             onChange={onChange}
             placeholder="Ej: 105"
             required
