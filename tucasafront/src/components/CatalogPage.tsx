@@ -324,6 +324,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
               filters={filters}
               setFilters={setFilters}
               tipos={tiposUnicos}
+              tipoInmueble={tipoInmuebleSeleccionado}
             />
           </div>
 

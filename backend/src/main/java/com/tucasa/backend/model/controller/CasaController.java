@@ -1,9 +1,7 @@
 package com.tucasa.backend.model.controller;
 
 import com.tucasa.backend.model.dto.CasaRequestDto;
-import com.tucasa.backend.model.dto.CasaRequestDto;
 import com.tucasa.backend.model.service.interfaces.CasaService;
-import com.tucasa.backend.model.service.interfaces.InmuebleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

@@ -81,10 +81,10 @@ export const INITIAL_FORM_DATA = {
   mascotasPermitidas: false,
   //amoblado: false,
   montoExpensas: '',
+  baulera: false,
 
 
   // Campos Lote
-  tamanio: '',
   muroPerimetral: false,
 
   images: [],
