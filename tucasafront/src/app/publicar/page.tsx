@@ -6,6 +6,8 @@ import OperationSelector from "./components/OperationSelector";
 import PropertyForm from "./components/PropertyForm";
 import PropertyPreview from "./components/PropertyPreview";
 
+import ProtectedRoute from "@/context/ProtectedRoute";
+
 export default function VenderPage() {
   const {
     step,
@@ -26,7 +28,11 @@ export default function VenderPage() {
 
   // Paso 1: Selección de tipo de operación
   if (step === 1) {
-    return <OperationSelector onSelect={handleOperationSelect} />;
+    return (
+      <ProtectedRoute>
+        <OperationSelector onSelect={handleOperationSelect} />;
+      </ProtectedRoute>
+    );
   }
 
   // Paso 2: Formulario completo

@@ -10,6 +10,7 @@ public class UsuarioResponseDto {
     private String nombre;
     private String apellido;
     private String telefono;
+    private String direccion;
     private String correo;
     private TipoUsuario rol;
 }
