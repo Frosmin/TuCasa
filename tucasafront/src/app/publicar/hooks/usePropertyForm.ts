@@ -39,7 +39,6 @@ export function usePropertyForm() {
     setFormData((prev) => ({ ...prev, serviciosIds: ids }));
   };
 
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;

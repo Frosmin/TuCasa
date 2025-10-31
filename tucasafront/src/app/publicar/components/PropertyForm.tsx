@@ -21,9 +21,9 @@ interface PropertyFormProps {
   onImageRemove: (index: number) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
-  mode: "registro" | "edicion";
   onLocationChange: (lat: number, lng: number) => void;
   onAddressChange: (address: string) => void;
+  mode: "registro" | "edicion";
 }
 
 export default function PropertyForm({

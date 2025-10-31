@@ -488,6 +488,38 @@ public class OfertaServiceImpl implements OfertaService {
                         "LEFT JOIN lote l ON i.id = l.id " +
                         "WHERE o.activo = true AND i.activo = true ");
 
+<<<<<<< HEAD
+=======
+        Map<String, String> camposTexto = Map.of(
+                "tipoOperacion", "o.tipo_operacion",
+                "tipoInmueble", "i.tipo_inmueble");
+
+        Map<String, String> camposNumericos = Map.of(
+                "numDormitorios", "c.num_dormitorios",
+                "numBanos", "c.num_banos",
+                "numPisos", "c.num_pisos",
+                "numAmbientes", "t.num_ambientes",
+                "precioMin", "o.precio",
+                "precioMax", "o.precio",
+                "tamanio", "l.tamanio",
+                "superficieInterna", "d.superficie_interna",
+                "montoExpensas", "d.monto_expensas");
+
+        Map<String, String> camposBooleanos = Map.of(
+                "garaje", "c.garaje",
+                "patio", "c.patio",
+                "amoblado", "c.amoblado",
+                "sotano", "c.sotano",
+                "banoPrivado", "t.bano_privado",
+                "deposito", "t.deposito",
+                "muroPerimetral", "l.muro_perimetral",
+                "mascotasPermitidas", "d.mascotas_permitidas",
+                "parqueo", "d.parqueo",
+                "ascensor", "d.ascensor"
+        // "balcon", "d.balcon" // Map solo permite 10 K,V
+        );
+
+>>>>>>> team-d
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -597,6 +629,17 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new InmuebleResponseDto(inmueble);
         }
 
+<<<<<<< HEAD
+=======
+        // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
+        // -> Usese por optimizacion
+
+        if (resumida) {
+            inmuebleDto.setDescripcion(null);
+            oferta.setDescripcion(null);
+        }
+
+>>>>>>> team-d
         if (inmuebleDto.getMultimedias() != null && !inmuebleDto.getMultimedias().isEmpty()) {
             inmuebleDto.getMultimedias().stream()
             .filter(MultimediaResponseDto::getEsPortada)
@@ -605,6 +648,7 @@ public class OfertaServiceImpl implements OfertaService {
                 inmuebleDto.setUrl_imagen(cover.getUrl());
                 // inmuebleDto.setMultimedias(List.of(cover));
             });
+<<<<<<< HEAD
         }
 
         // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
@@ -613,6 +657,8 @@ public class OfertaServiceImpl implements OfertaService {
         if (resumida) {
             inmuebleDto.setDescripcion(null);
             oferta.setDescripcion(null);
+=======
+>>>>>>> team-d
         }
 
         OfertaResponseDto dto = new OfertaResponseDto();
