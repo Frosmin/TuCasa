@@ -69,6 +69,7 @@ export default function VenderPage() {
               isSubmitting={isSubmitting}
               onLocationChange={handleLocationChange}
               onAddressChange={handleAddressChange} // AGREGAR AQUÍ
+              mode="registro"
             />
           </div>
 
