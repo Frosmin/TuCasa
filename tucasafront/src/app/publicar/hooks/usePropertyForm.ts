@@ -98,7 +98,9 @@ export function usePropertyForm() {
       console.log('Respuesta del servidor:',data);
       showSuccess('Propiedad publicada exitosamente! :D');
       setStep(1);
-      formData.images.forEach(url => URL.revokeObjectURL(url));
+      formData.images.forEach((url) => {
+        if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
+      });
       setImageFiles([]);
       setFormData(INITIAL_FORM_DATA);
       
