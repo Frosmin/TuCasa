@@ -30,6 +30,8 @@ export default function EditarPage() {
         handlePropertyTypeChange,
         handleToggle,
         handleServiciosChange,
+        handleLocationChange,
+        handleAddressChange,
     } = usePropertyForm();
 
     useEffect(() => {
@@ -165,6 +167,8 @@ export default function EditarPage() {
                             onServiciosChange={handleServiciosChange}
                             onSubmit={handleSubmit}
                             isSubmitting={isSubmitting}
+                            onLocationChange={handleLocationChange}
+                            onAddressChange={handleAddressChange}
                             mode='edicion'
                         />
                     </div>
