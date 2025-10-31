@@ -47,8 +47,6 @@ export const FiltroSidebar = ({
     servicios: false,
   })
 
-  
-
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -57,7 +55,7 @@ export const FiltroSidebar = ({
   }
 
   // Monedas disponibles
-  const monedasUnicas: MonedaType[] = ['$us', 'Bs']
+  const monedasUnicas: MonedaType[] = ['$', 'Bs']
 
   // Calcular rangos de la API
   const precios = ofertas.map(o => o.precio)

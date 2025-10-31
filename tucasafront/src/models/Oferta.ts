@@ -1,6 +1,6 @@
 import type { Inmueble } from "./Inmueble"
 
-export type MonedaType = '$us' | 'Bs'
+export type MonedaType = '$' | 'Bs'
 
 export type EstadoPublicacion = 'PUBLICADO' | 'EN REVISION' | 'RECHAZADO' | 'BORRADOR'
 
@@ -11,7 +11,6 @@ export interface Oferta {
     inmueble: Inmueble
     descripcion: string
     descripcion_oferta: string
-
     tipo: TipoOperacion
     precio: number
     moneda: MonedaType
@@ -21,8 +20,5 @@ export interface Oferta {
     fechaPublicacionFin?: string | null
     estadoPublicacion: EstadoPublicacion
     activo: boolean
-
-
-
 }
 
