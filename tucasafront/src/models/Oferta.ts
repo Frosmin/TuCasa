@@ -10,6 +10,8 @@ export interface Oferta {
     id: number
     inmueble: Inmueble
     descripcion: string
+    descripcion_oferta: string
+
     tipo: TipoOperacion
     precio: number
     moneda: MonedaType
@@ -19,5 +21,8 @@ export interface Oferta {
     fechaPublicacionFin?: string | null
     estadoPublicacion: EstadoPublicacion
     activo: boolean
+
+
+
 }
 

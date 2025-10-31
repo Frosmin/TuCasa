@@ -7,9 +7,11 @@ import { ArrowLeft, ArrowRight, Upload } from 'lucide-react';
 interface ImageCarouselProps {
   images: string[];
   className?: string;
+  onIndexChange?: (index: number) => void;
+
 }
 
-export default function ImageCarousel({ images, className = 'w-full h-64' }: ImageCarouselProps) {
+export default function ImageCarousel({ images, onIndexChange,className = 'w-full h-64' }: ImageCarouselProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = () => {
