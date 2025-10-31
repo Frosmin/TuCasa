@@ -13,6 +13,7 @@ public class UsuarioRequestDto {
     private String nombre;
     private String apellido;
     private String telefono;
+    private String direccion;
     private String correo;
     private String contrasenia;
     private TipoUsuario rol;
