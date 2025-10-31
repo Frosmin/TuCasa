@@ -27,14 +27,12 @@ interface FiltroSidebarProps {
   setFilters: (filters: Filtros) => void
   tipos: string[]
   ofertas: Oferta[]
-  tipoInmueble: string
 }
 
 export const FiltroSidebar = ({
   filters,
   setFilters,
   tipos,
-  tipoInmueble,
   ofertas,
 }: FiltroSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -47,8 +45,6 @@ export const FiltroSidebar = ({
     servicios: false,
   })
 
-  
-
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -57,7 +53,7 @@ export const FiltroSidebar = ({
   }
 
   // Monedas disponibles
-  const monedasUnicas: MonedaType[] = ['$us', 'Bs']
+  const monedasUnicas: MonedaType[] = ['$', 'Bs']
 
   // Calcular rangos de la API
   const precios = ofertas.map(o => o.precio)
@@ -329,7 +325,7 @@ export const FiltroSidebar = ({
       </div>
 
       {/* Filtro por Dormitorios */}
-      {(tipoInmueble !== 'LOTE' && dormitorios.length > 0) && (
+      {dormitorios.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm">
           <button
             onClick={() => toggleSection('dormitorios')}
@@ -383,7 +379,7 @@ export const FiltroSidebar = ({
       )}
 
       {/* Filtro por Características */}
-      {(tipoInmueble !== 'LOTE') && (tieneGaraje || tieneAmoblado || tienePatio || tieneSotano) && (
+      {(tieneGaraje || tieneAmoblado || tienePatio || tieneSotano) && (
         <div className="bg-white rounded-lg shadow-sm">
           <button
             onClick={() => toggleSection('caracteristicas')}
