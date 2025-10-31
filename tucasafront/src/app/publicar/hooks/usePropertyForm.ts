@@ -73,6 +73,22 @@ export function usePropertyForm() {
     );
   };
 
+  const handleLocationChange = (lat: number, lng: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitud: lat.toString(),
+      longitud: lng.toString(),
+    }));
+  };
+
+  // NUEVA FUNCIÓN: Actualizar dirección desde el mapa
+  const handleAddressChange = (address: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      direccion: address,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -106,7 +122,7 @@ export function usePropertyForm() {
       
     } catch (error: any) {
       console.error('Error:', error);
-      
+
       if (error.data) {
         const errorMessage = handleApiError(error.data);
         showError(`Errores de validación:\n${errorMessage}`);
@@ -137,5 +153,7 @@ export function usePropertyForm() {
     handleImageRemove,
     handleSubmit,
     resetToStep1,
+    handleLocationChange,
+    handleAddressChange, // AGREGAR AQUÍ
   };
 }

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.tucasa.backend.utils.CampoInmuebleBusqueda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -451,7 +452,6 @@ public class OfertaServiceImpl implements OfertaService {
 
                 inmueble = loteRepository.save(lote);
             }
-            // Etc.
 
             default -> throw new RuntimeException("Tipo de inmueble no soportado");
         }
@@ -477,7 +477,7 @@ public class OfertaServiceImpl implements OfertaService {
 
     // ---------------------- BÚSQUEDA DINÁMICA ----------------------
     @Override
-    public ResponseEntity<?> search(Map<String, String> params) {
+    public ResponseEntity<?> search(Map<String, String> params, Boolean compact) {
         StringBuilder sql = new StringBuilder(
                 "SELECT o.id " +
                         "FROM ofertas o " +
@@ -488,62 +488,31 @@ public class OfertaServiceImpl implements OfertaService {
                         "LEFT JOIN lote l ON i.id = l.id " +
                         "WHERE o.activo = true AND i.activo = true ");
 
-        Map<String, String> camposTexto = Map.of(
-                "tipoOperacion", "o.tipo_operacion",
-                "tipoInmueble", "i.tipo_inmueble");
-
-        Map<String, String> camposNumericos = Map.of(
-                "numDormitorios", "c.num_dormitorios",
-                "numBanos", "c.num_banos",
-                "numPisos", "c.num_pisos",
-                "numAmbientes", "t.num_ambientes",
-                "precioMin", "o.precio",
-                "precioMax", "o.precio",
-                "tamanio", "l.tamanio",
-                "superficieInterna", "d.superficie_interna",
-                "montoExpensas", "d.monto_expensas");
-
-        Map<String, String> camposBooleanos = Map.of(
-                "garaje", "c.garaje",
-                "patio", "c.patio",
-                "amoblado", "c.amoblado",
-                "sotano", "c.sotano",
-                "banoPrivado", "t.bano_privado",
-                "deposito", "t.deposito",
-                "muroPerimetral", "l.muro_perimetral",
-                "mascotasPermitidas", "d.mascotas_permitidas",
-                "parqueo", "d.parqueo",
-                "ascensor", "d.ascensor"
-        // "balcon", "d.balcon" // Map solo permite 10 K,V
-        );
-
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (value == null || value.isBlank())
-                continue;
 
-            if (camposTexto.containsKey(key)) {
-                sql.append(" AND ").append(camposTexto.get(key))
+            if (value == null || value.isBlank()) continue;
+
+            CampoInmuebleBusqueda campo = CampoInmuebleBusqueda.fromParam(key);
+
+            if (campo == null) continue;
+
+            switch (campo.getTipo()) {
+                case TEXTO -> sql.append(" AND ")
+                        .append(campo.getColumna())
                         .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
-            } else if (camposNumericos.containsKey(key)) {
-                try {
-                    String campo = camposNumericos.get(key);
-                    if (key.equals("precioMin"))
-                        sql.append(" AND ").append(campo).append(" >= ").append(value);
-                    else if (key.equals("precioMax"))
-                        sql.append(" AND ").append(campo).append(" <= ").append(value);
-                    else
-                        sql.append(" AND ").append(campo).append(" = ").append(value);
-                } catch (NumberFormatException ignored) {
+                case NUMERICO -> {
+                    try {
+                        new BigDecimal(value);
+                        if (key.equals("precioMin")) sql.append(" AND ").append(campo.getColumna()).append(" >= ").append(value);
+                        else if (key.equals("precioMax")) sql.append(" AND ").append(campo.getColumna()).append(" <= ").append(value);
+                        else sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                    } catch (NumberFormatException ignored) {}
                 }
-            } else if (camposBooleanos.containsKey(key)) {
-                try {
-                    boolean boolValue = Boolean.parseBoolean(value);
-                    if (boolValue) { // Solo aplicar filtro si el valor es true
-                        sql.append(" AND ").append(camposBooleanos.get(key)).append(" = true");
-                    }
-                } catch (Exception ignored) {
+                case BOOLEANO -> {
+                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+                        sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
                 }
             }
         }
@@ -602,14 +571,16 @@ public class OfertaServiceImpl implements OfertaService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        List<OfertaResponseDto> response = ofertasList.stream().map(this::mapToDto).toList();
-        return apiResponse.responseSuccess(Constants.RECORDS_FOUND, response);
+        List<OfertaResponseDto> response = ofertasList.stream()
+                .map(o -> mapToDto(o, compact != null && compact))
+                .toList();
+
+        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size());
     }
 
     // ---------------------- MAPEOS DTO ----------------------
-    private OfertaResponseDto mapToDto(Oferta oferta) {
-        if (oferta == null)
-            return null;
+    private OfertaResponseDto mapToDto(Oferta oferta, Boolean resumida) {
+        if (oferta == null) return null;
 
         InmuebleResponseDto inmuebleDto;
         Inmueble inmueble = oferta.getInmueble();
@@ -636,6 +607,14 @@ public class OfertaServiceImpl implements OfertaService {
             });
         }
 
+        // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
+        // -> Usese por optimizacion
+
+        if (resumida) {
+            inmuebleDto.setDescripcion(null);
+            oferta.setDescripcion(null);
+        }
+
         OfertaResponseDto dto = new OfertaResponseDto();
         dto.setId(oferta.getId());
         dto.setInmueble(inmuebleDto);
@@ -652,4 +631,9 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+
+    private OfertaResponseDto mapToDto(Oferta oferta) {
+        return mapToDto(oferta, false);
+    }
+
 }
