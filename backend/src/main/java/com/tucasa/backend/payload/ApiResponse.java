@@ -20,6 +20,17 @@ public class ApiResponse {
         return new ResponseEntity<Object>( response, HttpStatus.OK );
     }
 
+    public ResponseEntity<Object> responseSearch( String message, Object object, Integer totalResults ){
+        Map<String, Object> response = new HashMap<>();
+        response.put( "error", false );
+        response.put( "message", message );
+        response.put( "status", HttpStatus.OK );
+        response.put( "code", HttpStatus.OK.value() );
+        response.put("totalResults", totalResults);
+        response.put( "data", object );
+        return new ResponseEntity<Object>( response, HttpStatus.OK );
+    }
+
     public ResponseEntity<Object> responseCreate( String message, Object object ){
         Map<String, Object> response = new HashMap<>();
         response.put( "error", false );

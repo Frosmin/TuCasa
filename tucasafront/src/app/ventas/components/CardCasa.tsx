@@ -213,13 +213,14 @@ export const CasaCard: FC<CasaCardProps> = ({
 
                     {/* Botón Ver Detalles */}
                     <div className="mt-auto pt-3 border-t border-gray-200">
-                        <button
-                            onClick={handleViewDetails}
-                            className="w-full bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-white text-xs font-medium transition-colors"
-                        >
-                            Ver Detalles
-                        </button>
+                    <Link
+                        href={`/casa/${casa.id}`}
+                        className="block w-full text-center bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-white text-xs font-medium transition-colors"
+                    >
+                        Ver Detalles
+                    </Link>
                     </div>
+
                 </div>
             </div>
         </Link>

@@ -3,8 +3,10 @@ package com.tucasa.backend.model.service.implement;
 import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
+import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Inmueble;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
@@ -82,6 +84,44 @@ public class InmuebleServiceImpl implements InmuebleService {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }
     }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateMultimedia(Long inmuebleId, List<MultimediaRequestDto> multimediaDtos) {
+        String successMessage = "Multimedia actualizada correctamente";
+        String errorMessage = "No se pudo actualizar la multimedia";
+
+        try {
+            Inmueble inmueble = inmuebleRepository.findById(inmuebleId)
+                    .orElseThrow(() -> new RuntimeException("Inmueble no encontrado con id: " + inmuebleId));
+
+            // Limpiar la lista existente para activar orphanRemoval
+            inmueble.getMultimedias().clear();
+
+            // Añadir las nuevas multimedias
+            if (multimediaDtos != null && !multimediaDtos.isEmpty()) {
+                for (MultimediaRequestDto dto : multimediaDtos) {
+                    Multimedia multimedia = new Multimedia();
+                    multimedia.setUrl(dto.getUrl());
+                    multimedia.setMultimedia(dto.getTipo());
+                    multimedia.setDescripcion(dto.getDescripcion());
+                    multimedia.setEs_portada(dto.getEsPortada());
+                    multimedia.setActivo(true);
+                    multimedia.setInmueble(inmueble);
+                    inmueble.getMultimedias().add(multimedia);
+                }
+            }
+
+            Inmueble updatedInmueble = inmuebleRepository.save(inmueble);
+            return apiResponse.responseSuccess(successMessage, mapToDto(updatedInmueble));
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+
 
     // --- Mapeo a DTO ---
     private InmuebleResponseDto mapToDto(Inmueble inmueble) {
