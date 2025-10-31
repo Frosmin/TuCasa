@@ -21,6 +21,7 @@ export default function EditarPage() {
     const [localImageFiles, setLocalImageFiles] = useState<{ file: File; url: string }[]>([]);
     const router = useRouter();
     const id = Number(params.id);
+    const [submitting, setSubmitting] = useState(false);
 
     const {
         formData,
@@ -69,6 +70,10 @@ export default function EditarPage() {
 
 
     const handleLocalImageRemove = (index: number) => {
+        if (formData.images.length <=1){
+            showError('Los inmuebles deben tener almenos 1 imagen de referencia');
+            return;
+        }
         const urlToRemove = formData.images[index];
 
         setFormData(prev => {
@@ -85,6 +90,7 @@ export default function EditarPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
             const existingUrls = formData.images.filter(url => !url.startsWith("blob:"));
 
@@ -100,6 +106,7 @@ export default function EditarPage() {
 
             if (finalImages.length === 0) {
                 showInfo("Debes agregar al menos una imagen.");
+                setSubmitting(false);
                 return;
             }
 
@@ -126,6 +133,8 @@ export default function EditarPage() {
             } else {
                 showError('Error al actualizar la oferta. Por favor, intenta de nuevo.');
             }
+        } finally {
+            setSubmitting(false);
         }
     }
 
