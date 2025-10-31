@@ -5,6 +5,8 @@ import { Eye, Upload, ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { PropertyFormData } from '../types/property.types';
 
+import ImageCarousel from '@/components/ImageCarousel';
+
 interface PropertyPreviewProps {
   formData: PropertyFormData;
 }
@@ -37,60 +39,11 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
 
       <div className="space-y-6">
         {/* Imagen Principal con Carousel */}
-        <div className="w-full h-64 bg-gray-100 rounded-xl overflow-hidden relative group">
-          {formData.images.length > 0 ? (
-            <>
-              <Image
-                src={formData.images[currentImageIndex]}
-                alt={`Preview ${currentImageIndex + 1}`}
-                fill
-                className="object-cover"
-              />
 
-              {formData.images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  >
-                    <ArrowLeft className="w-5 h-5 text-gray-800" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  >
-                    <ArrowRight className="w-5 h-5 text-gray-800" />
-                  </button>
 
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {formData.images.map((_, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => goToImage(idx)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          idx === currentImageIndex
-                            ? 'bg-white w-6'
-                            : 'bg-white/60 hover:bg-white/80'
-                        }`}
-                      />
-                    ))}
-                  </div>
+        <ImageCarousel images={formData.images}/>
 
-                  <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {currentImageIndex + 1} / {formData.images.length}
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <Upload className="w-16 h-16 text-gray-300" />
-            </div>
-          )}
-        </div>
+        
 
         {/* Información */}
         <div className="space-y-4">

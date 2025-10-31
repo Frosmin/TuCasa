@@ -1,6 +1,7 @@
 // publicar/components/PropertyForm.tsx
 
 import { PropertyFormData } from '../types/property.types';
+import { useRouter } from 'next/navigation';
 import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constants';
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
@@ -22,6 +23,7 @@ interface PropertyFormProps {
   isSubmitting: boolean;
   onLocationChange: (lat: number, lng: number) => void;
   onAddressChange: (address: string) => void;
+  mode: "registro" | "edicion";
 }
 
 export default function PropertyForm({
@@ -36,14 +38,19 @@ export default function PropertyForm({
   onImageRemove,
   onSubmit,
   isSubmitting,
+  mode = "registro",
 }: PropertyFormProps) {
+  const router = useRouter();
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Tipo de Propiedad */}
-      <PropertyTypeSelector
+      {mode === "registro" && (
+        <PropertyTypeSelector
         selectedType={formData.propertyType}
         onChange={onPropertyTypeChange}
       />
+      )}
+      
 
       {/* Campos específicos para Casa */}
       {formData.propertyType === 'CASA' && (
@@ -69,6 +76,7 @@ export default function PropertyForm({
           formData={formData}
           onChange={onInputChange}
           onToggle={onToggle}
+          onServiciosChange={onServiciosChange} 
         />
       )}
 
@@ -246,15 +254,42 @@ export default function PropertyForm({
       />
 
       {/* Botón Submit */}
-      <div className="pt-4">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Publicando...' : 'Publicar ahora'}
-        </button>
-      </div>
+      {mode === 'edicion' ? (
+        <div className="pt-4  flex justify-around">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              router.back();
+            }}
+            className="flex-1 max-w-50 px-6 py-3 bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex-1 max-w-50 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {mode === 'edicion'
+            ? (isSubmitting ? 'Guardando cambios...' : 'Guardar cambios')
+            : (isSubmitting ? 'Publicando…' : 'Publicar')}
+          </button>
+        </div>
+      ) :
+        (
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Publicando...' : 'Publicar ahora'}
+            </button>
+          </div>
+        )}
+
     </form>
   );
 }

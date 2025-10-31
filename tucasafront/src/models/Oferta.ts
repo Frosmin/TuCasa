@@ -1,6 +1,6 @@
 import type { Inmueble } from "./Inmueble"
 
-export type MonedaType = '$us' | 'Bs'
+export type MonedaType = '$' | 'Bs'
 
 export type EstadoPublicacion = 'PUBLICADO' | 'EN REVISION' | 'RECHAZADO' | 'BORRADOR'
 
