@@ -488,8 +488,6 @@ public class OfertaServiceImpl implements OfertaService {
                         "LEFT JOIN lote l ON i.id = l.id " +
                         "WHERE o.activo = true AND i.activo = true ");
 
-<<<<<<< HEAD
-=======
         Map<String, String> camposTexto = Map.of(
                 "tipoOperacion", "o.tipo_operacion",
                 "tipoInmueble", "i.tipo_inmueble");
@@ -519,7 +517,6 @@ public class OfertaServiceImpl implements OfertaService {
         // "balcon", "d.balcon" // Map solo permite 10 K,V
         );
 
->>>>>>> team-d
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -629,8 +626,6 @@ public class OfertaServiceImpl implements OfertaService {
             inmuebleDto = new InmuebleResponseDto(inmueble);
         }
 
-<<<<<<< HEAD
-=======
         // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
         // -> Usese por optimizacion
 
@@ -639,7 +634,6 @@ public class OfertaServiceImpl implements OfertaService {
             oferta.setDescripcion(null);
         }
 
->>>>>>> team-d
         if (inmuebleDto.getMultimedias() != null && !inmuebleDto.getMultimedias().isEmpty()) {
             inmuebleDto.getMultimedias().stream()
             .filter(MultimediaResponseDto::getEsPortada)
@@ -648,17 +642,6 @@ public class OfertaServiceImpl implements OfertaService {
                 inmuebleDto.setUrl_imagen(cover.getUrl());
                 // inmuebleDto.setMultimedias(List.of(cover));
             });
-<<<<<<< HEAD
-        }
-
-        // Ocultacion de campos para respuestas resumidas (evaluar donde implementar y que ocultar)
-        // -> Usese por optimizacion
-
-        if (resumida) {
-            inmuebleDto.setDescripcion(null);
-            oferta.setDescripcion(null);
-=======
->>>>>>> team-d
         }
 
         OfertaResponseDto dto = new OfertaResponseDto();
