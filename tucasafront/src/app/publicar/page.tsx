@@ -20,6 +20,8 @@ export default function VenderPage() {
     handleImageRemove,
     handleSubmit,
     resetToStep1,
+    handleLocationChange,
+    handleAddressChange, 
   } = usePropertyForm();
 
   // Paso 1: Selección de tipo de operación
@@ -65,6 +67,8 @@ export default function VenderPage() {
               onServiciosChange={handleServiciosChange}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
+              onLocationChange={handleLocationChange}
+              onAddressChange={handleAddressChange} // AGREGAR AQUÍ
             />
           </div>
 
