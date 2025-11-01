@@ -3,8 +3,10 @@ package com.tucasa.backend.model.service.implement;
 import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
+import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Inmueble;
+import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
@@ -41,10 +43,7 @@ public class InmuebleServiceImpl implements InmuebleService {
         try {
             List<Inmueble> inmuebles = inmuebleRepository.findAll();
             if (!inmuebles.isEmpty()) {
-                List<InmuebleResponseDto> dtos = inmuebles.stream()
-                        .map(this::mapToDto)
-                        .collect(Collectors.toList());
-                return apiResponse.responseSuccess(successMessage, dtos);
+                return apiResponse.responseSuccess(successMessage, inmuebles);
             } else {
                 return apiResponse.responseDataError(errorMessage, null);
             }
@@ -61,76 +60,11 @@ public class InmuebleServiceImpl implements InmuebleService {
         try {
             Inmueble inmueble = inmuebleRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
-            return apiResponse.responseSuccess(successMessage, mapToDto(inmueble));
+            return apiResponse.responseSuccess(successMessage, inmueble);
         } catch (Exception e) {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }
     }
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> create(InmuebleRequestDto dto) {
-        String successMessage = Constants.RECORD_CREATED;
-        String errorMessage = Constants.RECORD_NOT_CREATED;
-
-        try {
-            Inmueble inmueble = new Inmueble();
-            inmueble.setDireccion(dto.getDireccion());
-            inmueble.setSuperficie(dto.getSuperficie());
-            inmueble.setIdPropietario(dto.getIdPropietario());
-            inmueble.setFechaPublicacion(LocalDateTime.now());
-            inmueble.setEstadoPublicacion(dto.getEstadoPublicacion());
-            inmueble.setDescripcion(dto.getDescripcion());
-            inmueble.setActivo(true);
-            inmueble.setTipo(dto.getTipo());
-
-            // Lista de servicios
-            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
-                Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
-                inmueble.setServicios(servicios);
-            }
-
-            Inmueble saved = inmuebleRepository.save(inmueble);
-            return apiResponse.responseCreate(successMessage, mapToDto(saved));
-
-        } catch (Exception e) {
-            return apiResponse.responseDataError(errorMessage, e.getMessage());
-        }
-    }
-
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> update(Long id, InmuebleRequestDto dto) {
-        String successMessage = Constants.RECORD_UPDATED;
-        String errorMessage = "Inmueble no encontrado: " + id;
-
-        try {
-            Inmueble inmueble = inmuebleRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException(errorMessage));
-
-            // Actualiza solo los campos que vienen no nulos
-            if (dto.getDireccion() != null) inmueble.setDireccion(dto.getDireccion());
-            if (dto.getSuperficie() != null) inmueble.setSuperficie(dto.getSuperficie());
-            if (dto.getEstadoPublicacion() != null) inmueble.setEstadoPublicacion(dto.getEstadoPublicacion());
-            if (dto.getDescripcion() != null) inmueble.setDescripcion(dto.getDescripcion());
-            if (dto.getTipo() != null) inmueble.setTipo(dto.getTipo());
-            if (dto.getActivo() != null) inmueble.setActivo(dto.getActivo());
-
-            // Actualiza la lista de servicios
-            if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
-                Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
-                inmueble.setServicios(servicios);
-            }
-
-            Inmueble updated = inmuebleRepository.save(inmueble);
-            return apiResponse.responseSuccess(successMessage, mapToDto(updated));
-
-        } catch (Exception e) {
-            return apiResponse.responseDataError(errorMessage, e.getMessage());
-        }
-    }
-
 
     @Override
     @Transactional
@@ -151,6 +85,44 @@ public class InmuebleServiceImpl implements InmuebleService {
         }
     }
 
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateMultimedia(Long inmuebleId, List<MultimediaRequestDto> multimediaDtos) {
+        String successMessage = "Multimedia actualizada correctamente";
+        String errorMessage = "No se pudo actualizar la multimedia";
+
+        try {
+            Inmueble inmueble = inmuebleRepository.findById(inmuebleId)
+                    .orElseThrow(() -> new RuntimeException("Inmueble no encontrado con id: " + inmuebleId));
+
+            // Limpiar la lista existente para activar orphanRemoval
+            inmueble.getMultimedias().clear();
+
+            // Añadir las nuevas multimedias
+            if (multimediaDtos != null && !multimediaDtos.isEmpty()) {
+                for (MultimediaRequestDto dto : multimediaDtos) {
+                    Multimedia multimedia = new Multimedia();
+                    multimedia.setUrl(dto.getUrl());
+                    multimedia.setMultimedia(dto.getTipo());
+                    multimedia.setDescripcion(dto.getDescripcion());
+                    multimedia.setEs_portada(dto.getEsPortada());
+                    multimedia.setActivo(true);
+                    multimedia.setInmueble(inmueble);
+                    inmueble.getMultimedias().add(multimedia);
+                }
+            }
+
+            Inmueble updatedInmueble = inmuebleRepository.save(inmueble);
+            return apiResponse.responseSuccess(successMessage, mapToDto(updatedInmueble));
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+
+
     // --- Mapeo a DTO ---
     private InmuebleResponseDto mapToDto(Inmueble inmueble) {
         InmuebleResponseDto dto = new InmuebleResponseDto();
@@ -158,8 +130,6 @@ public class InmuebleServiceImpl implements InmuebleService {
         dto.setDireccion(inmueble.getDireccion());
         dto.setSuperficie(inmueble.getSuperficie());
         dto.setIdPropietario(inmueble.getIdPropietario());
-        dto.setFechaPublicacion(inmueble.getFechaPublicacion());
-        dto.setEstadoPublicacion(inmueble.getEstadoPublicacion());
         dto.setDescripcion(inmueble.getDescripcion());
         dto.setActivo(inmueble.isActivo());
         dto.setTipo(inmueble.getTipo());

@@ -15,3 +15,21 @@
 - **B:** No he tenido problemas.
 
 ---
+
+# Scrum Report #2 — Oct 10
+
+## Daniel
+
+- **Y:** Configuración de herramientas y tecnologias para Frontend.
+- **T:** Trabajé en la creación del Formulario de Registro de Cliente.
+- **B:** Configuración de herramientas de Backend
+
+---
+
+## Sergio
+
+- **Y:** Trabajé haciendo mockups y configurando las herramientas para el desarrollo.
+- **T:** Trabajaré en la logica del registro de usuarios cliente.
+- **B:** Configuracion de herramientas y actualizacion de versiones de los proyectos de frontend y Backend.
+
+---
