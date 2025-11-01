@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { URL_BACKEND } from "@/config/constants";
 interface User {
   id: number;
   nombre: string;
@@ -21,7 +22,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const API_BASE_URL = "http://localhost:8000/tucasabackend";
   const router = useRouter();
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("user");
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(API_BASE_URL + "/auth/login", {
+      const response = await fetch(`${URL_BACKEND}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

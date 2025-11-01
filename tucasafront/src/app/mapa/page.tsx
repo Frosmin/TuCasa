@@ -51,7 +51,7 @@ const OPERACION_CONFIG = {
   ANTICRETICO: { color: '#9810fa', label: 'Anticrético', bgLight: '#fffbeb' },
 } as const;
 const COCHABAMBA_CENTER = { lat: -17.3895, lng: -66.1568 };
-const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
+
 
 export default function MapaPage() {
   const { isLoaded, loadError } = useGoogleMaps();
@@ -76,7 +76,7 @@ export default function MapaPage() {
   useEffect(() => {
     const fetchInmuebles = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/oferta`);
+        const response = await fetch(`${URL_BACKEND}/oferta`);
         const result = await response.json();
 
         if (result.error) {

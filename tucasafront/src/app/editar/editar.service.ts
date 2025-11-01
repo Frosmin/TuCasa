@@ -1,11 +1,11 @@
 import { PropertyPayload } from "../publicar/types/property.types";
+import { URL_BACKEND } from "@/config/constants";
 
-const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
 
 
 
 export async function fecthOferta(id: number) {
-    const res = await fetch(`${API_BASE_URL}/oferta/${id}`);
+    const res = await fetch(`${URL_BACKEND}/oferta/${id}`);
 
     if(!res.ok) {
         throw new Error(`error al obtener oferta:${res.status}`)
@@ -18,7 +18,7 @@ export async function fecthOferta(id: number) {
 
 export async function updateOferta(payload: PropertyPayload, id:number): Promise<any> {
 
-    const res = await fetch(`${API_BASE_URL}/oferta/${id}`, {
+    const res = await fetch(`${URL_BACKEND}/oferta/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

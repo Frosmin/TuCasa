@@ -35,7 +35,7 @@ export default function ServiciosSelector({
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://localhost:8000/tucasabackend/api/servicio');
+        const response = await fetch(`${URL_BACKEND}/api/servicio');
         const result = await response.json();
         if (result.error === false && result.data) {
           setServicios(result.data);

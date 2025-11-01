@@ -2,7 +2,6 @@
 
 import { PropertyPayload } from '../types/property.types';
 
-const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
 
 
 export class PropertyService {
@@ -13,7 +12,7 @@ export class PropertyService {
 
     console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${API_BASE_URL}/oferta`, {
+    const response = await fetch(`${URL_BACKEND}/oferta`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
