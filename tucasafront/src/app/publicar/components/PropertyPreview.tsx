@@ -192,9 +192,9 @@ export default function PropertyPreview({ formData }: PropertyPreviewProps) {
           {/* Características de Lote*/}
           {formData.propertyType === 'LOTE' && (
             <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200">
-              {formData.tamanio && (
+              {formData.superficie && (
               <p className="text-gray-600">
-                tamaño: <span className="font-semibold">{formData.tamanio} m²</span>
+                tamaño: <span className="font-semibold">{formData.superficie} m²</span>
               </p>
             )}
               <div className="text-sm">
