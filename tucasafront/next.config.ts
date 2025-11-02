@@ -1,9 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Agrega esta sección:
+  // Añade esta sección:
+  experimental: {
+    turbopack: {
+      // Esto le dice a Turbopack que la raíz del proyecto es este directorio
+      // y evita que busque en carpetas superiores.
+      root: process.cwd(),
+    },
+  },
+
   eslint: {
-    // Esto evitará que los errores de ESLint detengan el build en Render.
     ignoreDuringBuilds: true,
   },
 
