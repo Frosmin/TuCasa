@@ -1,6 +1,7 @@
 // publicar/services/property.service.ts
 
 import { PropertyPayload } from '../types/property.types';
+import { URL_BACKEND } from '@/config/constants';
 
 
 

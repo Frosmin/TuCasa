@@ -1,8 +1,8 @@
-// publicar/components/ServiciosSelector.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { Zap, Droplet, Flame, Wifi, Trash2, Shield, Check } from 'lucide-react';
+import { URL_BACKEND } from '@/config/constants';
 
 interface Servicio {
   id: number;
@@ -35,7 +35,7 @@ export default function ServiciosSelector({
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch(`${URL_BACKEND}/api/servicio');
+        const response = await fetch(URL_BACKEND +'/api/servicio');
         const result = await response.json();
         if (result.error === false && result.data) {
           setServicios(result.data);
