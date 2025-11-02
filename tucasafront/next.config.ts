@@ -1,19 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Añade esta sección:
-  experimental: {
-    turbopack: {
-      // Esto le dice a Turbopack que la raíz del proyecto es este directorio
-      // y evita que busque en carpetas superiores.
-      root: process.cwd(),
-    },
+  // Configuración de Turbopack en el nivel superior
+  turbopack: {
+    // Esto le dice a Turbopack que la raíz del proyecto es este directorio
+    // y evita que busque en carpetas superiores.
+    root: process.cwd(),
   },
 
   eslint: {
+    // Mantenemos esto para ignorar los errores de linting en el build
     ignoreDuringBuilds: true,
   },
-
+  
   images: {
     remotePatterns: [
       {
