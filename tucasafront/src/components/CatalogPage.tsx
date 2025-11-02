@@ -7,6 +7,7 @@ import { fetchOfertas } from '@/api/oferta'
 import { SearchBar } from '@/app/ventas/components/SearchBar'
 import { FiltroSidebar, type Filtros } from '@/app/ventas/components/FiltroSidebar'
 import { ResultadosOfertas } from '@/app/ventas/components/ResultadosOfertas'
+import { URL_BACKEND } from '@/config/constants';
 
 interface CatalogPageProps {
   tipoOperacion: TipoOperacion
