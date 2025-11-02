@@ -13,7 +13,7 @@ export class PropertyService {
 
     console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${URL_BACKEND}/oferta`, {
+    const response = await fetch(`${URL_BACKEND}/api/oferta`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
