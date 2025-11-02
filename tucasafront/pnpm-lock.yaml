@@ -42,6 +42,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.14
+      '@types/google.maps':
+        specifier: ^3.58.1
+        version: 3.58.1
       '@types/next':
         specifier: ^8.0.7
         version: 8.0.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)

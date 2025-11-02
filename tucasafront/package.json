@@ -9,9 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^2.0.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@googlemaps/js-api-loader": "^2.0.1",
     "@mui/material": "^7.3.4",
     "cloudinary": "^2.8.0",
     "lucide-react": "^0.545.0",
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.58.1",
     "@types/next": "^8.0.7",
     "@types/node": "^20",
     "@types/react": "^19.2.2",

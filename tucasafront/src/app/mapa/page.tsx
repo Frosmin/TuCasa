@@ -22,6 +22,7 @@ import {
 import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
+import { URL_BACKEND } from '@/config/constants';
 
 
 type TipoOperacion = 'TODOS' | 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
@@ -76,7 +77,7 @@ export default function MapaPage() {
   useEffect(() => {
     const fetchInmuebles = async () => {
       try {
-        const response = await fetch(`${URL_BACKEND}/oferta`);
+        const response = await fetch(`${URL_BACKEND}/api/oferta`);
         const result = await response.json();
 
         if (result.error) {
