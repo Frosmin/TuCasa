@@ -5,7 +5,7 @@ import { URL_BACKEND } from "@/config/constants";
 
 
 export async function fecthOferta(id: number) {
-    const res = await fetch(`${URL_BACKEND}/oferta/${id}`);
+    const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`);
 
     if(!res.ok) {
         throw new Error(`error al obtener oferta:${res.status}`)
@@ -18,7 +18,7 @@ export async function fecthOferta(id: number) {
 
 export async function updateOferta(payload: PropertyPayload, id:number): Promise<any> {
 
-    const res = await fetch(`${URL_BACKEND}/oferta/${id}`, {
+    const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
