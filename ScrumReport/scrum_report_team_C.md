@@ -87,9 +87,9 @@
 # Scrum Report #5 — Oct 21
 
 ## Simon
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Mejoras en el enpoint para crear departamentos
+- **T:** cambiar la logica para que funcione ahora con ofertas
+- **B:** sin problemas
 
 ---
 
@@ -125,3 +125,71 @@
 - **Y:** Investigacion para saber como el frontend gestiona el subir imagenes
 - **T:** Buscar soluciones al dilema de la carga de imagenes en nuestro proyecto en especifico
 - **B:** El backend esta un paso por delante
+
+---
+# Scrum Report #7 — Oct 28
+
+## Simon
+- **Y:** mejora de las tablas en la db para almacenar imagenes
+- **T:** volver el carucel de imgenes en un componete reutilizable
+- **B:** sin probelmas
+
+---
+
+## Ricardo
+- **Y:** 
+- **T:** 
+- **B:** 
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+---
+
+# Scrum Report #8 — Oct 31
+
+## Simon
+- **Y:** Tratar de integrar los cambios del team d a nuestra rama 
+- **T:** Seguir haciendo la integracion
+- **B:** La forma en al que reutilizaron el componente los del team d me causo problemas en la integraion
+
+---
+
+## Ricardo
+- **Y:** 
+- **T:** 
+- **B:** 
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+  ---
+
+# Scrum Report #9 — Nov 4
+
+## Simon
+- **Y:** corigiendo errores para deploy
+- **T:** deploy del proyecto 
+- **B:** errores que me causaron demoras
+
+---
+
+## Ricardo
+- **Y:** 
+- **T:** 
+- **B:** 
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
