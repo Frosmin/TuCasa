@@ -18,6 +18,8 @@ public class InmuebleResponseDto {
 
     private Long id;
 
+    private String zona;
+
     private String direccion;
 
     private BigDecimal latitud;
@@ -43,6 +45,7 @@ public class InmuebleResponseDto {
     public InmuebleResponseDto(Inmueble inmueble) {
         this.id = inmueble.getId();
         this.direccion = inmueble.getDireccion();
+        this.zona = inmueble.getZona();
         this.latitud = inmueble.getLatitud();
         this.longitud = inmueble.getLongitud();
         this.superficie = inmueble.getSuperficie();
