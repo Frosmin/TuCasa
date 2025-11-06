@@ -341,6 +341,7 @@ public class OfertaServiceImpl implements OfertaService {
             case CASA -> {
                 Casa casa = new Casa();
                 casa.setDireccion(dto.getDireccion());
+                casa.setZona(dto.getZona());
                 casa.setSuperficie(dto.getSuperficie());
                 casa.setLatitud(dto.getLatitud());
                 casa.setLongitud(dto.getLongitud());
@@ -370,6 +371,7 @@ public class OfertaServiceImpl implements OfertaService {
             case TIENDA -> {
                 Tienda tienda = new Tienda();
                 tienda.setDireccion(dto.getDireccion());
+                tienda.setZona(dto.getZona());
                 tienda.setSuperficie(dto.getSuperficie());
                 tienda.setLatitud(dto.getLatitud());
                 tienda.setLongitud(dto.getLongitud());
@@ -398,6 +400,7 @@ public class OfertaServiceImpl implements OfertaService {
             case DEPARTAMENTO -> {
                 Departamento departamento = new Departamento();
                 departamento.setDireccion(dto.getDireccion());
+                departamento.setZona(dto.getZona());
                 departamento.setSuperficie(dto.getSuperficie());
                 departamento.setLongitud(dto.getLongitud());
                 departamento.setLatitud(dto.getLatitud());
@@ -432,6 +435,7 @@ public class OfertaServiceImpl implements OfertaService {
             case LOTE -> {
                 Lote lote = new Lote();
                 lote.setDireccion(dto.getDireccion());
+                lote.setZona(dto.getZona());
                 lote.setSuperficie(dto.getSuperficie());
                 lote.setLongitud(dto.getLongitud());
                 lote.setLatitud(dto.getLatitud());
