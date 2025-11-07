@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.service.implement;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -567,6 +568,9 @@ public class OfertaServiceImpl implements OfertaService {
 
         List<Oferta> resultados = ofertaRepository.findAllCompletoByIds(ofertaIds);
 
+        BigDecimal promedioPrecios = ofertaRepository.findAveragePrecioByIds(ofertaIds);
+        promedioPrecios = promedioPrecios != null ? promedioPrecios.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+
         Map<Long, Oferta> ofertasFinded = resultados.stream()
                 .collect(Collectors.toMap(Oferta::getId, Function.identity()));
 
@@ -579,7 +583,7 @@ public class OfertaServiceImpl implements OfertaService {
                 .map(o -> mapToDto(o, compact != null && compact))
                 .toList();
 
-        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size());
+        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size(), promedioPrecios);
     }
 
     // ---------------------- MAPEOS DTO ----------------------
