@@ -144,3 +144,27 @@
 -   **T:** Hoy voy a agregar un modal de las propiedades en el mapa
 -   **B:** No he tenido problemas
 
+
+# Scrum Report #8 — Nov 7
+
+## Pablo
+
+-   **Y:** Trabajé en el endpoint de filtrado por zonas
+-   **T:** Hoy voy agregar promedio de precios a las busquedas
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabajé en implementar el registro de zonas para una publicacion
+-   **T:** Hoy voy a implementar el filtrado por zonas
+-   **B:** No he tenido problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en revisar la seccion la detalles de un inmueble
+-   **T:** Hoy voy a agregar la recuperacion de direccion del inmueble en especifico
+-   **B:** No he tenido problemas
