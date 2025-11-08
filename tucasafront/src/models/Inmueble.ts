@@ -32,5 +32,6 @@ export interface Inmueble {
     mascotasPermitidas?: boolean
     baulera?: boolean
     ascensor?: boolean
+    zona?: string
 }
 
