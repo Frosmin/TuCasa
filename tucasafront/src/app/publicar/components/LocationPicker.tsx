@@ -10,9 +10,16 @@ interface LocationPickerProps {
     longitude: string;
     onChange: (lat: number, lng: number) => void;
     onAddressChange?: (address: string) => void;
+    onZonaChange?: (zona: string) => void; 
 }
 
-export default function LocationPicker({ latitude, longitude, onChange, onAddressChange }: LocationPickerProps) {
+export default function LocationPicker({ 
+    latitude, 
+    longitude, 
+    onChange, 
+    onAddressChange,
+    onZonaChange 
+}: LocationPickerProps) {
     const mapRef = useRef<HTMLDivElement>(null);
     const markerRef = useRef<google.maps.Marker | null>(null);
     const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -49,7 +56,7 @@ export default function LocationPicker({ latitude, longitude, onChange, onAddres
         markerRef.current = marker;
 
         // Obtener dirección inicial
-        getAddress(initialLat, initialLng);
+        getAddressAndZone(initialLat, initialLng);
 
         // Evento: cuando se arrastra el marcador
         marker.addListener('dragend', () => {
@@ -58,7 +65,7 @@ export default function LocationPicker({ latitude, longitude, onChange, onAddres
                 const lat = position.lat();
                 const lng = position.lng();
                 onChange(lat, lng);
-                getAddress(lat, lng);
+                getAddressAndZone(lat, lng);
             }
         });
 
@@ -70,7 +77,7 @@ export default function LocationPicker({ latitude, longitude, onChange, onAddres
                 marker.setPosition(e.latLng);
                 map.panTo(e.latLng);
                 onChange(lat, lng);
-                getAddress(lat, lng);
+                getAddressAndZone(lat, lng);
             }
         });
     }, [isLoaded]);
@@ -86,28 +93,71 @@ export default function LocationPicker({ latitude, longitude, onChange, onAddres
                 const newPosition = { lat, lng };
                 markerRef.current.setPosition(newPosition);
                 mapInstanceRef.current.panTo(newPosition);
-                getAddress(lat, lng);
+                getAddressAndZone(lat, lng);
             }
         }
     }, [latitude, longitude, isLoaded]);
 
-    const getAddress = async (lat: number, lng: number) => {
+    const getAddressAndZone = async (lat: number, lng: number) => {
         if (!window.google?.maps?.Geocoder) return;
 
         const geocoder = new google.maps.Geocoder();
         try {
             const response = await geocoder.geocode({ location: { lat, lng } });
             if (response.results[0]) {
-                const detectedAddress = response.results[0].formatted_address;
+                const result = response.results[0];
+                const detectedAddress = result.formatted_address;
+                
+                // Extraer la zona del resultado de geocodificación
+                const zona = extractZonaFromGeocodeResult(result);
+                
                 setAddress(detectedAddress);
-                // Llamar al callback para actualizar el campo de dirección
+                
+                // Actualizar dirección
                 if (onAddressChange) {
                     onAddressChange(detectedAddress);
+                }
+                
+                // Actualizar zona
+                if (onZonaChange && zona) {
+                    onZonaChange(zona);
                 }
             }
         } catch (error) {
             console.error('Error al obtener la dirección:', error);
         }
+    };
+
+    // Función para extraer la zona de los componentes del resultado de geocodificación
+    const extractZonaFromGeocodeResult = (result: google.maps.GeocoderResult): string => {
+        const addressComponents = result.address_components;
+        
+        // Prioridad de búsqueda de la zona:
+        // 1. sublocality_level_1 (barrio/zona específica)
+        // 2. locality (ciudad)
+        // 3. administrative_area_level_2 (municipio)
+        // 4. administrative_area_level_1 (departamento/estado)
+        
+        const priorityTypes = [
+            'sublocality_level_1',
+            'sublocality',
+            'neighborhood',
+            'locality',
+            'administrative_area_level_2',
+            'administrative_area_level_1'
+        ];
+        
+        for (const type of priorityTypes) {
+            const component = addressComponents.find(comp => 
+                comp.types.includes(type)
+            );
+            if (component) {
+                return component.long_name;
+            }
+        }
+        
+        // Fallback: retornar el primer componente si no se encuentra ninguno
+        return addressComponents[0]?.long_name || 'Zona no especificada';
     };
 
     const getCurrentLocation = () => {
@@ -127,7 +177,7 @@ export default function LocationPicker({ latitude, longitude, onChange, onAddres
                     markerRef.current.setPosition(newPosition);
                     mapInstanceRef.current.panTo(newPosition);
                     mapInstanceRef.current.setZoom(16);
-                    getAddress(lat, lng);
+                    getAddressAndZone(lat, lng);
                 }
             },
             (error) => {

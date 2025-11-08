@@ -1,11 +1,12 @@
 // publicar/utils/property.utils.ts
 
-import { PropertyFormData, PropertyPayload, InmuebleData, OperationType, MultimediaItem } from '../types/property.types';
+import { PropertyFormData, PropertyPayload, InmuebleData, MultimediaItem, OperationType } from '../types/property.types';
 
 export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayload => {
   const inmuebleData: InmuebleData = {
     tipo: formData.propertyType,
     direccion: formData.direccion,
+    zona: formData.zona, // ✅ AGREGADO: Campo zona
     latitud: parseFloat(formData.latitud),
     longitud: parseFloat(formData.longitud),
     superficie: parseFloat(formData.superficie),
@@ -47,6 +48,11 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
     inmuebleData.baulera = !!formData.baulera;
   }
 
+  // Agregar campos específicos de LOTE
+  if (formData.propertyType === 'LOTE') {
+    inmuebleData.muroPerimetral = formData.muroPerimetral;
+  }
+
   // Mapear imágenes a "multimedia" que requiere el backend
   if (formData.images && formData.images.length > 0) {
     const multimedia: MultimediaItem[] = formData.images.map((url, idx) => ({
@@ -57,10 +63,6 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
       esPortada: idx === 0, // primera como portada
     }));
     inmuebleData.multimedia = multimedia;
-  }
-
-  if (formData.propertyType === 'LOTE') {
-    inmuebleData.muroPerimetral = formData.muroPerimetral;
   }
 
   return {
@@ -74,7 +76,6 @@ export const buildPropertyPayload = (formData: PropertyFormData): PropertyPayloa
       : null,
     tipoPago: formData.operacion === 'VENTA' ? 'unico' : formData.tipoPago,
   };
-
 };
 
 export const handleApiError = (errorData: any): string => {
