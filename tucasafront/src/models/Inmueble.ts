@@ -8,6 +8,7 @@ export interface Inmueble {
     direccion: string
     latitud: number
     longitud: number
+    zona: string
     superficie: number
     idPropietario: number
     descripcion: string

@@ -23,6 +23,7 @@ interface PropertyFormProps {
   isSubmitting: boolean;
   onLocationChange: (lat: number, lng: number) => void;
   onAddressChange: (address: string) => void;
+  onZonaChange: (zona: string) => void; // Nuevo callback
   mode: "registro" | "edicion";
 }
 
@@ -34,6 +35,7 @@ export default function PropertyForm({
   onServiciosChange,
   onLocationChange,
   onAddressChange,
+  onZonaChange, // Nuevo callback
   onImageUpload,
   onImageRemove,
   onSubmit,
@@ -96,11 +98,13 @@ export default function PropertyForm({
         longitude={formData.longitud}
         onChange={onLocationChange}
         onAddressChange={onAddressChange}
+        onZonaChange={onZonaChange} // Pasar el callback
       />
 
-      {/* Campos ocultos para latitud y longitud */}
+      {/* Campos ocultos para latitud, longitud y zona */}
       <input type="hidden" name="latitud" value={formData.latitud} />
       <input type="hidden" name="longitud" value={formData.longitud} />
+      <input type="hidden" name="zona" value={formData.zona} />
 
       {/* Dirección - Ahora se actualiza automáticamente desde el mapa */}
       <div>

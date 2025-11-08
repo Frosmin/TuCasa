@@ -17,7 +17,7 @@ import {
   AlertCircle,
   X,
   MapPinHouse,
-  Circle
+  ChevronDown
 } from 'lucide-react';
 import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
@@ -71,6 +71,9 @@ export default function MapaPage() {
   // Estados de filtros
   const [tipoInmuebleSeleccionado, setTipoInmuebleSeleccionado] = useState<TipoPropiedad | ''>('DEPARTAMENTO');
   const [tipoOperacion, setTipoOperacion] = useState<TipoOperacion>('ALQUILER');
+  const [zonaSeleccionada, setZonaSeleccionada] = useState<string>('');
+  const [isZonaDropdownOpen, setIsZonaDropdownOpen] = useState(false);
+  const [zonaSearchTerm, setZonaSearchTerm] = useState('');
 
   // Cargar inmuebles desde la API
   useEffect(() => {
@@ -108,6 +111,9 @@ export default function MapaPage() {
         return false;
       }
 
+      if (zonaSeleccionada && oferta.inmueble.zona !== zonaSeleccionada) {
+        return false;
+      }
       // Filtro por tipo de operación
       if (tipoOperacion !== 'TODOS') {
 
@@ -118,7 +124,25 @@ export default function MapaPage() {
 
       return true;
     });
-  }, [ofertas, tipoInmuebleSeleccionado, tipoOperacion]);
+  }, [ofertas, tipoInmuebleSeleccionado, tipoOperacion, zonaSeleccionada]);
+
+  const zonasUnicas = useMemo(() => {
+    const zonas = new Set<string>();
+    ofertas.forEach(oferta => {
+      if (oferta.inmueble.zona && oferta.inmueble.zona.trim() !== '') {
+        zonas.add(oferta.inmueble.zona.trim());
+      }
+    });
+    return Array.from(zonas).sort();
+  }, [ofertas]);
+
+  const zonasFiltradas = useMemo(() => {
+    if (!zonaSearchTerm) return zonasUnicas;
+    return zonasUnicas.filter(zona =>
+      zona.toLowerCase().includes(zonaSearchTerm.toLowerCase())
+    );
+  }, [zonasUnicas, zonaSearchTerm]);
+
 
   // Asegurar que el DOM esté listo
   useEffect(() => {
@@ -383,9 +407,10 @@ export default function MapaPage() {
   const limpiarFiltros = () => {
     setTipoInmuebleSeleccionado('');
     setTipoOperacion('TODOS');
+    setZonaSeleccionada('');
   };
 
-  const tienesFiltrosActivos = tipoInmuebleSeleccionado !== '' || tipoOperacion !== 'TODOS';
+  const tienesFiltrosActivos = tipoInmuebleSeleccionado !== '' || tipoOperacion !== 'TODOS' || zonaSeleccionada !== '';
 
   if (loadError) {
     return (
@@ -469,6 +494,118 @@ export default function MapaPage() {
             ))}
           </div>
         </div>
+
+        {zonasUnicas.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-4">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Zona
+            </h3>
+            <div className="relative">
+              {/* Selector Principal */}
+              <button
+                type="button"
+                onClick={() => setIsZonaDropdownOpen(!isZonaDropdownOpen)}
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm"
+              >
+                <span className={`truncate ${zonaSeleccionada ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                  {zonaSeleccionada || 'Todas las zonas'}
+                </span>
+
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {zonaSeleccionada && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setZonaSeleccionada('');
+                        setZonaSearchTerm('');
+                      }}
+                      className="p-1 hover:bg-gray-300 rounded transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5 text-gray-600" />
+                    </button>
+                  )}
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-600 transition-transform ${isZonaDropdownOpen ? 'rotate-180' : ''}`}
+                  />
+                </div>
+              </button>
+
+              {/* Dropdown */}
+              {isZonaDropdownOpen && (
+                <>
+                  {/* Overlay */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsZonaDropdownOpen(false)}
+                  />
+
+                  {/* Menú desplegable */}
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-80 overflow-hidden">
+                    {/* Buscador */}
+                    <div className="p-2 border-b border-gray-200">
+                      <input
+                        type="text"
+                        placeholder="Buscar zona..."
+                        value={zonaSearchTerm}
+                        onChange={(e) => setZonaSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+
+                    {/* Lista de zonas */}
+                    <div className="overflow-y-auto max-h-64">
+                      {/* Opción "Todas las zonas" */}
+                      <button
+                        onClick={() => {
+                          setZonaSeleccionada('');
+                          setIsZonaDropdownOpen(false);
+                          setZonaSearchTerm('');
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${!zonaSeleccionada ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                      >
+                        Todas las zonas ({ofertas.length})
+                      </button>
+
+                      {/* Opciones de zonas */}
+                      {zonasFiltradas.length > 0 ? (
+                        zonasFiltradas.map((zona) => {
+                          const count = ofertas.filter(o => o.inmueble.zona === zona).length;
+                          return (
+                            <button
+                              key={zona}
+                              onClick={() => {
+                                setZonaSeleccionada(zona);
+                                setIsZonaDropdownOpen(false);
+                                setZonaSearchTerm('');
+                              }}
+                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${zonaSeleccionada === zona ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                                }`}
+                            >
+                              {zona} ({count})
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <div className="px-4 py-8 text-center text-sm text-gray-500">
+                          No se encontraron zonas
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Contador */}
+                    {zonaSearchTerm && zonasFiltradas.length > 0 && (
+                      <div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
+                        {zonasFiltradas.length} zona{zonasFiltradas.length !== 1 ? 's' : ''} encontrada{zonasFiltradas.length !== 1 ? 's' : ''}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
 
 
