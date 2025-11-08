@@ -24,9 +24,9 @@ const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: numbe
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2)
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c
 }
@@ -51,6 +51,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     proximidad: null,
     latitud: COCHABAMBA_CENTER.lat,
     longitud: COCHABAMBA_CENTER.lng,
+    zona: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -69,12 +70,12 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
       return { lat: lng, lng: lat } // Invertir si están fuera de rango
     }
-    
+
     // Si la latitud parece más como longitud y viceversa (para Bolivia)
     if (Math.abs(lat) > Math.abs(lng)) {
       return { lat: lng, lng: lat } // Invertir
     }
-    
+
     return { lat, lng }
   }
 
@@ -100,7 +101,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
             }
           })
           .filter(o => o.inmueble.latitud !== 0 && o.inmueble.longitud !== 0)
-        
+
         setOfertas(datosValidos)
 
         // Calcular el centro promedio de inmuebles válidos
@@ -109,13 +110,13 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           const lngSum = datosValidos.reduce((sum, o) => sum + o.inmueble.longitud, 0)
           const centerLat = latSum / datosValidos.length
           const centerLng = lngSum / datosValidos.length
-          
+
           setFilters(prev => ({
             ...prev,
             latitud: COCHABAMBA_CENTER.lat,
             longitud: COCHABAMBA_CENTER.lng,
           }))
-        } 
+        }
       } catch (err) {
         const mensaje =
           err instanceof Error ? err.message : 'Error desconocido'
@@ -151,12 +152,14 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     }))
   }, [ofertas, filters.latitud, filters.longitud])
 
-  // Filtrar ofertas
   const ofertasFiltradas = useMemo(() => {
     return ofertasConDistancia
       .filter(({ oferta, distancia }) => {
         // Filtro por tipo de inmueble
         if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
+          return false
+        }
+        if (filters.zona && oferta.inmueble.zona !== filters.zona) {
           return false
         }
 
@@ -166,11 +169,13 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           const coincide =
             oferta.descripcion.toLowerCase().includes(termo) ||
             oferta.inmueble.descripcion.toLowerCase().includes(termo) ||
-            oferta.inmueble.direccion.toLowerCase().includes(termo)
+            oferta.inmueble.direccion.toLowerCase().includes(termo) ||
+            (oferta.inmueble.zona && oferta.inmueble.zona.toLowerCase().includes(termo)) // ✅ Incluir zona en búsqueda
           if (!coincide) return false
         }
 
-        // Filtro por proximidad - Validación mejorada
+        // ... resto de filtros sin cambios
+        // Filtro por proximidad
         if (filters.proximidad && filters.proximidad > 0) {
           if (distancia > filters.proximidad) {
             return false
@@ -257,6 +262,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       proximidad: null,
       latitud: COCHABAMBA_CENTER.lat,
       longitud: COCHABAMBA_CENTER.lng,
+      zona: '',
     })
     setSearchTerm('')
     setTipoInmuebleSeleccionado('')
@@ -295,11 +301,10 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
               <button
                 key={id}
                 onClick={() => setTipoInmuebleSeleccionado(id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${
-                  tipoInmuebleSeleccionado === id
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
-                }`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 {label}
