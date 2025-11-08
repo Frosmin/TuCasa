@@ -8,6 +8,7 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 
 import ImageCarousel from '@/components/ImageCarousel';
+import PropertyLocationMap from './components/PropertyLocationMap'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
@@ -390,16 +391,6 @@ export default function DetalleOfertaPage() {
           </div>
         </div>
 
-        {/* Dirección con icono destacado */}
-        <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
-          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <MapPin className="h-5 w-5 text-blue-600" />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 font-medium">Ubicación</p>
-            <p className="text-lg font-semibold text-gray-900">{inmueble?.direccion || 'Dirección no especificada'}</p>
-          </div>
-        </div>
       </div>
 
       {/* Características principales en cards */}
@@ -518,6 +509,14 @@ export default function DetalleOfertaPage() {
           </div>
         )}
       </div>
+
+      <PropertyLocationMap
+        latitude={oferta.inmueble.latitud}
+        longitude={oferta.inmueble.longitud}
+        address={oferta.inmueble.direccion}
+        zone={oferta.inmueble.zona}
+        propertyName={oferta.descripcion}
+      />
 
       {/* Botón de acción destacado */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
