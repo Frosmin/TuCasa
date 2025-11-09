@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
-import { Home, Building2, MapPin, Store } from 'lucide-react'
+import { Home, Building2, MapPin, Store, TrendingUp, BarChart3 } from 'lucide-react'
 import Loading from '@/components/Loading'
 import type { Oferta, TipoOperacion } from '@/models/Oferta'
-import { fetchOfertas } from '@/api/oferta'
+import { fetchOfertas, type OfertasResult } from '@/api/oferta'
 import { SearchBar } from '@/app/ventas/components/SearchBar'
 import { FiltroSidebar, type Filtros } from '@/app/ventas/components/FiltroSidebar'
 import { ResultadosOfertas } from '@/app/ventas/components/ResultadosOfertas'
@@ -14,7 +14,6 @@ interface CatalogPageProps {
 
 // Coordenadas de Cochabamba
 const COCHABAMBA_CENTER = { lat: -17.392902, lng: -66.144739 }
-
 
 // Función utilitaria para calcular distancia (Haversine)
 const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -63,19 +62,14 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     { id: 'TIENDA', label: 'Tiendas', icon: Store },
   ] as const
 
-  // Validar y corregir coordenadas (detectar si están invertidas)
+  // Validar y corregir coordenadas
   const validarCoordenadas = (lat: number, lng: number) => {
-    // Cochabamba debe estar aproximadamente entre -17 y -18 de latitud
-    // y entre -66 y -67 de longitud
     if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
-      return { lat: lng, lng: lat } // Invertir si están fuera de rango
+      return { lat: lng, lng: lat }
     }
-
-    // Si la latitud parece más como longitud y viceversa (para Bolivia)
     if (Math.abs(lat) > Math.abs(lng)) {
-      return { lat: lng, lng: lat } // Invertir
+      return { lat: lng, lng: lat }
     }
-
     return { lat, lng }
   }
 
@@ -85,10 +79,11 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       try {
         setLoading(true)
         setError(null)
-        const data = await fetchOfertas(tipoOperacion)
+
+        const result: OfertasResult = await fetchOfertas(tipoOperacion)
 
         // Filtrar inmuebles con coordenadas válidas y corregidas
-        const datosValidos = data
+        const datosValidos = result.ofertas
           .map(o => {
             const { lat, lng } = validarCoordenadas(o.inmueble.latitud, o.inmueble.longitud)
             return {
@@ -104,13 +99,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
 
         setOfertas(datosValidos)
 
-        // Calcular el centro promedio de inmuebles válidos
         if (datosValidos.length > 0) {
-          const latSum = datosValidos.reduce((sum, o) => sum + o.inmueble.latitud, 0)
-          const lngSum = datosValidos.reduce((sum, o) => sum + o.inmueble.longitud, 0)
-          const centerLat = latSum / datosValidos.length
-          const centerLng = lngSum / datosValidos.length
-
           setFilters(prev => ({
             ...prev,
             latitud: COCHABAMBA_CENTER.lat,
@@ -118,8 +107,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           }))
         }
       } catch (err) {
-        const mensaje =
-          err instanceof Error ? err.message : 'Error desconocido'
+        const mensaje = err instanceof Error ? err.message : 'Error desconocido'
         setError(mensaje)
       } finally {
         setLoading(false)
@@ -155,7 +143,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
   const ofertasFiltradas = useMemo(() => {
     return ofertasConDistancia
       .filter(({ oferta, distancia }) => {
-        // Filtro por tipo de inmueble
         if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
           return false
         }
@@ -163,74 +150,56 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           return false
         }
 
-        // Filtro por búsqueda
         if (searchTerm) {
           const termo = searchTerm.toLowerCase()
           const coincide =
             oferta.descripcion.toLowerCase().includes(termo) ||
             oferta.inmueble.descripcion.toLowerCase().includes(termo) ||
             oferta.inmueble.direccion.toLowerCase().includes(termo) ||
-            (oferta.inmueble.zona && oferta.inmueble.zona.toLowerCase().includes(termo)) // ✅ Incluir zona en búsqueda
+            (oferta.inmueble.zona && oferta.inmueble.zona.toLowerCase().includes(termo))
           if (!coincide) return false
         }
 
-        // ... resto de filtros sin cambios
-        // Filtro por proximidad
         if (filters.proximidad && filters.proximidad > 0) {
           if (distancia > filters.proximidad) {
             return false
           }
         }
 
-        // Filtro por precio
-        if (
-          oferta.precio < filters.precioMin ||
-          oferta.precio > filters.precioMax
-        ) {
+        if (oferta.precio < filters.precioMin || oferta.precio > filters.precioMax) {
           return false
         }
 
-        // Filtro por superficie
-        if (
-          oferta.inmueble.superficie < filters.superficieMin ||
-          oferta.inmueble.superficie > filters.superficieMax
-        ) {
+        if (oferta.inmueble.superficie < filters.superficieMin || oferta.inmueble.superficie > filters.superficieMax) {
           return false
         }
 
-        // Filtro por dormitorios
         if (filters.dormitorios && oferta.inmueble.numDormitorios) {
           if (oferta.inmueble.numDormitorios !== parseInt(filters.dormitorios)) {
             return false
           }
         }
 
-        // Filtro por garaje
         if (filters.garaje === true && !oferta.inmueble.garaje) {
           return false
         }
 
-        // Filtro por amoblado
         if (filters.amoblado === true && !oferta.inmueble.amoblado) {
           return false
         }
 
-        // Filtro por patio
         if (filters.patio === true && !oferta.inmueble.patio) {
           return false
         }
 
-        // Filtro por sotano
         if (filters.sotano === true && !oferta.inmueble.sotano) {
           return false
         }
 
-        // Filtro por moneda
         if (filters.moneda && oferta.moneda !== filters.moneda) {
           return false
         }
 
-        // Filtro por servicios
         if (filters.servicios && filters.servicios.length > 0) {
           const servicios = oferta.inmueble.servicios || []
           const serviciosInmueble = servicios.map(s => s.nombre)
@@ -245,7 +214,50 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       .map(({ oferta }) => oferta)
   }, [ofertasConDistancia, tipoInmuebleSeleccionado, searchTerm, filters])
 
-  // Limpiar filtros
+  // Calcular promedio SOLO por zona y tipo de inmueble (independiente de otros filtros)
+  const promediosPorZona = useMemo(() => {
+    // Filtrar solo por zona y tipo de inmueble seleccionados
+    let ofertasParaPromedio = ofertas
+
+    if (filters.zona) {
+      ofertasParaPromedio = ofertasParaPromedio.filter(o => o.inmueble.zona === filters.zona)
+    }
+
+    if (tipoInmuebleSeleccionado) {
+      ofertasParaPromedio = ofertasParaPromedio.filter(o => o.inmueble.tipo === tipoInmuebleSeleccionado)
+    }
+
+    if (ofertasParaPromedio.length === 0) {
+      return {
+        promedio: 0,
+        porMoneda: {},
+        total: 0
+      }
+    }
+
+    // Promedio general
+    const suma = ofertasParaPromedio.reduce((acc, o) => acc + o.precio, 0)
+    const promedio = suma / ofertasParaPromedio.length
+
+    // Promedios por moneda
+    const promedios: { '$'?: number; 'Bs'?: number } = {}
+    const monedas = ['$', 'Bs'] as const
+
+    monedas.forEach(moneda => {
+      const ofertasMoneda = ofertasParaPromedio.filter(o => o.moneda === moneda)
+      if (ofertasMoneda.length > 0) {
+        const suma = ofertasMoneda.reduce((acc, o) => acc + o.precio, 0)
+        promedios[moneda] = suma / ofertasMoneda.length
+      }
+    })
+
+    return {
+      promedio,
+      porMoneda: promedios,
+      total: ofertasParaPromedio.length
+    }
+  }, [ofertas, filters.zona, tipoInmuebleSeleccionado])
+
   const limpiarFiltrosCompleto = () => {
     setFilters({
       precioMin: 0,
@@ -268,7 +280,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     setTipoInmuebleSeleccionado('')
   }
 
-  // Mostrar error
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -286,9 +297,15 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     )
   }
 
-  // Mostrar loading
   if (loading) {
     return <Loading message="Cargando ofertas..." />
+  }
+
+  const formatearPrecio = (precio: number) => {
+    return precio.toLocaleString('es-BO', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
   }
 
   return (
@@ -298,27 +315,71 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {tiposPropiedad.map(({ id, label, icon: Icon }) => {
-
               const length = ofertas.filter(o => id === '' || o.inmueble.tipo === id).length
               return (
-
                 <button
                   key={id}
                   onClick={() => setTipoInmuebleSeleccionado(id)}
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
                     }`}
                 >
                   <Icon className="w-5 h-5" />
                   {label} ({length})
                 </button>
               )
-            }
-            )}
+            })}
           </div>
         </div>
       </div>
+
+      {/* Banner de Estadísticas - Basado en ZONA seleccionada */}
+      {promediosPorZona.promedio > 0 && (
+        <div className="max-w-7xl mx-auto px-4 pt-6">
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm">
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm text-blue-100 font-medium">
+                    Precio promedio {filters.zona ? `en ${filters.zona}` : 'del mercado'}
+                    {tipoInmuebleSeleccionado && ` - ${tiposPropiedad.find(t => t.id === tipoInmuebleSeleccionado)?.label}`}
+                  </p>
+                  <p className="text-3xl font-bold">{formatearPrecio(promediosPorZona.promedio)}</p>
+                </div>
+              </div>
+
+              {(promediosPorZona.porMoneda['$'] || promediosPorZona.porMoneda['Bs']) && (
+                <div className="flex gap-6">
+                  {promediosPorZona.porMoneda['$'] && (
+                    <div className="text-right">
+                      <p className="text-sm text-blue-100 font-medium">Promedio en Dólares</p>
+                      <p className="text-2xl font-bold">$ {formatearPrecio(promediosPorZona.porMoneda['$'])}</p>
+                    </div>
+                  )}
+                  {promediosPorZona.porMoneda['Bs'] && (
+                    <div className="text-right">
+                      <p className="text-sm text-blue-100 font-medium">Promedio en Bolivianos</p>
+                      <p className="text-2xl font-bold">Bs {formatearPrecio(promediosPorZona.porMoneda['Bs'])}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-sm text-blue-100 mt-3">
+              <BarChart3 className="w-4 h-4" />
+              <p>
+                Basado en {promediosPorZona.total} propiedades
+                {filters.zona && ` en la zona de ${filters.zona}`}
+                {tipoInmuebleSeleccionado && !filters.zona && ` del tipo ${tiposPropiedad.find(t => t.id === tipoInmuebleSeleccionado)?.label}`}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Buscador */}
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -351,7 +412,5 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     </div>
   )
 }
-
-
 
 export default CatalogPage
