@@ -168,3 +168,27 @@
 -   **Y:** Trabajé en revisar la seccion la detalles de un inmueble
 -   **T:** Hoy voy a agregar la recuperacion de direccion del inmueble en especifico
 -   **B:** No he tenido problemas
+
+# Scrum Report #9 — Nov 11
+
+## Pablo
+
+-   **Y:** Trabajé en calcular y devolver el promedio de precios por busqueda 
+-   **T:** Hoy voy hacer las consultas para el historico de precios de ofertas
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabajé en el filtrado por zonas
+-   **T:** Hoy voy a refactorizar el frontend.
+-   **B:** No he tenido problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en mostrar la direccion de un inmueble especifico
+-   **T:** Hoy voy a mostrar el promedio de precios de una zona
+-   **B:** No he tenido problemas
