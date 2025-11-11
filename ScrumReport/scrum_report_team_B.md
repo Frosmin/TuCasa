@@ -144,6 +144,31 @@
 -   **T:** Hoy voy a agregar un modal de las propiedades en el mapa
 -   **B:** No he tenido problemas
 
+# Scrum Report #7 — Oct 31
+
+## Pablo
+
+-   **Y:** Trabajé en agregar servicios nuevos para inmuebles
+-   **T:** Hoy voy a integrar la rama team b a dev
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabajé en filtrados del mapa
+-   **T:** Hoy voy a hacer correcciones y dar soporte a la integracion
+-   **B:** No he tenido problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en agregar un modal con la informacion del inmueble en el mapa
+-   **T:** Hoy voy a hacer correcciones si se necesita y dar soporte a la integracion
+-   **B:** No he tenido problemas
+
+
 
 # Scrum Report #8 — Nov 7
 
