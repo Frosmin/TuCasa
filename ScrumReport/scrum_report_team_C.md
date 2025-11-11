@@ -160,9 +160,9 @@
 ---
 
 ## Ricardo
-- **Y:** 
-- **T:** 
-- **B:** 
+- **Y:** Integración de lo trabajado con la rama dev
+- **T:** Validación de la integración para su correcto funcionamiento
+- **B:** Falta de comunicación con los otros equipos, cambiaron internamente su orden de integración
 
 ---
 
@@ -183,9 +183,9 @@
 ---
 
 ## Ricardo
-- **Y:** 
-- **T:** 
-- **B:** 
+- **Y:** Analizando que historias podemos trabajar este nuevo sprint
+- **T:** Proponiendo posibles soluciones para las historias seleccionadas
+- **B:** Mucho depende de la existencia de roles y no existe alguna historia que se encargue de ello
 
 ---
 
@@ -206,9 +206,30 @@
 ---
 
 ## Ricardo
+- **Y:** Reunión interna del equipo comentado sobre como realizar las historias seleccionadas
+- **T:** No hubo avances
+- **B:** Ninguno
+
+---
+
+## Carlos
+- **Y:** ...
+- **T:** ...
+- **B:** ...
+
+# Scrum Report #9 — Nov 11
+
+## Simon
 - **Y:** 
 - **T:** 
 - **B:** 
+
+---
+
+## Ricardo
+- **Y:** No avance 
+- **T:** Fuimos a investigar el sobre el asunto del RUAT 
+- **B:** Ninguno
 
 ---
 
