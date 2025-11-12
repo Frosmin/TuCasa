@@ -36,14 +36,20 @@ export default function ImageCarousel({ images, onIndexChange,className = 'w-ful
 
   return (
     <div className={`${className} bg-gray-100 rounded-xl overflow-hidden relative group`}>
+      {images.map((src,idx) =>(
       <Image
-        src={images[currentImageIndex]}
-        alt={`Imagen ${currentImageIndex + 1}`}
+        key={src+idx}
+        src={src}
+        alt={`Imagen ${idx + 1}`}
         fill
-        className="object-cover"
-        priority={currentImageIndex === 0}
+        sizes="100vw"
+        loading="eager"
+        priority={idx === 0}
+        className={`object-cover absolute inset-0 transition-opacity duration-300 ${
+            idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }`}
       />
-
+      ))}
       {images.length > 1 && (
         <>
           {/* Botones de navegación */}
