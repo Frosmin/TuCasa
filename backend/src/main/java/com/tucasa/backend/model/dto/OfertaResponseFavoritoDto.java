@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class OfertaResponseFavoritoDto extends OfertaResponseDto {
 
     private Long totalFavoritos;
+    private boolean esFavorito;
 
     public OfertaResponseFavoritoDto(OfertaResponseDto dto, Long totalFavoritos) {
         super(
@@ -29,5 +30,6 @@ public class OfertaResponseFavoritoDto extends OfertaResponseDto {
             
         );
         this.totalFavoritos = totalFavoritos;
+        this.esFavorito = false;
     }
 }
