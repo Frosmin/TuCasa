@@ -46,6 +46,7 @@ import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.OfertaRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
+import com.tucasa.backend.model.repository.UsuarioRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
 
@@ -54,6 +55,8 @@ import java.util.ArrayList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+
+import org.springframework.security.core.Authentication;
 
 @Service
 public class OfertaServiceImpl implements OfertaService {
@@ -88,6 +91,9 @@ public class OfertaServiceImpl implements OfertaService {
     @Autowired
     private FavoritoRepository favoritoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     // ---------------------- CRUD OFERTAS ----------------------
     @Override
     public ResponseEntity<?> findAll() {
@@ -110,7 +116,7 @@ public class OfertaServiceImpl implements OfertaService {
     }
 
     @Override
-    public ResponseEntity<?> findById(Long id) {
+    public ResponseEntity<?> findById(Long id, Authentication authentication) {
         String successMessage = Constants.RECORDS_FOUND;
         String errorMessage = "Oferta no encontrada";
 
@@ -121,6 +127,17 @@ public class OfertaServiceImpl implements OfertaService {
             OfertaResponseDto baseDto = mapToDto(oferta);
             Long totalFavoritos = favoritoRepository.countByOfertaId(id);
             OfertaResponseFavoritoDto responseDto = new OfertaResponseFavoritoDto(baseDto, totalFavoritos);
+
+            if (authentication != null &&  authentication.isAuthenticated()){
+                String userEmail = authentication.getName();
+                usuarioRepository.findByCorreo(userEmail).ifPresent(usuario -> {
+                    Long userID = usuario.getId();
+                    boolean esFavorito = favoritoRepository.existsByUsuarioIdAndOfertaId(userID, id);
+                    responseDto.setEsFavorito(esFavorito);;
+                });
+
+            }
+
 
             return apiResponse.responseSuccess(successMessage, responseDto);
         } catch (Exception e) {
