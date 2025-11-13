@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, Settings, LayoutList } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, UserPlus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -66,16 +66,28 @@ export default function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
 
-          {user ? (
-            <Link
-              href={"/publicar"}
-              className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
-            >
-              Publicar
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
-            </Link>
-          ) : (
-            <></>
+          {/* Mostrar solo si hay usuario */}
+          {user && (
+            <>
+              <Link
+                href={"/publicar"}
+                className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+              >
+                Publicar
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+              </Link>
+
+              {/* Mostrar botón "Convertirse en Agente!" si no es agente */}
+              {user.rol !== "AGENTE_INMOBILIARIO" && (
+                <Link
+                  href={"/convertirse-agente"}
+                  className="ml-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  ¡Convertirse en agente!
+                </Link>
+              )}
+            </>
           )}
         </div>
 

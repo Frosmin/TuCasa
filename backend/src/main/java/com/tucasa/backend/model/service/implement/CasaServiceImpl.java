@@ -97,7 +97,6 @@ public class CasaServiceImpl implements CasaService {
             casa.setAmoblado(dto.getAmoblado());
             casa.setSotano(dto.getSotano());
 
-            // Lista de servicios
             if (dto.getServiciosIds() != null && !dto.getServiciosIds().isEmpty()) {
                 Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(dto.getServiciosIds()));
                 casa.setServicios(servicios);
