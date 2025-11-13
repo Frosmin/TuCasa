@@ -6,15 +6,19 @@ import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart, X, ChevronLeft, Che
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
-
 import ImageCarousel from '@/components/ImageCarousel';
+
+import LikeButton from '@/components/LikeButton'
+import { getMyFavorites } from '@/api/favorito.service'
+import { useAuth } from '@/context/AuthContext'
+import { useToast } from '@/components/Toast'
+
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
   const router = useRouter()
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
@@ -24,6 +28,11 @@ export default function DetalleOfertaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  //botoncito like
+  const {token} =useAuth()
+  const [isFavorite, setIsFavorite] = useState(false)
+  const { showInfo, showError } = useToast()
+  //const [likeCount, setLikeCount] = useState<number | null>(null)
 
   type Multimedia = {
     url: string;
@@ -84,6 +93,27 @@ export default function DetalleOfertaPage() {
       fetchData()
     }
   }, [id])
+
+
+  // para cuando este el endpoint de total de favoritos
+  {/* descomentar cuando este */}
+  useEffect(() => {
+    if (!token || !id) return
+    let active = true
+    ;(async () => {
+      try {
+        const favs = await getMyFavorites(token)
+        const ids: number[] = Array.isArray(favs?.data)
+          ? favs.data.map((f: any) => f.ofertaId ?? f.idOferta ?? f.id)
+          : []
+        if (active) setIsFavorite(ids.includes(Number(id)))
+      } catch {
+        showError('que errorsito sera....')
+      }
+    })()
+    return () => { active = false }
+  }, [token, id])
+
 
   // Funciones para el modal
   const openModal = (index: number = 0) => {
@@ -249,14 +279,13 @@ export default function DetalleOfertaPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="font-medium">Volver al catálogo</span>
         </Link>
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="p-3 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
-        >
-          <Heart
-            className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
-          />
-        </button>
+        {/* megusta/favorito */}
+        <LikeButton
+          ofertaId={Number(id)}
+          initialIsFavorite={isFavorite}
+          initialCount={null}
+          onChange={(fav) => setIsFavorite(fav)}
+        />
       </div>
 
       {/* Carrusel clickeable */}
