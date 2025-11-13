@@ -12,4 +12,5 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     boolean existsByUsuarioIdAndOfertaId(Long usuarioId, Long ofertaId);
     Optional<Favorito> findByUsuarioIdAndOfertaId(Long usuarioId, Long ofertaId);
     List<Favorito> findByUsuarioId(Long usuarioId);
+    Long countByOfertaId(Long ofertaId);
 }
