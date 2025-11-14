@@ -9,9 +9,7 @@ import { URL_BACKEND } from '@/config/constants'
 import ImageCarousel from '@/components/ImageCarousel';
 
 import LikeButton from '@/components/LikeButton'
-import { getMyFavorites } from '@/api/favorito.service'
 import { useAuth } from '@/context/AuthContext'
-import { useToast } from '@/components/Toast'
 
 
 export default function DetalleOfertaPage() {
@@ -30,9 +28,7 @@ export default function DetalleOfertaPage() {
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
   //botoncito like
   const {token} =useAuth()
-  const [isFavorite, setIsFavorite] = useState(false)
-  const { showInfo, showError } = useToast()
-  //const [likeCount, setLikeCount] = useState<number | null>(null)
+
 
   type Multimedia = {
     url: string;
@@ -47,7 +43,12 @@ export default function DetalleOfertaPage() {
         
         console.log('🔍 Buscando oferta con ID:', id)
         
-        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
+        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, {
+          cache: 'no-store',
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          }
+        })
         
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
@@ -92,27 +93,8 @@ export default function DetalleOfertaPage() {
     if (id) {
       fetchData()
     }
-  }, [id])
+  }, [id, token])
 
-
-  // para cuando este el endpoint de total de favoritos
-  {/* descomentar cuando este */}
-  useEffect(() => {
-    if (!token || !id) return
-    let active = true
-    ;(async () => {
-      try {
-        const favs = await getMyFavorites(token)
-        const ids: number[] = Array.isArray(favs?.data)
-          ? favs.data.map((f: any) => f.ofertaId ?? f.idOferta ?? f.id)
-          : []
-        if (active) setIsFavorite(ids.includes(Number(id)))
-      } catch {
-        showError('que errorsito sera....')
-      }
-    })()
-    return () => { active = false }
-  }, [token, id])
 
 
   // Funciones para el modal
@@ -282,9 +264,8 @@ export default function DetalleOfertaPage() {
         {/* megusta/favorito */}
         <LikeButton
           ofertaId={Number(id)}
-          initialIsFavorite={isFavorite}
-          initialCount={null}
-          onChange={(fav) => setIsFavorite(fav)}
+          initialIsFavorite={oferta.esFavorito || false}
+          initialCount={oferta.totalFavoritos ?? null}
         />
       </div>
 
