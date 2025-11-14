@@ -101,9 +101,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Reunion con el Team C
+- **T:** Estuadiar como se manejan las imagenes en el front
+- **B:** ninguno
 
 # Scrum Report #6 — Oct 24
 
@@ -144,9 +144,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Leer la documentacion de Cloudinary para comprender su comportamiento
+- **T:** Implementar la carga de imagenes a cloudinary y mandar las URLs a nuestro backend
+- **B:** ninguno
 
 ---
 
@@ -167,9 +167,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Comprender como el equipo d realizo sus features
+- **T:** Ayudar con la integracion
+- **B:** la integracion con el team d fue complicada
 
   ---
 
@@ -190,9 +190,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Revisando las historias disponibles para el nuevo sprint
+- **T:** Estudiar las soluciones que propuso mi team lead
+- **B:** Las dependencias entre las historias
 
     ---
 
@@ -213,9 +213,9 @@
 ---
 
 ## Carlos
-- **Y:** ...
-- **T:** ...
-- **B:** ...
+- **Y:** Reunion con mi Team lead
+- **T:** Investigacion sobre el manejo de Tokens en el frontend
+- **B:** Ninguno
 
 # Scrum Report #9 — Nov 11
 
