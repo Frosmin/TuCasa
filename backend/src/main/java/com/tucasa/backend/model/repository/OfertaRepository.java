@@ -24,4 +24,8 @@ public interface OfertaRepository extends JpaRepository<Oferta, Long> {
     @EntityGraph(attributePaths = {"inmueble", "inmueble.servicios"})
     @Query("SELECT o FROM Oferta o WHERE o.id IN :ids")
     List<Oferta> findAllCompletoByIds(@Param("ids") List<Long> ids);
+    
+    @EntityGraph(attributePaths = {"inmueble", "inmueble.servicios"})
+    @Query("SELECT o FROM Oferta o WHERE o.inmueble.propietario.id = :propietarioId")
+    List<Oferta> findAllByPropietarioId(@Param("propietarioId") Long propietarioId);
 }
