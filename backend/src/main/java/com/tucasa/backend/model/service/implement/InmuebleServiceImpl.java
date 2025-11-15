@@ -129,7 +129,7 @@ public class InmuebleServiceImpl implements InmuebleService {
         dto.setId(inmueble.getId());
         dto.setDireccion(inmueble.getDireccion());
         dto.setSuperficie(inmueble.getSuperficie());
-        dto.setIdPropietario(inmueble.getIdPropietario());
+        dto.setIdPropietario(inmueble.getPropietario().getId());
         dto.setDescripcion(inmueble.getDescripcion());
         dto.setActivo(inmueble.isActivo());
         dto.setTipo(inmueble.getTipo());
