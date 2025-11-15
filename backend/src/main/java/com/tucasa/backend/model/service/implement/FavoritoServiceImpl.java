@@ -73,7 +73,7 @@ public class FavoritoServiceImpl implements FavoritoService {
             return apiResponse.responseNotFoundError("Favorito no existe", null);
         }
         favoritoRepository.delete(favoritoOpt.get());
-        return apiResponse.responseSuccess("Eliminado de favoritos",favoritoOpt);
+        return apiResponse.responseSuccess("Eliminado de favoritos",null);
     }
 
     @Override
