@@ -35,7 +35,7 @@ export const OPERATION_TYPES = [
   {
     id: 'AVALUO',
     label: 'Avaluo',
-    description: 'Avaluo de bien inmueble',
+    description: 'Avaluo de propiedad',
     icon: CircleDollarSign,
     colorClass: 'green',
   }
