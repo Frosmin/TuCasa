@@ -6,6 +6,7 @@ import { PropertyService } from '../services/property.service';
 import { buildPropertyPayload, handleApiError } from '../utils/property.utils';
 import { useToast } from '@/components/Toast';
 import { UploadService } from '../services/upload.service';
+import { useAuth } from '@/context/AuthContext';
 
 export function usePropertyForm() {
   const [step, setStep] = useState(1);
@@ -13,7 +14,19 @@ export function usePropertyForm() {
   const [formData, setFormData] = useState<PropertyFormData>(INITIAL_FORM_DATA);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { showSuccess, showError } = useToast();
+  const { user } = useAuth();
 
+  useEffect(() => {
+      if (user && user.id) { 
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          idPropietario: user.id, 
+        }));
+      }
+      console.log(formData);
+    console.log(isSubmitting);
+      
+  }, [isSubmitting]); 
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
