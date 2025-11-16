@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 interface User {
   id: number;
@@ -20,17 +20,58 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getInitialUser = (): User | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
+  try {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  } catch (error) {
+    console.error("Error al leer 'user' de localStorage:", error);
+    return null;
+  }
+};
+
+const getInitialToken = (): string | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
+  try {
+    return localStorage.getItem("token");
+  } catch (error) {
+    console.error("Error al leer 'token' de localStorage:", error);
+    return null;
+  }
+};
+
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const API_BASE_URL = "http://localhost:8000/tucasabackend";
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
 
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("token");
-  });
+  const [user, setUser] = useState<User | null>(getInitialUser);
+  const [token, setToken] = useState<string | null>(getInitialToken);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
 
   const login = async (email: string, password: string) => {
     try {
@@ -48,8 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(data.data);
       setToken(data.token);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.data));
 
       return true;
     } catch (error) {
@@ -61,8 +100,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     router.push("/");
   };
 
