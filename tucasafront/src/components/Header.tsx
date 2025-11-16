@@ -21,6 +21,8 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (typeof window === "undefined") return null;
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -66,7 +68,7 @@ export default function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
 
-          {user ? (
+          {!!user && (
             <Link
               href={"/publicar"}
               className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
@@ -74,8 +76,6 @@ export default function Header() {
               Publicar
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
             </Link>
-          ) : (
-            <></>
           )}
         </div>
 
@@ -100,7 +100,7 @@ export default function Header() {
                   className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
                 >
                   <Link
-                    href={"/perfil"}
+                    href={"/pages/perfil"}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <User className="w-4 h-4" /> Perfil

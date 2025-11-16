@@ -7,7 +7,8 @@ interface User {
   nombre: string;
   apellido: string;
   telefono: string;
-  email: string;
+  correo: string;
+  direccion: string;
   rol: "CLIENTE" | "ADMIN" | "AGENTE_INMOBILIARIO";
 }
 
