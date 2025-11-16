@@ -13,5 +13,5 @@ public interface InmuebleService {
     ResponseEntity<?> findById(Long id);
     ResponseEntity<?> delete(Long id);
     ResponseEntity<?> updateMultimedia(Long inmuebleId, List<MultimediaRequestDto> multimediaDtos);
-
+    ResponseEntity<?> findOwnerById(Long id);
 }

@@ -3,6 +3,7 @@ package com.tucasa.backend.model.entity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +43,9 @@ public class Usuario implements UserDetails{
     private String correo;
 
     private String contrasenia;
+
+    @OneToMany(mappedBy = "propietario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Inmueble> inmuebles;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
