@@ -8,6 +8,7 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 
 import ImageCarousel from '@/components/ImageCarousel';
+import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
@@ -24,6 +25,7 @@ export default function DetalleOfertaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  const [owner, setOwner] = useState<Owner>(OWNER_INITIAL_DATA);
 
   type Multimedia = {
     url: string;
@@ -71,6 +73,7 @@ export default function DetalleOfertaPage() {
 
         console.log('✅ Oferta extraída:', ofertaData)
         setOferta(ofertaData)
+        fetchOwner(ofertaData.inmueble.idPropietario);
 
       } catch (err) {
         console.error('❌ Error cargando la oferta:', err)
@@ -84,6 +87,29 @@ export default function DetalleOfertaPage() {
       fetchData()
     }
   }, [id])
+
+  const fetchOwner = async (idPropietario: number | unknown) => {
+    try {
+      const response = await fetch(`${URL_BACKEND}/api/inmueble/propietario/${idPropietario}`);
+      const { data } = await response.json();
+
+      if (!response.ok) {
+        setOwner(OWNER_INITIAL_DATA);
+        throw new Error(`Error al obtener el propietario del inmueble.`);
+      }
+      const ownr: Owner = {
+        name: data.nombre,
+        lastname: data.apellido,
+        email: data.correo,
+        phone: data.telefono
+      }
+      setOwner(ownr);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message ?? "Error al obtener datos del propietario.")
+      }
+    }
+  }
 
   // Funciones para el modal
   const openModal = (index: number = 0) => {
@@ -471,11 +497,11 @@ export default function DetalleOfertaPage() {
           </nav>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-6 p-6">
-          
+
           <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-gray-200">
             <img
-              src={inmueble?.propietario?.foto || '/profile.png'}
-              alt={`${inmueble?.propietario?.nombre} ${inmueble?.propietario?.apellido}`}
+              src={'/profile.png'}
+              alt={`${owner.name ?? "Desconocido"} ${owner.lastname ?? ""}`}
               className="w-full h-full object-cover"
             />
           </div>
@@ -483,17 +509,17 @@ export default function DetalleOfertaPage() {
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
             <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
               <span className="text-xs text-gray-500 mb-1">Nombre</span>
-              <span>{inmueble?.propietario?.nombre} {inmueble?.propietario?.apellido}</span>
+              <span>{owner.name ?? "Desconocido"} {owner.lastname ?? ""}</span>
             </div>
 
             <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
               <span className="text-xs text-gray-500 mb-1">Correo</span>
-              <span>{inmueble?.propietario?.correo}</span>
+              <span>{owner.email ?? "Desconocido"}</span>
             </div>
 
             <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
               <span className="text-xs text-gray-500 mb-1">Teléfono</span>
-              <span>{inmueble?.propietario?.telefono}</span>
+              <span>{owner.phone ?? "Desconocido"}</span>
             </div>
 
           </div>
