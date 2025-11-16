@@ -5,6 +5,7 @@ import com.tucasa.backend.model.dto.*;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
@@ -12,6 +13,8 @@ import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.CasaService;
 import com.tucasa.backend.model.service.interfaces.CasaService;
 import com.tucasa.backend.payload.ApiResponse;
+import com.tucasa.backend.utils.PropietarioMapper;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,9 @@ public class CasaServiceImpl implements CasaService {
 
     @Autowired
     private ApiResponse apiResponse;
+
+    @Autowired
+    private PropietarioMapper propietarioMapper;
 
     @Override
     public ResponseEntity<?> findAll() {
@@ -79,12 +85,13 @@ public class CasaServiceImpl implements CasaService {
         String errorMessage = Constants.RECORD_NOT_CREATED;
 
         try {
+            Usuario propietario = propietarioMapper.getPropietarioEntity(dto.getIdPropietario());
             Casa casa = new Casa();
             casa.setDireccion(dto.getDireccion());
             casa.setLatitud(dto.getLatitud());
             casa.setLongitud(dto.getLongitud());
             casa.setSuperficie(dto.getSuperficie());
-            casa.setIdPropietario(dto.getIdPropietario());
+            casa.setPropietario(propietario);
             casa.setDescripcion(dto.getDescripcion());
             casa.setActivo(true);
             casa.setTipo(dto.getTipo());
@@ -182,7 +189,7 @@ public class CasaServiceImpl implements CasaService {
         dto.setLatitud(casa.getLatitud());
         dto.setLongitud(casa.getLongitud());
         dto.setSuperficie(casa.getSuperficie());
-        dto.setIdPropietario(casa.getIdPropietario());
+        dto.setIdPropietario(casa.getPropietario().getId());
         dto.setDescripcion(casa.getDescripcion());
         dto.setActivo(casa.isActivo());
         dto.setTipo(casa.getTipo());
