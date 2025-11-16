@@ -14,10 +14,12 @@ import com.tucasa.backend.model.dto.LoteResponseDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.LoteService;
 import com.tucasa.backend.payload.ApiResponse;
+import com.tucasa.backend.utils.PropietarioMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -34,16 +36,20 @@ public class LoteServiceImpl implements LoteService {
     @Autowired
     private ApiResponse apiResponse;
 
+    @Autowired
+    private PropietarioMapper propietarioMapper;
+
     @Override
     @Transactional
     public ResponseEntity<?> create(LoteRequestDto dto) {
         try {
+            Usuario propietario = propietarioMapper.getPropietarioEntity(dto.getIdPropietario());
             Lote lote = new Lote();
             lote.setDireccion(dto.getDireccion());
             lote.setLatitud(dto.getLatitud());
             lote.setLongitud(dto.getLongitud());
             lote.setSuperficie(dto.getSuperficie());
-            lote.setIdPropietario(dto.getIdPropietario());
+            lote.setPropietario(propietario);
             lote.setDescripcion(dto.getDescripcion());
             lote.setActivo(true);
             lote.setTipo(dto.getTipo());
@@ -160,7 +166,7 @@ public class LoteServiceImpl implements LoteService {
         dto.setLatitud(lote.getLatitud());
         dto.setLongitud(lote.getLongitud());
         dto.setSuperficie(lote.getSuperficie());
-        dto.setIdPropietario(lote.getIdPropietario());
+        dto.setIdPropietario(lote.getPropietario().getId());
         dto.setDescripcion(lote.getDescripcion());
         dto.setActivo(lote.isActivo());
         dto.setTamanio(lote.getTamanio());

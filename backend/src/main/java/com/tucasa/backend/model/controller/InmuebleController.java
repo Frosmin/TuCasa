@@ -26,6 +26,11 @@ public class InmuebleController {
         return inmuebleService.findAll();
     }
 
+    @GetMapping("/propietario/{id}")
+    public ResponseEntity<?> findOwnerById(@PathVariable Long id) {
+        return inmuebleService.findOwnerById(id);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         return inmuebleService.findById(id);

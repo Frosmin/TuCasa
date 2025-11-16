@@ -113,6 +113,8 @@ export default function Header() {
                   </Link>
                   <Link
                     href={"/publicaciones"}
+                    onClick={() => setMenuOpen(false)}
+
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones
