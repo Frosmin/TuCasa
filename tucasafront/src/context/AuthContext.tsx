@@ -1,7 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
+
 interface User {
   id: number;
   nombre: string;
@@ -23,14 +30,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const API_BASE_URL = "http://localhost:8000/tucasabackend";
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
 
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("token");
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const savedToken = localStorage.getItem("token");
+        const savedUser = localStorage.getItem("user");
+
+        if (savedToken) {
+          setToken(savedToken);
+        }
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      }
+    } catch (e) {
+      console.error("Error al cargar datos de localStorage:", e);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
@@ -45,11 +67,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
+      const userData: User = data.data;
+      const userToken: string = data.token;
 
-      setUser(data.data);
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.data));
+      setUser(userData);
+      setToken(userToken);
+
+      localStorage.setItem("token", userToken);
+      localStorage.setItem("user", JSON.stringify(userData));
 
       return true;
     } catch (error) {
@@ -61,8 +86,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
     router.push("/");
   };
 
