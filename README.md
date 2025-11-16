@@ -12,7 +12,7 @@ TuCasa.com está compuesto por dos grandes módulos:
 | Módulo | Descripción | Tecnología |
 |--------|--------------|-------------|
 | 🖥️ **Frontend** | Interfaz web para usuarios y administradores | **Next.js 15 + TypeScript + TailwindCSS** |
-| ⚙️ **Backend** | API REST y lógica de negocio | **Spring Boot * |
+| ⚙️ **Backend** | API REST y lógica de negocio | **Spring Boot** |
 
 ---
 

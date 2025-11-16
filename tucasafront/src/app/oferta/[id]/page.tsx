@@ -8,6 +8,7 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 
 import ImageCarousel from '@/components/ImageCarousel';
+import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
@@ -19,11 +20,12 @@ export default function DetalleOfertaPage() {
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
   const [images, setImages] = useState<string[]>([])
-  
+
   // Estados para el modal de imagen
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  const [owner, setOwner] = useState<Owner>(OWNER_INITIAL_DATA);
 
   type Multimedia = {
     url: string;
@@ -35,27 +37,27 @@ export default function DetalleOfertaPage() {
       try {
         setLoading(true)
         setError(null)
-        
+
         console.log('🔍 Buscando oferta con ID:', id)
-        
+
         const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
-        
+
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
         }
-        
+
         const data = await res.json()
-        
+
         const inmuebleData = data.data?.inmueble;
         const fotos: Multimedia[] = (inmuebleData?.multimedias ?? [])
         const images = fotos.map(f => f.url);
         setImages(images);
-        
+
         console.log('📦 Datos crudos recibidos:', data)
-        setRawData(data) 
-        
+        setRawData(data)
+
         let ofertaData: Oferta | null = null
-        
+
         if (data.data && data.data.inmueble) {
           ofertaData = data.data
         } else if (data.inmueble) {
@@ -63,15 +65,16 @@ export default function DetalleOfertaPage() {
         } else if (data.result && data.result.inmueble) {
           ofertaData = data.result
         }
-        
+
         if (!ofertaData) {
           console.error('❌ No se pudo extraer la oferta de la respuesta:', data)
           throw new Error('Estructura de datos inesperada')
         }
-        
+
         console.log('✅ Oferta extraída:', ofertaData)
         setOferta(ofertaData)
-        
+        fetchOwner(ofertaData.inmueble.idPropietario);
+
       } catch (err) {
         console.error('❌ Error cargando la oferta:', err)
         setError(err instanceof Error ? err.message : 'Error desconocido')
@@ -79,11 +82,34 @@ export default function DetalleOfertaPage() {
         setLoading(false)
       }
     }
-    
+
     if (id) {
       fetchData()
     }
   }, [id])
+
+  const fetchOwner = async (idPropietario: number | unknown) => {
+    try {
+      const response = await fetch(`${URL_BACKEND}/api/inmueble/propietario/${idPropietario}`);
+      const { data } = await response.json();
+
+      if (!response.ok) {
+        setOwner(OWNER_INITIAL_DATA);
+        throw new Error(`Error al obtener el propietario del inmueble.`);
+      }
+      const ownr: Owner = {
+        name: data.nombre,
+        lastname: data.apellido,
+        email: data.correo,
+        phone: data.telefono
+      }
+      setOwner(ownr);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message ?? "Error al obtener datos del propietario.")
+      }
+    }
+  }
 
   // Funciones para el modal
   const openModal = (index: number = 0) => {
@@ -108,12 +134,12 @@ export default function DetalleOfertaPage() {
   // Manejar clic en el carrusel
   const handleCarouselClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    const isButton = target.closest('button') || 
-                    target.closest('[role="button"]') || 
-                    target.tagName === 'BUTTON' ||
-                    target.closest('.carousel-button') ||
-                    target.closest('.slick-arrow');
-    
+    const isButton = target.closest('button') ||
+      target.closest('[role="button"]') ||
+      target.tagName === 'BUTTON' ||
+      target.closest('.carousel-button') ||
+      target.closest('.slick-arrow');
+
     if (!isButton) {
       openModal(carouselCurrentIndex);
     }
@@ -126,7 +152,7 @@ export default function DetalleOfertaPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isModalOpen) return
-      
+
       switch (e.key) {
         case 'Escape':
           closeModal()
@@ -260,11 +286,11 @@ export default function DetalleOfertaPage() {
       </div>
 
       {/* Carrusel clickeable */}
-      <div 
+      <div
         className="cursor-zoom-in mb-8 transition-transform hover:opacity-95 relative rounded-2xl overflow-hidden shadow-lg"
         onClick={handleCarouselClick}
       >
-        <ImageCarousel 
+        <ImageCarousel
           images={images}
           onIndexChange={handleCarouselIndexChange}
         />
@@ -322,9 +348,8 @@ export default function DetalleOfertaPage() {
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg transition-all ${
-                    index === currentImageIndex ? 'border-blue-500 scale-110' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
+                  className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg transition-all ${index === currentImageIndex ? 'border-blue-500 scale-110' : 'border-transparent opacity-70 hover:opacity-100'
+                    }`}
                 >
                   <img
                     src={image}
@@ -379,11 +404,11 @@ export default function DetalleOfertaPage() {
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">
-                🗓️ Publicado el {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                🗓️ Publicado el {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </div>
@@ -451,13 +476,52 @@ export default function DetalleOfertaPage() {
             </div>
           </nav>
         </div>
-        
+
         <div className="p-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Sobre esta propiedad</h3>
             <p className="text-gray-700 leading-relaxed text-lg">
               {inmueble?.descripcion || oferta.descripcion || 'No hay descripción disponible'}
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Info Propietario */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm mb-8 overflow-hidden">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            <div className="flex-1 py-4 px-6 text-center font-medium text-sm border-b-2 border-blue-500 text-blue-600 bg-blue-50">
+              📋 Información del Propietario
+            </div>
+          </nav>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-6 p-6">
+
+          <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-gray-200">
+            <img
+              src={'/profile.png'}
+              alt={`${owner.name ?? "Desconocido"} ${owner.lastname ?? ""}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Nombre</span>
+              <span>{owner.name ?? "Desconocido"} {owner.lastname ?? ""}</span>
+            </div>
+
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Correo</span>
+              <span>{owner.email ?? "Desconocido"}</span>
+            </div>
+
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Teléfono</span>
+              <span>{owner.phone ?? "Desconocido"}</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -507,9 +571,8 @@ export default function DetalleOfertaPage() {
                       <span className="text-lg">{icon}</span>
                       <span className="text-gray-700 font-medium">{label}</span>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
                       {value ? 'Sí' : 'No'}
                     </span>
                   </div>
@@ -526,7 +589,7 @@ export default function DetalleOfertaPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             type='button'
-            onClick={()=>{router.push(`/editar/${id}`)}}
+            onClick={() => { router.push(`/editar/${id}`) }}
             className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
           >
             ✏️ Editar oferta

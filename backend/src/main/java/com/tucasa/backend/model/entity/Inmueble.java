@@ -1,5 +1,6 @@
 package com.tucasa.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tucasa.backend.model.enums.TipoInmueble;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -31,9 +32,9 @@ public abstract class Inmueble {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal superficie;  // Superficie en metros cuadrados
 
-    // Luego cambiar a relacion con usuario
-    @Column(name = "id_propietario", nullable = false)
-    private Long idPropietario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_propietario", nullable = false)
+    private Usuario propietario;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_inmueble", nullable = false)

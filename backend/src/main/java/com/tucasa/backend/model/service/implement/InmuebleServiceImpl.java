@@ -5,9 +5,11 @@ import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
+import com.tucasa.backend.model.dto.UsuarioResponseDto;
 import com.tucasa.backend.model.entity.Inmueble;
 import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.InmuebleService;
@@ -121,7 +123,25 @@ public class InmuebleServiceImpl implements InmuebleService {
         }
     }
 
-
+    @Override
+    public ResponseEntity<?> findOwnerById(Long id){
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = "Propietario no encontrado";
+        try {
+            Usuario usuario = inmuebleRepository.findPropietarioByInmuebleId(id);
+            UsuarioResponseDto dto = new UsuarioResponseDto();
+            dto.setId(usuario.getId());
+            dto.setNombre(usuario.getNombre());
+            dto.setApellido(usuario.getApellido());
+            dto.setTelefono(usuario.getTelefono());
+            dto.setDireccion(usuario.getDireccion());
+            dto.setCorreo(usuario.getCorreo());
+            dto.setRol(usuario.getRol());
+            return apiResponse.responseSuccess(successMessage, dto);
+        } catch (Exception e) {
+            return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
+        }
+    }
 
     // --- Mapeo a DTO ---
     private InmuebleResponseDto mapToDto(Inmueble inmueble) {
@@ -129,7 +149,7 @@ public class InmuebleServiceImpl implements InmuebleService {
         dto.setId(inmueble.getId());
         dto.setDireccion(inmueble.getDireccion());
         dto.setSuperficie(inmueble.getSuperficie());
-        dto.setIdPropietario(inmueble.getIdPropietario());
+        dto.setIdPropietario(inmueble.getPropietario().getId());
         dto.setDescripcion(inmueble.getDescripcion());
         dto.setActivo(inmueble.isActivo());
         dto.setTipo(inmueble.getTipo());
