@@ -76,7 +76,7 @@ export default function ProfilePage() {
                 className="absolute top-2 right-2 text-white bg-gray-800 bg-opacity-50 rounded-full p-2 hover:bg-opacity-70 transition"
                 onClick={closeModal}
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 cursor-pointer" />
               </button>
             </div>
           </div>
