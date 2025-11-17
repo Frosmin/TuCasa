@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 import java.util.List;
 import java.util.Map;
@@ -24,8 +26,8 @@ public class OfertaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-        return ofertaService.findById(id);
+    public ResponseEntity<?> findById(@PathVariable Long id, Authentication authentication) {
+        return ofertaService.findById(id, authentication);
     }
 
     @PostMapping("")

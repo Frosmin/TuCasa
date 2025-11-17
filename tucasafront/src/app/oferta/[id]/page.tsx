@@ -6,8 +6,11 @@ import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart, X, ChevronLeft, Che
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
-
 import ImageCarousel from '@/components/ImageCarousel';
+
+import LikeButton from '@/components/LikeButton'
+import { useAuth } from '@/context/AuthContext'
+
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
 
 export default function DetalleOfertaPage() {
@@ -15,7 +18,6 @@ export default function DetalleOfertaPage() {
   const router = useRouter()
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
@@ -25,6 +27,9 @@ export default function DetalleOfertaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  //botoncito like
+  const {token} =useAuth()
+
   const [owner, setOwner] = useState<Owner>(OWNER_INITIAL_DATA);
 
   type Multimedia = {
@@ -39,9 +44,14 @@ export default function DetalleOfertaPage() {
         setError(null)
 
         console.log('🔍 Buscando oferta con ID:', id)
-
-        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
-
+        
+        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, {
+          cache: 'no-store',
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          }
+        })
+        
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
         }
@@ -86,7 +96,9 @@ export default function DetalleOfertaPage() {
     if (id) {
       fetchData()
     }
-  }, [id])
+  }, [id, token])
+
+
 
   const fetchOwner = async (idPropietario: number | unknown) => {
     try {
@@ -275,14 +287,12 @@ export default function DetalleOfertaPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="font-medium">Volver al catálogo</span>
         </Link>
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="p-3 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
-        >
-          <Heart
-            className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
-          />
-        </button>
+        {/* megusta/favorito */}
+        <LikeButton
+          ofertaId={Number(id)}
+          initialIsFavorite={oferta.esFavorito || false}
+          initialCount={oferta.totalFavoritos ?? null}
+        />
       </div>
 
       {/* Carrusel clickeable */}

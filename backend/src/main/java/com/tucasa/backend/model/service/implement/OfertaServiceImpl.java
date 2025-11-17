@@ -29,6 +29,7 @@ import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.MultimediaResponseDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
+import com.tucasa.backend.model.dto.OfertaResponseFavoritoDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
 import com.tucasa.backend.model.dto.TiendaResponseDto;
 import com.tucasa.backend.model.entity.Casa;
@@ -42,11 +43,13 @@ import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
+import com.tucasa.backend.model.repository.FavoritoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.OfertaRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
+import com.tucasa.backend.model.repository.UsuarioRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
 
@@ -55,6 +58,8 @@ import java.util.ArrayList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+
+import org.springframework.security.core.Authentication;
 
 @Service
 public class OfertaServiceImpl implements OfertaService {
@@ -87,6 +92,12 @@ public class OfertaServiceImpl implements OfertaService {
     private EntityManager entityManager;
 
     @Autowired
+    private FavoritoRepository favoritoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
     private PropietarioMapper propietarioMapper;
 
     // ---------------------- CRUD OFERTAS ----------------------
@@ -111,14 +122,30 @@ public class OfertaServiceImpl implements OfertaService {
     }
 
     @Override
-    public ResponseEntity<?> findById(Long id) {
+    public ResponseEntity<?> findById(Long id, Authentication authentication) {
         String successMessage = Constants.RECORDS_FOUND;
         String errorMessage = "Oferta no encontrada";
 
         try {
             Oferta oferta = ofertaRepository.findCompletoById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
-            return apiResponse.responseSuccess(successMessage, mapToDto(oferta));
+
+            OfertaResponseDto baseDto = mapToDto(oferta);
+            Long totalFavoritos = favoritoRepository.countByOfertaId(id);
+            OfertaResponseFavoritoDto responseDto = new OfertaResponseFavoritoDto(baseDto, totalFavoritos);
+
+            if (authentication != null &&  authentication.isAuthenticated()){
+                String userEmail = authentication.getName();
+                usuarioRepository.findByCorreo(userEmail).ifPresent(usuario -> {
+                    Long userID = usuario.getId();
+                    boolean esFavorito = favoritoRepository.existsByUsuarioIdAndOfertaId(userID, id);
+                    responseDto.setEsFavorito(esFavorito);;
+                });
+
+            }
+
+
+            return apiResponse.responseSuccess(successMessage, responseDto);
         } catch (Exception e) {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }

@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.entity;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import java.util.Set;
+
+
 
 @Entity
 @Table(name = "usuario")
@@ -46,6 +50,9 @@ public class Usuario implements UserDetails{
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoUsuario rol;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Favorito> favoritos = new HashSet<>();
 
     @Override
     public String getUsername(){
