@@ -1,17 +1,18 @@
 "use client";
 import { useState } from "react";
-import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Phone, Lock, Eye, EyeOff, BookUser } from "lucide-react";
 
 import { useToast } from "@/components/Toast";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    nombre: "",
+    name: "",
+    email: "",
     apellido: "",
+    password: "",
+    direccion: "",
     telefono: "",
-    correo: "",
-    contrasena: "",
-    rol: "CLIENTE",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const { showSuccess, showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,35 +44,35 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    if (formData.contrasena !== confirmPassword) {
+    if (formData.password !== confirmPassword) {
       showError("Las contraseñas no coinciden");
       return;
     }
     setIsSubmitting(true);
 
     try {
-      const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
+      const API_BASE_URL = "http://localhost:8000/tucasabackend";
 
-      const res = await fetch(API_BASE_URL + "/usuarios/registrar", {
+      const res = await fetch(API_BASE_URL + "/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
       if (data.error) {
         showError(data.message);
       } else {
         showSuccess(data.message);
         setFormData({
-          nombre: "",
+          name: "",
           apellido: "",
-          correo: "",
+          email: "",
           telefono: "",
-          contrasena: "",
-          rol: "CLIENTE",
+          direccion: "",
+          password: "",
         });
         setConfirmPassword("");
+        router.push("/login");
       }
     } catch (err) {
       console.error("Error al enviar los datos:", err);
@@ -104,10 +106,10 @@ export default function RegisterPage() {
               />
               <input
                 type="text"
-                name="nombre"
+                name="name"
                 placeholder="Ej: Michael"
                 required
-                value={formData.nombre}
+                value={formData.name}
                 onChange={handleChange}
                 className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -142,10 +144,30 @@ export default function RegisterPage() {
             <Mail className="absolute left-3 top-11 text-gray-400" size={18} />
             <input
               type="email"
-              name="correo"
+              name="email"
               placeholder="Correo Electrónico"
               required
-              value={formData.correo}
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Dirección
+            </label>
+            <BookUser
+              className="absolute left-3 top-11 text-gray-400"
+              size={18}
+            />
+            <input
+              type="text"
+              name="direccion"
+              placeholder="Dirección"
+              required
+              value={formData.direccion}
               onChange={handleChange}
               className="w-full px-10 py-3 bg-gray-50 border border-gray-300 rounded-lg 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -176,10 +198,10 @@ export default function RegisterPage() {
             <Lock className="absolute left-3 top-11 text-gray-400" size={18} />
             <input
               type={showPassword ? "text" : "password"}
-              name="contrasena"
+              name="password"
               placeholder="Contraseña"
               required
-              value={formData.contrasena}
+              value={formData.password}
               onChange={handleChange}
               className="w-full px-10 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -238,7 +260,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-600 mt-6">
           ¿Ya tienes una cuenta?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-blue-600 hover:underline">
             Inicia sesión
           </a>
         </p>

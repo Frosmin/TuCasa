@@ -1,8 +1,9 @@
 // components/FiltroSidebar.tsx
 'use client'
 import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import type { Oferta } from '@/models/Oferta'
+import { ChevronDown, MapPin } from 'lucide-react'
+import type { Oferta, MonedaType } from '@/models/Oferta'
+import LocationPicker from '@/app/publicar/components/LocationPicker'
 
 export interface Filtros {
   precioMin: number
@@ -10,11 +11,15 @@ export interface Filtros {
   superficieMin: number
   superficieMax: number
   dormitorios: string
+  moneda?: MonedaType | ''
   garaje?: boolean | null
   amoblado?: boolean | null
   patio?: boolean | null
   sotano?: boolean | null
   servicios?: string[]
+  proximidad?: number | null
+  latitud: number
+  longitud: number
 }
 
 interface FiltroSidebarProps {
@@ -33,6 +38,8 @@ export const FiltroSidebar = ({
   ofertas,
 }: FiltroSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    localizacion: false,
+    moneda: true,
     precio: true,
     superficie: true,
     dormitorios: true,
@@ -40,14 +47,15 @@ export const FiltroSidebar = ({
     servicios: false,
   })
 
-  
-
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section],
     }))
   }
+
+  // Monedas disponibles
+  const monedasUnicas: MonedaType[] = ['$', 'Bs']
 
   // Calcular rangos de la API
   const precios = ofertas.map(o => o.precio)
@@ -75,7 +83,7 @@ export const FiltroSidebar = ({
     )
   ).sort()
 
-  // Verificar si hay propiedades con garaje
+  // Verificar si hay propiedades con características
   const tieneGaraje = ofertas.some(o => o.inmueble.garaje === true)
   const tieneAmoblado = ofertas.some(o => o.inmueble.amoblado === true)
   const tienePatio = ofertas.some(o => o.inmueble.patio === true)
@@ -83,6 +91,131 @@ export const FiltroSidebar = ({
 
   return (
     <div className="space-y-4">
+      {/* Filtro por Localización */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <button
+          onClick={() => toggleSection('localizacion')}
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+        >
+          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Localización
+          </h3>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${expandedSections.localizacion ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {expandedSections.localizacion && (
+          <div className="px-4 py-3 border-t border-gray-200 space-y-3">
+            <LocationPicker
+              latitude={String(filters.latitud)}
+              longitude={String(filters.longitud)}
+              onChange={(lat, lng) => {
+                setFilters({
+                  ...filters,
+                  latitud: lat,
+                  longitud: lng,
+                })
+              }}
+            />
+
+            <div>
+              <label className="text-xs font-semibold text-gray-700">
+                Proximidad (km)
+              </label>
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="range"
+                  min="0"
+                  max="50"
+                  step="1"
+                  value={filters.proximidad || 0}
+                  onChange={e =>
+                    setFilters({
+                      ...filters,
+                      proximidad: parseFloat(e.target.value) || null,
+                    })
+                  }
+                  className="flex-1"
+                />
+                <span className="text-sm font-semibold text-blue-600 w-12">
+                  {filters.proximidad || 0} km
+                </span>
+              </div>
+            </div>
+
+            
+
+            <button
+              onClick={() =>
+                setFilters({
+                  ...filters,
+                  proximidad: null,
+                })
+              }
+              className="w-full px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+            >
+              Limpiar filtro de proximidad
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Filtro por Moneda */}
+      {monedasUnicas.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('moneda')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900">Moneda</h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.moneda ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.moneda && (
+            <div className="px-4 py-3 border-t border-gray-200 space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="moneda"
+                  checked={filters.moneda === '' || !filters.moneda}
+                  onChange={() =>
+                    setFilters({
+                      ...filters,
+                      moneda: '',
+                    })
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700">Todas las monedas</span>
+              </label>
+
+              {monedasUnicas.map(moneda => (
+                <label key={moneda} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="moneda"
+                    value={moneda}
+                    checked={filters.moneda === moneda}
+                    onChange={() =>
+                      setFilters({
+                        ...filters,
+                        moneda: moneda as MonedaType,
+                      })
+                    }
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">{moneda}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filtro por Precio */}
       <div className="bg-white rounded-lg shadow-sm">
         <button

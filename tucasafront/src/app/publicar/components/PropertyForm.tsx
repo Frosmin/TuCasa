@@ -9,6 +9,7 @@ import TiendaFields from './TiendaFields';
 import DepartamentoFields from './DepartamentoFields';
 import LoteFields from './LoteFields';
 import ImageUploader from './ImageUploader';
+import LocationPicker from './LocationPicker';
 
 interface PropertyFormProps {
   formData: PropertyFormData;
@@ -20,6 +21,8 @@ interface PropertyFormProps {
   onImageRemove: (index: number) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
+  onLocationChange: (lat: number, lng: number) => void;
+  onAddressChange: (address: string) => void;
   mode: "registro" | "edicion";
 }
 
@@ -29,6 +32,8 @@ export default function PropertyForm({
   onPropertyTypeChange,
   onToggle,
   onServiciosChange,
+  onLocationChange,
+  onAddressChange,
   onImageUpload,
   onImageRemove,
   onSubmit,
@@ -39,10 +44,13 @@ export default function PropertyForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Tipo de Propiedad */}
-      <PropertyTypeSelector
+      {mode === "registro" && (
+        <PropertyTypeSelector
         selectedType={formData.propertyType}
         onChange={onPropertyTypeChange}
       />
+      )}
+      
 
       {/* Campos específicos para Casa */}
       {formData.propertyType === 'CASA' && (
@@ -82,7 +90,19 @@ export default function PropertyForm({
         />
       )}
 
-      {/* Dirección */}
+      {/* Selector de Ubicación con Mapa */}
+      <LocationPicker
+        latitude={formData.latitud}
+        longitude={formData.longitud}
+        onChange={onLocationChange}
+        onAddressChange={onAddressChange}
+      />
+
+      {/* Campos ocultos para latitud y longitud */}
+      <input type="hidden" name="latitud" value={formData.latitud} />
+      <input type="hidden" name="longitud" value={formData.longitud} />
+
+      {/* Dirección - Ahora se actualiza automáticamente desde el mapa */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Dirección *
@@ -96,40 +116,9 @@ export default function PropertyForm({
           required
           className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
         />
-      </div>
-
-      {/* Coordenadas */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Latitud *
-          </label>
-          <input
-            type="number"
-            step="any"
-            name="latitud"
-            value={formData.latitud}
-            onChange={onInputChange}
-            placeholder="-17.3935"
-            required
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Longitud *
-          </label>
-          <input
-            type="number"
-            step="any"
-            name="longitud"
-            value={formData.longitud}
-            onChange={onInputChange}
-            placeholder="-66.1570"
-            required
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-          />
-        </div>
+        <p className="mt-1 text-xs text-gray-500">
+          Esta dirección se actualiza automáticamente al seleccionar una ubicación en el mapa
+        </p>
       </div>
 
       {/* Superficie y Precio */}
@@ -283,7 +272,9 @@ export default function PropertyForm({
             disabled={isSubmitting}
             className="flex-1 max-w-50 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            Guardar Cambios
+            {mode === 'edicion'
+            ? (isSubmitting ? 'Guardando cambios...' : 'Guardar cambios')
+            : (isSubmitting ? 'Publicando…' : 'Publicar')}
           </button>
         </div>
       ) :

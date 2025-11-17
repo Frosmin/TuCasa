@@ -13,4 +13,5 @@ public interface OfertaService {
     ResponseEntity<?> delete(Long id);
     ResponseEntity<?> search(Map<String, String> params);
     ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion);
+    ResponseEntity<?> search(Map<String, String> params, Boolean compact);
 }

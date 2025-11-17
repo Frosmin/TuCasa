@@ -40,4 +40,6 @@ public class DepartamentoRequestDto extends InmuebleRequestDto {
     private Boolean ascensor = false;
 
     private Boolean balcon = false;
+
+    private Boolean baulera = false;
 }
