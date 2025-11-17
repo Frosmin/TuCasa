@@ -15,7 +15,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<User|false>;
   logout: () => void;
 }
 
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false); // evita parpadeo inicial
 
-  // ✅ Cargar datos de localStorage cuando ya existe `window`
+  //Cargar datos de localStorage cuando ya existe `window`
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedUser = localStorage.getItem("user");
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.data));
       localStorage.setItem("token", data.token);
-      return true;
+      return data.data;
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       return false;
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     router.push("/");
   };
 
-  // 💡 Evitar renderizar los hijos hasta que cargue el estado inicial
+  //Evitar renderizar los hijos hasta que cargue el estado inicial
   if (!loaded) return null;
 
   return (
