@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.tucasa.backend.model.entity.SolicitudAgente;
@@ -11,7 +12,8 @@ import com.tucasa.backend.model.enums.EstadoSolicitud;
 import com.tucasa.backend.model.service.implement.SolicitudAgenteService;
 
 @RestController
-@RequestMapping("/api/admin/solicitudes/agentes") // 🚀 Cambiado para evitar conflicto
+@RequestMapping("/api/admin/solicitudes/agentes") 
+@PreAuthorize("hasRole('ADMIN')")
 @CrossOrigin(origins = "*")
 public class SolicitudAgenteAdminController {
 
