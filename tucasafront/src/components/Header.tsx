@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList, UserPlus } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, UserPlus,PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -78,7 +78,7 @@ export default function Header() {
               </Link>
 
               {/* Mostrar botón "Convertirse en Agente!" si no es agente */}
-              {user.rol !== "AGENTE_INMOBILIARIO" && (
+              {user.rol === "CLIENTE" && (
                 <Link
                   href={"/convertirse-agente"}
                   className="ml-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center gap-2"
@@ -111,12 +111,21 @@ export default function Header() {
                   ref={menuRef}
                   className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
                 >
-                  <Link
-                    href={"/perfil"}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    <User className="w-4 h-4" /> Perfil
-                  </Link>
+                  {user.rol === "ADMIN" ? (
+                    <Link
+                      href={"/admin/dashboard"}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      <PanelTop className="w-4 h-4" /> Panel Admin
+                    </Link>
+                  ) : (
+                    <Link
+                      href={"/perfil"}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      <User className="w-4 h-4" /> Perfil
+                    </Link>
+                  )}
                   <Link
                     href={"/publicaciones"}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"

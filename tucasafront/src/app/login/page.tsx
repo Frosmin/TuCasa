@@ -34,11 +34,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const success = await login(formData.email, formData.password);
+      const user = await login(formData.email, formData.password);
 
-      if (success) {
+      if (user) {
+        if(user.rol === "ADMIN") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/");
+        }
         showSuccess("Inicio Correcto.");
-        router.push("/");
       } else {
         setError("Credenciales Incorrectas.");
         showError("Credenciales Incorrectas.");
