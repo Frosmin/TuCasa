@@ -49,7 +49,7 @@ public class InmuebleResponseDto {
         this.latitud = inmueble.getLatitud();
         this.longitud = inmueble.getLongitud();
         this.superficie = inmueble.getSuperficie();
-        this.idPropietario = inmueble.getIdPropietario();
+        this.idPropietario = inmueble.getPropietario().getId();
         this.descripcion = inmueble.getDescripcion();
         this.activo = inmueble.isActivo();
         this.tipo = inmueble.getTipo();

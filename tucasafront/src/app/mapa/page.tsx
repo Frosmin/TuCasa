@@ -49,6 +49,7 @@ const OPERACION_CONFIG = {
   VENTA: { color: '#3b82f6', label: 'Venta', bgLight: '#ecfdf5' },
   ALQUILER: { color: '#10b981', label: 'Alquiler', bgLight: '#eff6ff' },
   ANTICRETICO: { color: '#9810fa', label: 'Anticrético', bgLight: '#fffbeb' },
+  AVALUO: { color: '#9810fa', label: 'Avaluo', bgLight: '#fffbeb' },
 } as const;
 const COCHABAMBA_CENTER = { lat: -17.3895, lng: -66.1568 };
 const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
