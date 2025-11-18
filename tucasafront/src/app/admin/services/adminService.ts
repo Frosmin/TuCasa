@@ -19,7 +19,7 @@ export interface SolicitudAgente {
 }
 
 export async function obtenerSolicitudesPendientes(): Promise<SolicitudAgente[]> {
-  const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/pendientes`, {
+  const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -30,16 +30,20 @@ export async function obtenerSolicitudesPendientes(): Promise<SolicitudAgente[]>
 
 export async function aprobarSolicitud(id: number) {
   const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/${id}/aprobar`, {
-    method: "POST",
-    credentials: "include",
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   if (!res.ok) throw new Error("Error al aprobar solicitud");
 }
 
 export async function rechazarSolicitud(id: number) {
   const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/${id}/rechazar`, {
-    method: "POST",
-    credentials: "include",
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   if (!res.ok) throw new Error("Error al rechazar solicitud");
 }

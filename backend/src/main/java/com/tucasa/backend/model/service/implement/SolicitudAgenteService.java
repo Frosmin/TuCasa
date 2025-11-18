@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tucasa.backend.model.entity.SolicitudAgente;
 import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.enums.TipoUsuario;
-import com.tucasa.backend.model.enums.EstadoSolicitud; // ✅ Import del enum
+import com.tucasa.backend.model.enums.EstadoSolicitud; 
 import com.tucasa.backend.model.repository.SolicitudAgenteRepository;
 import com.tucasa.backend.model.repository.UsuarioRepository;
 
@@ -47,12 +47,13 @@ public class SolicitudAgenteService {
         Path filePath = uploadPath.resolve(fileName);
         cvFile.transferTo(filePath.toFile());
 
+        String publicUrl = "http://localhost:8000/tucasabackend/uploads/cv/" + fileName;
         SolicitudAgente solicitud = new SolicitudAgente();
         solicitud.setUsuario(usuario);
         solicitud.setDescripcion(descripcion);
         solicitud.setExperiencia(experiencia);
         solicitud.setMatricula(matricula);
-        solicitud.setCvPath(filePath.toString());
+        solicitud.setCvPath(publicUrl);
         solicitud.setEstado(EstadoSolicitud.PENDIENTE);
 
         return solicitudRepository.save(solicitud);
