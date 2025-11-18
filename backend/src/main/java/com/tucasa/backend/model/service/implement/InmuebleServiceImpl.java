@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,23 @@ public class InmuebleServiceImpl implements InmuebleService {
             List<Inmueble> inmuebles = inmuebleRepository.findAll();
             if (!inmuebles.isEmpty()) {
                 return apiResponse.responseSuccess(successMessage, inmuebles);
+            } else {
+                return apiResponse.responseDataError(errorMessage, null);
+            }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getZonasWithInmuebles() {
+        String successMessage = "Zonas con inmmuebles registrados encontradas";
+        String errorMessage = "No hay zonas con inmuebles registrados";
+
+        try {
+            List<Map<String, Object>> zonasEncontradas = inmuebleRepository.getZonasWithInmuebles();
+            if (!zonasEncontradas.isEmpty()) {
+                return apiResponse.responseSuccess(successMessage, zonasEncontradas);
             } else {
                 return apiResponse.responseDataError(errorMessage, null);
             }
@@ -148,6 +166,7 @@ public class InmuebleServiceImpl implements InmuebleService {
         InmuebleResponseDto dto = new InmuebleResponseDto();
         dto.setId(inmueble.getId());
         dto.setDireccion(inmueble.getDireccion());
+        dto.setZona(inmueble.getZona());
         dto.setSuperficie(inmueble.getSuperficie());
         dto.setIdPropietario(inmueble.getPropietario().getId());
         dto.setDescripcion(inmueble.getDescripcion());

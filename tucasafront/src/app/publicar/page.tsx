@@ -25,6 +25,7 @@ export default function VenderPage() {
     resetToStep1,
     handleLocationChange,
     handleAddressChange,
+    handleZonaChange,
   } = usePropertyForm();
 
   // Paso 1: Selección de tipo de operación
@@ -52,7 +53,7 @@ export default function VenderPage() {
           {/* Formulario */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              ¿Qué tipo de propiedad quieres 
+              ¿Qué tipo de propiedad quieres
               {formData.operacion === OPERATION_TYPES[3].id ? " avaluar?" : " publicar?"}
             </h1>
             <p className="text-gray-600 mb-2">
@@ -76,7 +77,8 @@ export default function VenderPage() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               onLocationChange={handleLocationChange}
-              onAddressChange={handleAddressChange} // AGREGAR AQUÍ
+              onAddressChange={handleAddressChange}
+              onZonaChange={handleZonaChange}
               mode="registro"
             />
           </div>

@@ -57,6 +57,7 @@ export const INITIAL_FORM_DATA = {
   direccion: '',
   latitud: '',
   longitud: '',
+  zona: '',
   superficie: '',
   precio: '',
   moneda: 'Bs' as const,
