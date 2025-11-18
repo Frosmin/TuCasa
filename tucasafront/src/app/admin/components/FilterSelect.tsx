@@ -13,9 +13,9 @@ export default function FilterSelect({ value, onChange }: Props) {
                    focus:ring-2 focus:ring-blue-500 focus:outline-none"
       >
         <option className="text-gray-700" value="">Todos</option>
-        <option className="text-gray-700" value="pendiente">Pendiente</option>
-        <option className="text-gray-700" value="aprovada">Aprobada</option>
-        <option className="text-gray-700" value="rechazada">Rechazada</option>
+        <option className="text-gray-700" value="PENDIENTE">Pendiente</option>
+        <option className="text-gray-700" value="APROBADA">Aprobada</option>
+        <option className="text-gray-700" value="RECHAZADA">Rechazada</option>
       </select>
     </div>
   );

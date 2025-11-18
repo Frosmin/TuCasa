@@ -1,18 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Newspaper } from "lucide-react";
+import { Users, Newspaper, X } from "lucide-react";
+import Image from "next/image";
 import { obtenerSolicitudesPendientes, aprobarSolicitud, rechazarSolicitud, SolicitudAgente } from "../services/adminService";
 import { SearchBar } from "@/app/admin/components/SearchBar";
 import FilterSelect from "@/app/admin/components/FilterSelect";
+import { useToast } from '@/components/Toast';
+import { useAuth } from "@/context/AuthContext";
+import Loading from "@/components/Loading";
 
 export default function DashboardAdmin() {
+  const { user } = useAuth();
   const [solicitudes, setSolicitudes] = useState<SolicitudAgente[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<SolicitudAgente | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState('');
+  const [filteredData, setFilteredData] = useState<SolicitudAgente[]>([]);
+  const { showSuccess, showError } = useToast();
+
 
   const solicitudesPanel = [
     { id: "AGENTES", label: "Agentes", icon: Users },
@@ -29,12 +37,38 @@ export default function DashboardAdmin() {
     try {
       const data = await obtenerSolicitudesPendientes();
       setSolicitudes(data);
+      setFilteredData(data);
     } catch (error: any) {
-      alert("Error: " + error.message);
+      showError("Error al cargar las solicitudes");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let temp = solicitudes;
+    if (searchTerm.trim() !== "") {
+      temp = temp.filter(s =>
+        s.usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.usuario.correo.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selected !== "" && selected !== "all") {
+      temp = temp.filter(s => s.estado === selected);
+    }
+
+    setFilteredData(temp);
+  }, [searchTerm, selected, solicitudes]);
+
+  if (!user || user.rol !== "ADMIN") {
+    return (
+      <div className="text-center py-20">
+        <h1 className="text-6xl font-bold">404</h1>
+        <p className="text-xl">Página no encontrada</p>
+      </div>
+    );
+  }
 
   const abrirModal = (solicitud: SolicitudAgente) => {
     setSolicitudSeleccionada(solicitud);
@@ -46,15 +80,17 @@ export default function DashboardAdmin() {
     setSolicitudSeleccionada(null);
   };
 
+
   const handleAprobar = async () => {
     if (!solicitudSeleccionada) return;
     try {
       await aprobarSolicitud(solicitudSeleccionada.id);
-      alert("Solicitud aprobada");
+      showSuccess("La solicitud fue Aprobada");
       cerrarModal();
       cargarSolicitudes();
     } catch (error: any) {
-      alert("Error: " + error.message);
+      showError("Error al aprobar la solicitud");
+      console.error(error);
     }
   };
 
@@ -62,15 +98,16 @@ export default function DashboardAdmin() {
     if (!solicitudSeleccionada) return;
     try {
       await rechazarSolicitud(solicitudSeleccionada.id);
-      alert("Solicitud rechazada");
+      showSuccess("La solicitud fue Rechazada");
       cerrarModal();
       cargarSolicitudes();
     } catch (error: any) {
-      alert("Error: " + error.message);
+      showError("Error al rechazar la solicitud");
+      console.error(error);
     }
   };
 
-  if (loading) return <p>Cargando solicitudes...</p>;
+  if (loading) return <Loading message="Cargando las solicitudes..." /> ;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -124,7 +161,7 @@ export default function DashboardAdmin() {
               </thead>
 
               <tbody>
-                {solicitudes.map((s) => (
+                {filteredData.map((s) => (
                   <tr key={s.id} className="border-b-2 border-gray-200 hover:bg-gray-100 text-gray-700">
                     <td className="px-6 py-4">{s.usuario.nombre}</td>
                     <td className="px-6 py-4">{s.usuario.apellido}</td>
@@ -148,7 +185,7 @@ export default function DashboardAdmin() {
                         onClick={() => abrirModal(s)}
                         className="text-blue-600 hover:underline"
                       >
-                        Editar
+                        Ver Detalles
                       </button>
                     </td>
                   </tr>
@@ -161,107 +198,106 @@ export default function DashboardAdmin() {
 
       {/* MODAL */}
       {modalOpen && solicitudSeleccionada && (
-        <div className="fixed inset-0 bg-transparent flex items-center justify-center z-50 ">
-          <div className="bg-white w-full max-w-2xl rounded-xl shadow-xl">
-
-            {/* HEADER */}
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="text-xl font-semibold">Detalles de Solicitud</h3>
+        <div className="fixed inset-0 bg-transparent flex items-center justify-center z-50  ">
+          <div className="bg-white w-full max-w-2xl border border-gray-300 rounded-lg shadow-md  ">
+            <div className="bg-gray-200 flex items-center justify-between px-6 py-4 border-b">
+              <h3 className="text-xl text-gray-800 font-bold">Detalles de Solicitud</h3>
               <button onClick={cerrarModal} className="text-gray-500 hover:text-gray-700">
-                ✕
+                <X />
               </button>
             </div>
-
-            {/* CONTENT */}
             <div className="px-6 py-4 space-y-6">
-
-              {/* FILA 1 */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <p className="font-semibold text-gray-700">Nombre Completo</p>
-                  <p>{solicitudSeleccionada.usuario.nombre} {solicitudSeleccionada.usuario.apellido}</p>
+                  <p className="font-semibold text-gray-800">Nombre Completo</p>
+                  <p className="text-gray-700">{solicitudSeleccionada.usuario.nombre} {solicitudSeleccionada.usuario.apellido}</p>
                 </div>
 
                 <div>
-                  <p className="font-semibold text-gray-700">Email</p>
-                  <p>{solicitudSeleccionada.usuario.correo}</p>
+                  <p className="font-semibold text-gray-800">Email</p>
+                  <p className="text-gray-700">{solicitudSeleccionada.usuario.correo}</p>
                 </div>
               </div>
-
-              {/* FILA 2 */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <p className="font-semibold text-gray-700">Teléfono</p>
-                  <p>{solicitudSeleccionada.usuario.telefono}</p>
+                  <p className="font-semibold text-gray-800">Teléfono</p>
+                  <p className="text-gray-700">{solicitudSeleccionada.usuario.telefono}</p>
                 </div>
 
                 <div>
-                  <p className="font-semibold text-gray-700">Dirección</p>
-                  <p>{solicitudSeleccionada.usuario.direccion}</p>
+                  <p className="font-semibold text-gray-800">Dirección</p>
+                  <p className="text-gray-700">{solicitudSeleccionada.usuario.direccion}</p>
                 </div>
               </div>
-
-              <hr />
-
-              {/* DESCRIPCIÓN */}
               <div>
-                <p className="font-semibold text-gray-700">Descripción de solicitud</p>
-                <p>{solicitudSeleccionada.descripcion}</p>
+                <p className="font-semibold text-gray-800">Descripción de solicitud</p>
+                <p className="text-gray-700">{solicitudSeleccionada.descripcion}</p>
               </div>
-
-              {/* FILA 3 */}
+              <div>
+                <p className="font-semibold text-gray-800">Experiencia</p>
+                <p className="text-gray-700">{solicitudSeleccionada.experiencia}</p>
+              </div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <p className="font-semibold text-gray-700">Experiencia</p>
-                  <p>{solicitudSeleccionada.experiencia}</p>
+                  <p className="font-semibold text-gray-800">Licencia</p>
+                  <p className="text-gray-700">{solicitudSeleccionada.matricula}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Curriculum Vitae(PDF)</p>
+                  <a
+                    href={solicitudSeleccionada.cvPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:underline"
+
+                  >
+
+                    <Image
+                      src="/pdf.png"
+                      alt="PDF Icon"
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
+
+                    {solicitudSeleccionada.cvPath.split(/[/\\]/).pop()}
+                  </a>
                 </div>
 
-                <div>
-                  <p className="font-semibold text-gray-700">Licencia</p>
-                  <p>{solicitudSeleccionada.matricula}</p>
-                </div>
               </div>
 
-              {/* CV */}
-              <div>
-                <p className="font-semibold text-gray-700">CV (PDF)</p>
+              <div className="px-6 py-4 bg-gray-50 flex justify-end gap-4">
                 <button
-                  //onClick={() => abrirCv(solicitudSeleccionada.cvUrl)}
-                  className="text-blue-600 hover:underline"
+                  onClick={cerrarModal}
+                  className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
                 >
-                  Ver CV
+                  Cerrar
+                </button>
+
+                <button
+                  onClick={handleRechazar}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  Rechazar
+                </button>
+
+                <button
+                  onClick={handleAprobar}
+                  className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                >
+                  Aprobar
                 </button>
               </div>
 
             </div>
 
-            {/* FOOTER */}
-            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end gap-4">
-              <button
-                onClick={cerrarModal}
-                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-              >
-                Cerrar
-              </button>
 
-              <button
-                onClick={handleRechazar}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Rechazar
-              </button>
 
-              <button
-                onClick={handleAprobar}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-              >
-                Aprobar
-              </button>
-            </div>
           </div>
         </div>
-      )}
+      )
+      }
 
-    </div>
+    </div >
   );
 }

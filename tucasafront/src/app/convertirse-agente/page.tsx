@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { URL_BACKEND } from "@/config/constants";
-import PopupMessage from "./components/popupMessage";
+import { useToast } from "@/components/Toast";
 
 export default function ConvertirseAgentePage() {
   const router = useRouter();
@@ -14,23 +14,14 @@ export default function ConvertirseAgentePage() {
   const [matricula, setMatricula] = useState("");
   const [cv, setCv] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const { showSuccess, showError, showInfo } = useToast();
 
-  const [popup, setPopup] = useState({
-    show: false,
-    message: "",
-    type: "success" as "success" | "error",
-  });
-
-  const showPopup = (message: string, type: "success" | "error", duration = 3000) => {
-    setPopup({ show: true, message, type });
-    setTimeout(() => setPopup(prev => ({ ...prev, show: false })), duration);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!cv) return showPopup("Debes adjuntar tu CV en PDF", "error");
-    if (!user) return showPopup("Usuario no autenticado", "error");
+    if (!cv) return showInfo("Debes adjuntar tu CV en PDF");
+    if (!user)return router.push("/login");
 
     const formData = new FormData();
     formData.append("usuarioId", String(user.id));
@@ -52,7 +43,7 @@ export default function ConvertirseAgentePage() {
 
       if (!res.ok) throw new Error(text || "Error desconocido al enviar la solicitud");
 
-      showPopup("✅ Solicitud enviada correctamente. Un administrador la revisará.", "success");
+      showSuccess("Solicitud enviada correctamente. Un administrador la revisará.");
 
       setDescripcion("");
       setExperiencia("");
@@ -63,7 +54,7 @@ export default function ConvertirseAgentePage() {
 
     } catch (error: any) {
       console.error("Error al enviar solicitud:", error);
-      showPopup("❌ Error: " + error.message, "error");
+      showError("Error al enviar solicitud");
     } finally {
       setLoading(false);
     }
@@ -71,13 +62,6 @@ export default function ConvertirseAgentePage() {
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10 relative">
-      {/* Popup */}
-      <PopupMessage
-        show={popup.show}
-        message={popup.message}
-        type={popup.type}
-        onClose={() => setPopup({ ...popup, show: false })}
-      />
 
       <h2 className="text-xl font-bold text-center text-blue-600 mb-4">
         Solicitud para Convertirse en Agente
