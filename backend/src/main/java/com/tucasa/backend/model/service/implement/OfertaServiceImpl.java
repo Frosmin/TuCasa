@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -631,6 +632,37 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+    @Override
+public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion) {
+    try {
+        Optional<Oferta> optional = ofertaRepository.findById(id);
+
+        if (optional.isEmpty()) {
+            return apiResponse.responseDataError("La oferta no existe", null);
+        }
+
+        Oferta oferta = optional.get();
+
+        List<String> estadosValidos = List.of(
+                "pendiente",
+                "cancelado",
+                "publicado"
+        );
+
+        if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
+            return apiResponse.responseDataError("Estado no válido", null);
+        }
+
+        oferta.setEstadoPublicacion(estadoPublicacion);
+        ofertaRepository.save(oferta);
+   return apiResponse.responseSuccess("Estado actualizado correctamente", mapToDto(oferta));
+
+       
+
+    } catch (Exception e) {
+        return apiResponse.responseDataError("Error interno", e.getMessage());
+    }
+}
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
         return mapToDto(oferta, false);
