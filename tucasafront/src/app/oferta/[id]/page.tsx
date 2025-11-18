@@ -549,32 +549,14 @@ export default function DetalleOfertaPage() {
       </div>
 
       {/* Botón de acción destacado */}
-      {user && user.rol !== "ADMIN" ? (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
-          <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
-          <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              type='button'
-              onClick={() => { router.push(`/editar/${id}`) }}
-              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-            >
-              ✏️ Editar oferta
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
-              📞 Contactar
-            </button>
-          </div>
-        </div>
-      ) : (
+      {user && user.rol === "ADMIN" && (
+
+
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
           <h3 className="text-2xl font-bold text-white mb-2">¿Editar Estado</h3>
           <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center"></div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-
-
-
             {(
               <>
                 <button
@@ -582,14 +564,14 @@ export default function DetalleOfertaPage() {
                   onClick={() => manejarEstado('publicado')}
                   className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
                 >
-                  ✅ Publicar
+                  Publicar
                 </button>
                 <button
                   type="button"
                   onClick={() => manejarEstado('cancelado')}
                   className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
                 >
-                  ❌ Rechazar
+                  Rechazar
                 </button>
               </>
             )}
