@@ -6,14 +6,13 @@ import { obtenerSolicitudesPendientes, aprobarSolicitud, rechazarSolicitud, Soli
 import { SearchBar } from "@/app/admin/components/SearchBar";
 import FilterSelect from "@/app/admin/components/FilterSelect";
 import { useToast } from '@/components/Toast';
-import { useAuth } from "@/context/AuthContext";
+//import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/Loading";
-import { useRouter } from "next/navigation";
 import ModalDetails from "../components/ModalDetails";
 import type { Oferta, EstadoPublicacion } from "@/models/Oferta";
 
 export default function DashboardAdmin() {
-  const { user } = useAuth();
+  //const { user } = useAuth();
   const [solicitudes, setSolicitudes] = useState<SolicitudAgente[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -22,7 +21,7 @@ export default function DashboardAdmin() {
   const [selected, setSelected] = useState('');
   const [filteredData, setFilteredData] = useState<SolicitudAgente[]>([]);
   const { showSuccess, showError } = useToast();
-  const router = useRouter();
+
 
 
   const [ofertas, setOfertas] = useState<Oferta[]>([]);
@@ -59,7 +58,7 @@ export default function DashboardAdmin() {
       const data = await res.json();
       setOfertas(data.data);
     } catch (err: any) {
-      alert("Error cargando ofertas: " + err.message);
+      showError("No se pudo cargar las ofertas");
     } finally {
       setLoadingOfertas(false);
     }
@@ -81,9 +80,9 @@ export default function DashboardAdmin() {
     setFilteredData(temp);
   }, [searchTerm, selected, solicitudes]);
 
-  if (!user || user.rol !== "ADMIN") {
-    return router.push("/");
-  }
+  /*if (!user || user.rol !== "ADMIN") {
+    return <p>No autorizado</p>;
+  }*/
 
   const abrirModal = (solicitud: SolicitudAgente) => {
     setSolicitudSeleccionada(solicitud);
@@ -120,12 +119,6 @@ export default function DashboardAdmin() {
       showError("Error al rechazar la solicitud");
       console.error(error);
     }
-  };
-
-  const actualizarEstado = (id: number, nuevoEstado: EstadoPublicacion) => {
-    setOfertas(prev =>
-      prev.map(o => (o.id === id ? { ...o, estadoPublicacion: nuevoEstado } : o))
-    );
   };
 
   const actualizarEstado = (id: number, nuevoEstado: EstadoPublicacion) => {
@@ -231,7 +224,7 @@ export default function DashboardAdmin() {
   <div className="max-w-7xl mx-auto px-4 mt-3">
     <h2 className="text-xl font-bold">Gestión de Publicaciones</h2>
     {loadingOfertas ? (
-      <p>Cargando ofertas...</p>
+      <Loading message="Cargando ofertas..."/>
     ) : ofertas.length === 0 ? (
       <p>No hay ofertas disponibles</p>
     ) : (
@@ -239,9 +232,8 @@ export default function DashboardAdmin() {
         <table className="w-full text-left">
           <thead className="bg-gray-200 text-gray-800 uppercase text-base">
             <tr>
-              <th className="px-6 py-5">ID</th>
               <th className="px-6 py-5">Tipo</th>
-              <th className="px-6 py-5">Dirección</th>
+              <th className="px-6 py-5">Operacion</th>
               <th className="px-6 py-5">Precio</th>
               <th className="px-6 py-5">Estado</th>
               <th className="px-6 py-3">Acciones</th>
@@ -250,9 +242,8 @@ export default function DashboardAdmin() {
           <tbody>
             {ofertas.map((o) => (
               <tr key={o.id} className="border-b-2 border-gray-200 hover:bg-gray-100 text-gray-700">
-                <td className="px-6 py-4">{o.id}</td>
-                <td className="px-6 py-4">{o.tipo} - {o.inmueble.tipo}</td>
-                <td className="px-6 py-4">{o.inmueble.direccion}</td>
+                <td className="px-6 py-4">{o.inmueble.tipo}</td>
+                <td className="px-6 py-4">{o.tipo}</td>
                 <td className="px-6 py-4">{o.moneda} {o.precio}</td>
                 <td className="px-6 py-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${

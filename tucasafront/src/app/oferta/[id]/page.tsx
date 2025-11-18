@@ -8,10 +8,14 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
+import { useAuth } from '@/context/AuthContext'
+import { useToast } from '@/components/Toast'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+  const { showError, showSuccess } = useToast();
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
@@ -19,7 +23,7 @@ export default function DetalleOfertaPage() {
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
   const [images, setImages] = useState<string[]>([])
-  
+
   // Estados para el modal de imagen
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -35,27 +39,27 @@ export default function DetalleOfertaPage() {
       try {
         setLoading(true)
         setError(null)
-        
+
         console.log('🔍 Buscando oferta con ID:', id)
-        
+
         const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
-        
+
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
         }
-        
+
         const data = await res.json()
-        
+
         const inmuebleData = data.data?.inmueble;
         const fotos: Multimedia[] = (inmuebleData?.multimedias ?? [])
         const images = fotos.map(f => f.url);
         setImages(images);
-        
+
         console.log('📦 Datos crudos recibidos:', data)
-        setRawData(data) 
-        
+        setRawData(data)
+
         let ofertaData: Oferta | null = null
-        
+
         if (data.data && data.data.inmueble) {
           ofertaData = data.data
         } else if (data.inmueble) {
@@ -63,15 +67,15 @@ export default function DetalleOfertaPage() {
         } else if (data.result && data.result.inmueble) {
           ofertaData = data.result
         }
-        
+
         if (!ofertaData) {
           console.error('❌ No se pudo extraer la oferta de la respuesta:', data)
           throw new Error('Estructura de datos inesperada')
         }
-        
+
         console.log('✅ Oferta extraída:', ofertaData)
         setOferta(ofertaData)
-        
+
       } catch (err) {
         console.error('❌ Error cargando la oferta:', err)
         setError(err instanceof Error ? err.message : 'Error desconocido')
@@ -79,7 +83,7 @@ export default function DetalleOfertaPage() {
         setLoading(false)
       }
     }
-    
+
     if (id) {
       fetchData()
     }
@@ -108,12 +112,12 @@ export default function DetalleOfertaPage() {
   // Manejar clic en el carrusel
   const handleCarouselClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    const isButton = target.closest('button') || 
-                    target.closest('[role="button"]') || 
-                    target.tagName === 'BUTTON' ||
-                    target.closest('.carousel-button') ||
-                    target.closest('.slick-arrow');
-    
+    const isButton = target.closest('button') ||
+      target.closest('[role="button"]') ||
+      target.tagName === 'BUTTON' ||
+      target.closest('.carousel-button') ||
+      target.closest('.slick-arrow');
+
     if (!isButton) {
       openModal(carouselCurrentIndex);
     }
@@ -126,7 +130,7 @@ export default function DetalleOfertaPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isModalOpen) return
-      
+
       switch (e.key) {
         case 'Escape':
           closeModal()
@@ -241,30 +245,30 @@ export default function DetalleOfertaPage() {
     return labels[tipoPago] || tipoPago
   }
 
-const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
-  try {
-    const res = await fetch(`${URL_BACKEND}/api/oferta/${id}/estado?estadoPublicacion=${nuevoEstado}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
+    try {
+      const res = await fetch(`${URL_BACKEND}/api/oferta/${id}/estado?estadoPublicacion=${nuevoEstado}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      // Mostrar error real del backend
-      throw new Error(data?.message || `Error ${res.status}`);
+      if (!res.ok) {
+        // Mostrar error real del backend
+        throw new Error(data?.message || `Error ${res.status}`);
+      }
+
+      showSuccess(`la oferta ha sido ${nuevoEstado}`)
+      setOferta(prev => prev ? { ...prev, estadoPublicacion: nuevoEstado } : prev);
+
+    } catch (err) {
+      showError("No se puede completar la operación");
+      console.error(err);
     }
-
-    alert(`✅ Estado actualizado a ${nuevoEstado}`);
-    setOferta(prev => prev ? { ...prev, estadoPublicacion: nuevoEstado } : prev);
-
-  } catch (err) {
-    alert(`❌ Error al cambiar el estado: ${err instanceof Error ? err.message : err}`);
-    console.error(err);
   }
-}
 
 
 
@@ -287,11 +291,11 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
       </div>
 
       {/* Carrusel clickeable */}
-      <div 
+      <div
         className="cursor-zoom-in mb-8 transition-transform hover:opacity-95 relative rounded-2xl overflow-hidden shadow-lg"
         onClick={handleCarouselClick}
       >
-        <ImageCarousel 
+        <ImageCarousel
           images={images}
           onIndexChange={handleCarouselIndexChange}
         />
@@ -349,9 +353,8 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg transition-all ${
-                    index === currentImageIndex ? 'border-blue-500 scale-110' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
+                  className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg transition-all ${index === currentImageIndex ? 'border-blue-500 scale-110' : 'border-transparent opacity-70 hover:opacity-100'
+                    }`}
                 >
                   <img
                     src={image}
@@ -406,11 +409,11 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">
-                🗓️ Publicado el {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                🗓️ Publicado el {new Date(oferta.fechaPublicacionInicio).toLocaleDateString('es-BO', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </div>
@@ -478,7 +481,7 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
             </div>
           </nav>
         </div>
-        
+
         <div className="p-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Sobre esta propiedad</h3>
@@ -534,9 +537,8 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
                       <span className="text-lg">{icon}</span>
                       <span className="text-gray-700 font-medium">{label}</span>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
                       {value ? 'Sí' : 'No'}
                     </span>
                   </div>
@@ -547,52 +549,57 @@ const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
       </div>
 
       {/* Botón de acción destacado */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
-        <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            type='button'
-            onClick={()=>{router.push(`/editar/${id}`)}}
-            className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-          >
-            ✏️ Editar oferta
-          </button>
-          <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
-            📞 Contactar
-          </button>
+      {user && user.rol !== "ADMIN" ? (
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
+          <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
+          <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              type='button'
+              onClick={() => { router.push(`/editar/${id}`) }}
+              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
+            >
+              ✏️ Editar oferta
+            </button>
+            <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
+              📞 Contactar
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
+          <h3 className="text-2xl font-bold text-white mb-2">¿Editar Estado</h3>
+          <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center"></div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
 
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">¿Editar Estado</h3>
-        <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center"></div>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-  
- 
 
-  { (
-    <>
-      <button
-        type="button"
-        onClick={() => manejarEstado('publicado')}
-        className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
-      >
-        ✅ Publicar
-      </button>
-      <button
-        type="button"
-        onClick={() => manejarEstado('cancelado')}
-        className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
-      >
-        ❌ Rechazar
-      </button>
-    </>
-  )}
-</div>
-</div>
+
+            {(
+              <>
+                <button
+                  type="button"
+                  onClick={() => manejarEstado('publicado')}
+                  className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  ✅ Publicar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => manejarEstado('cancelado')}
+                  className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  ❌ Rechazar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+      )}
+
+
     </div>
-    
+
   )
 }
