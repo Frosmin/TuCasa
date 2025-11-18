@@ -217,3 +217,28 @@
 -   **Y:** Trabajé en mostrar la direccion de un inmueble especifico
 -   **T:** Hoy voy a mostrar el promedio de precios de una zona
 -   **B:** No he tenido problemas
+
+# Scrum Report #10 — Nov 18
+
+## Pablo
+
+-   **Y:** Trabajé en la integracion de la rama team-b en dev
+-   **T:** Hoy voy a dar soporte a la integracion
+-   **B:** Solo algunos inconvenientes menores con el servicio de google maps
+
+---
+
+## Diego
+
+-   **Y:** Trabaje en mostrar informacion adicional en los mapas
+-   **T:** Hoy voy a solucionar un problema del servicio de google
+-   **B:** No he tenido mas problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en hacer correcciones menores
+-   **T:** Hoy voy a dar soporte a la integración
+-   **B:** No he tenido problemas
+
