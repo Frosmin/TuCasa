@@ -412,6 +412,35 @@ export default function MapaPage() {
   };
 
   const tienesFiltrosActivos = tipoInmuebleSeleccionado !== '' || tipoOperacion !== 'TODOS' || zonaSeleccionada !== '';
+  const estadisticasPorZona = useMemo(() => {
+    const stats: { [zona: string]: { count: number; totalUSD: number; totalBOB: number } } = {};
+
+    ofertasFiltrados.forEach(oferta => {
+      const zona = oferta.inmueble.zona || 'Sin zona';
+      if (!stats[zona]) {
+        stats[zona] = { count: 0, totalUSD: 0, totalBOB: 0 };
+      }
+
+      stats[zona].count += 1;
+
+      if (oferta.moneda === '$' || oferta.moneda.toString() === 'USD') {
+        stats[zona].totalUSD += oferta.precio;
+        stats[zona].totalBOB += oferta.precio * 6.96;
+      } else {
+        stats[zona].totalBOB += oferta.precio;
+        stats[zona].totalUSD += oferta.precio / 6.96;
+      }
+    });
+
+    return Object.entries(stats)
+      .map(([zona, data]) => ({
+        zona,
+        count: data.count,
+        promedioUSD: data.totalUSD / data.count,
+        promedioBOB: data.totalBOB / data.count
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [ofertasFiltrados]);
 
   if (loadError) {
     return (
@@ -447,11 +476,29 @@ export default function MapaPage() {
       </div>
     );
   }
-
   return (
     <>
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-lg shadow-lg px-6 py-3 flex items-center gap-6">
+        <div className="text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Inmuebles</div>
+          <div className="text-lg font-bold text-blue-600">{ofertasFiltrados.length}</div>
+        </div>
+        <div className="h-8 w-px bg-gray-300"></div>
+        <div className="text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Promedio USD</div>
+          <div className="text-lg font-bold text-green-600">
+            ${(estadisticasPorZona.reduce((acc, stat) => acc + stat.promedioUSD, 0) / (estadisticasPorZona.length || 1)).toLocaleString('es-BO', { maximumFractionDigits: 0 })}
+          </div>
+        </div>
+        <div className="h-8 w-px bg-gray-300"></div>
+        <div className="text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Promedio Bs.</div>
+          <div className="text-lg font-bold text-purple-600">
+            {(estadisticasPorZona.reduce((acc, stat) => acc + stat.promedioBOB, 0) / (estadisticasPorZona.length || 1)).toLocaleString('es-BO', { maximumFractionDigits: 0 })}
+          </div>
+        </div>
+      </div>
 
-      {/* Controles laterales */}
       <div className="fixed top-20 left-4 z-50 flex flex-col gap-3">
         <div className="bg-white rounded-lg shadow-lg p-3 flex flex-col gap-2">
           <button
@@ -461,10 +508,8 @@ export default function MapaPage() {
             <Layers className="w-4 h-4" />
             {mapType === 'roadmap' ? 'Satélite' : 'Mapa'}
           </button>
-
         </div>
 
-        {/* Tipo de Operación */}
         <div className="bg-white rounded-lg shadow-lg p-4">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
             Tipo de Operación
@@ -474,15 +519,8 @@ export default function MapaPage() {
               <button
                 key={tipo}
                 onClick={() => setTipoOperacion(tipo)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${tipoOperacion === tipo
-                  ? `bg-blue-500 text-white shadow-md`
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                style={
-                  tipoOperacion === tipo && tipo !== 'TODOS'
-                    ? { backgroundColor: OPERACION_CONFIG[tipo].color }
-                    : {}
-                }
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${tipoOperacion === tipo ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                style={tipoOperacion === tipo && tipo !== 'TODOS' ? { backgroundColor: OPERACION_CONFIG[tipo].color } : {}}
               >
                 <div
                   className='w-3 h-3 rounded-full'
@@ -502,11 +540,9 @@ export default function MapaPage() {
               Zona
             </h3>
             <div className="relative">
-              {/* Selector Principal */}
-              <button
-                type="button"
+              <div
                 onClick={() => setIsZonaDropdownOpen(!isZonaDropdownOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm cursor-pointer"
               >
                 <span className={`truncate ${zonaSeleccionada ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                   {zonaSeleccionada || 'Todas las zonas'}
@@ -514,35 +550,31 @@ export default function MapaPage() {
 
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {zonaSeleccionada && (
-                    <button
+                    <div
                       onClick={(e) => {
                         e.stopPropagation();
                         setZonaSeleccionada('');
                         setZonaSearchTerm('');
                       }}
-                      className="p-1 hover:bg-gray-300 rounded transition-colors"
+                      className="p-1 hover:bg-gray-300 rounded transition-colors cursor-pointer"
                     >
                       <X className="w-3.5 h-3.5 text-gray-600" />
-                    </button>
+                    </div>
                   )}
                   <ChevronDown
                     className={`w-4 h-4 text-gray-600 transition-transform ${isZonaDropdownOpen ? 'rotate-180' : ''}`}
                   />
                 </div>
-              </button>
+              </div>
 
-              {/* Dropdown */}
               {isZonaDropdownOpen && (
                 <>
-                  {/* Overlay */}
                   <div
                     className="fixed inset-0 z-40"
                     onClick={() => setIsZonaDropdownOpen(false)}
                   />
 
-                  {/* Menú desplegable */}
                   <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-80 overflow-hidden">
-                    {/* Buscador */}
                     <div className="p-2 border-b border-gray-200">
                       <input
                         type="text"
@@ -554,22 +586,18 @@ export default function MapaPage() {
                       />
                     </div>
 
-                    {/* Lista de zonas */}
                     <div className="overflow-y-auto max-h-64">
-                      {/* Opción "Todas las zonas" */}
                       <button
                         onClick={() => {
                           setZonaSeleccionada('');
                           setIsZonaDropdownOpen(false);
                           setZonaSearchTerm('');
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${!zonaSeleccionada ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${!zonaSeleccionada ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'}`}
                       >
                         Todas las zonas ({ofertas.length})
                       </button>
 
-                      {/* Opciones de zonas */}
                       {zonasFiltradas.length > 0 ? (
                         zonasFiltradas.map((zona) => {
                           const count = ofertas.filter(o => o.inmueble.zona === zona).length;
@@ -581,8 +609,7 @@ export default function MapaPage() {
                                 setIsZonaDropdownOpen(false);
                                 setZonaSearchTerm('');
                               }}
-                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${zonaSeleccionada === zona ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                                }`}
+                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${zonaSeleccionada === zona ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'}`}
                             >
                               {zona} ({count})
                             </button>
@@ -595,7 +622,6 @@ export default function MapaPage() {
                       )}
                     </div>
 
-                    {/* Contador */}
                     {zonaSearchTerm && zonasFiltradas.length > 0 && (
                       <div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
                         {zonasFiltradas.length} zona{zonasFiltradas.length !== 1 ? 's' : ''} encontrada{zonasFiltradas.length !== 1 ? 's' : ''}
@@ -608,9 +634,6 @@ export default function MapaPage() {
           </div>
         )}
 
-
-
-        {/* Leyenda de tipos */}
         <div className="bg-white rounded-lg shadow-lg px-4 py-3">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
             Inmueble
@@ -618,14 +641,9 @@ export default function MapaPage() {
           <div className="flex flex-col gap-2.5">
             <button
               onClick={() => setTipoInmuebleSeleccionado('')}
-              className={`flex items-center gap-2 cursor-pointer  p-2 rounded-xl  ${tipoInmuebleSeleccionado === ''
-                ? 'bg-blue-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+              className={`flex items-center gap-2 cursor-pointer p-2 rounded-xl ${tipoInmuebleSeleccionado === '' ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
-              <div
-                className="w-6 h-6 rounded-full flex items-center justify-center"
-              >
+              <div className="w-6 h-6 rounded-full flex items-center justify-center">
                 <MapPinHouse className="w-4 h-4" />
               </div>
               <span className="text-sm font-medium">
@@ -637,19 +655,17 @@ export default function MapaPage() {
               const count = ofertas.filter(i => i.inmueble.tipo === tipo).length;
 
               return (
-                <button onClick={() => setTipoInmuebleSeleccionado(tipoInmuebleSeleccionado === tipo ? '' : tipo as TipoPropiedad)} key={tipo} className={`flex items-center gap-2 cursor-pointer  p-2 rounded-xl ${tipoInmuebleSeleccionado === tipo
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}>
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                  >
-                    <Icon className="w-3.5 h-3.5 " />
+                <button
+                  onClick={() => setTipoInmuebleSeleccionado(tipoInmuebleSeleccionado === tipo ? '' : tipo as TipoPropiedad)}
+                  key={tipo}
+                  className={`flex items-center gap-2 cursor-pointer p-2 rounded-xl ${tipoInmuebleSeleccionado === tipo ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                >
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center">
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-sm font-medium ">
+                  <span className="text-sm font-medium">
                     {config.label} ({count})
                   </span>
-
                 </button>
               );
             })}
@@ -657,7 +673,6 @@ export default function MapaPage() {
         </div>
       </div>
 
-      {/* Contenedor del mapa */}
       <div
         ref={(el) => {
           mapRef.current = el;
