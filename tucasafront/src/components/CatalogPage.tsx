@@ -12,13 +12,11 @@ interface CatalogPageProps {
   tipoOperacion: TipoOperacion
 }
 
-// Coordenadas de Cochabamba
 const COCHABAMBA_CENTER = { lat: -17.392902, lng: -66.144739 }
 
-
-// Función utilitaria para calcular distancia (Haversine)
+// Calcular distancia
 const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371 // Radio de la Tierra en km
+  const R = 6371
   const dLat = ((lat2 - lat1) * Math.PI) / 180
   const dLon = ((lon2 - lon1) * Math.PI) / 180
   const a =
@@ -32,6 +30,7 @@ const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
+
   const [ofertas, setOfertas] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -62,32 +61,31 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     { id: 'TIENDA', label: 'Tiendas', icon: Store },
   ] as const
 
-  // Validar y corregir coordenadas (detectar si están invertidas)
+  // Validar coordenadas
   const validarCoordenadas = (lat: number, lng: number) => {
-    // Cochabamba debe estar aproximadamente entre -17 y -18 de latitud
-    // y entre -66 y -67 de longitud
     if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
-      return { lat: lng, lng: lat } // Invertir si están fuera de rango
+      return { lat: lng, lng: lat }
     }
-    
-    // Si la latitud parece más como longitud y viceversa (para Bolivia)
     if (Math.abs(lat) > Math.abs(lng)) {
-      return { lat: lng, lng: lat } // Invertir
+      return { lat: lng, lng: lat }
     }
-    
     return { lat, lng }
   }
 
-  // Cargar ofertas del backend
+  // 🔥 Cargar ofertas del backend (solo PUBLICADAS)
   useEffect(() => {
     const cargarOfertas = async () => {
       try {
         setLoading(true)
         setError(null)
+
         const data = await fetchOfertas(tipoOperacion)
 
-        // Filtrar inmuebles con coordenadas válidas y corregidas
-        const datosValidos = data
+        // 🔥 FILTRAR SOLO PUBLICADAS
+        const dataPublicadas = data.filter(o => o.estadoPublicacion === 'publicado')
+
+        // Filtrar inmuebles válidos y corregir lat/lng
+        const datosValidos = dataPublicadas
           .map(o => {
             const { lat, lng } = validarCoordenadas(o.inmueble.latitud, o.inmueble.longitud)
             return {
@@ -100,25 +98,11 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
             }
           })
           .filter(o => o.inmueble.latitud !== 0 && o.inmueble.longitud !== 0)
-        
+
         setOfertas(datosValidos)
 
-        // Calcular el centro promedio de inmuebles válidos
-        if (datosValidos.length > 0) {
-          const latSum = datosValidos.reduce((sum, o) => sum + o.inmueble.latitud, 0)
-          const lngSum = datosValidos.reduce((sum, o) => sum + o.inmueble.longitud, 0)
-          const centerLat = latSum / datosValidos.length
-          const centerLng = lngSum / datosValidos.length
-          
-          setFilters(prev => ({
-            ...prev,
-            latitud: COCHABAMBA_CENTER.lat,
-            longitud: COCHABAMBA_CENTER.lng,
-          }))
-        } 
       } catch (err) {
-        const mensaje =
-          err instanceof Error ? err.message : 'Error desconocido'
+        const mensaje = err instanceof Error ? err.message : 'Error desconocido'
         setError(mensaje)
       } finally {
         setLoading(false)
@@ -128,17 +112,15 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     cargarOfertas()
   }, [tipoOperacion])
 
-  // Obtener tipos de inmuebles únicos
+  // Tipos únicos
   const tiposUnicos = useMemo(() => {
     const tipos = new Set(
-      ofertas
-        .map(o => o.inmueble.tipo)
-        .filter(Boolean)
+      ofertas.map(o => o.inmueble.tipo).filter(Boolean)
     )
     return Array.from(tipos).sort() as string[]
   }, [ofertas])
 
-  // Pre-calcular distancias para optimización
+  // Pre-calcular distancias
   const ofertasConDistancia = useMemo(() => {
     return ofertas.map(oferta => ({
       oferta,
@@ -151,16 +133,12 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     }))
   }, [ofertas, filters.latitud, filters.longitud])
 
-  // Filtrar ofertas
+  // Aplicar filtros
   const ofertasFiltradas = useMemo(() => {
     return ofertasConDistancia
       .filter(({ oferta, distancia }) => {
-        // Filtro por tipo de inmueble
-        if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) {
-          return false
-        }
+        if (tipoInmuebleSeleccionado && oferta.inmueble.tipo !== tipoInmuebleSeleccionado) return false
 
-        // Filtro por búsqueda
         if (searchTerm) {
           const termo = searchTerm.toLowerCase()
           const coincide =
@@ -170,77 +148,34 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           if (!coincide) return false
         }
 
-        // Filtro por proximidad - Validación mejorada
-        if (filters.proximidad && filters.proximidad > 0) {
-          if (distancia > filters.proximidad) {
-            return false
-          }
-        }
+        if (filters.proximidad && distancia > filters.proximidad) return false
 
-        // Filtro por precio
-        if (
-          oferta.precio < filters.precioMin ||
-          oferta.precio > filters.precioMax
-        ) {
-          return false
-        }
+        if (oferta.precio < filters.precioMin || oferta.precio > filters.precioMax) return false
 
-        // Filtro por superficie
-        if (
-          oferta.inmueble.superficie < filters.superficieMin ||
-          oferta.inmueble.superficie > filters.superficieMax
-        ) {
-          return false
-        }
+        if (oferta.inmueble.superficie < filters.superficieMin ||
+            oferta.inmueble.superficie > filters.superficieMax) return false
 
-        // Filtro por dormitorios
-        if (filters.dormitorios && oferta.inmueble.numDormitorios) {
-          if (oferta.inmueble.numDormitorios !== parseInt(filters.dormitorios)) {
-            return false
-          }
-        }
+        if (filters.dormitorios && oferta.inmueble.numDormitorios &&
+            oferta.inmueble.numDormitorios !== parseInt(filters.dormitorios)) return false
 
-        // Filtro por garaje
-        if (filters.garaje === true && !oferta.inmueble.garaje) {
-          return false
-        }
+        if (filters.garaje && !oferta.inmueble.garaje) return false
+        if (filters.amoblado && !oferta.inmueble.amoblado) return false
+        if (filters.patio && !oferta.inmueble.patio) return false
+        if (filters.sotano && !oferta.inmueble.sotano) return false
 
-        // Filtro por amoblado
-        if (filters.amoblado === true && !oferta.inmueble.amoblado) {
-          return false
-        }
+        if (filters.moneda && oferta.moneda !== filters.moneda) return false
 
-        // Filtro por patio
-        if (filters.patio === true && !oferta.inmueble.patio) {
-          return false
-        }
+        if ((filters.servicios ?? []).length > 0) {
+  const serviciosInmueble = (oferta.inmueble.servicios || []).map(s => s.nombre)
+  if (!(filters.servicios ?? []).every(s => serviciosInmueble.includes(s))) return false
+}
 
-        // Filtro por sotano
-        if (filters.sotano === true && !oferta.inmueble.sotano) {
-          return false
-        }
-
-        // Filtro por moneda
-        if (filters.moneda && oferta.moneda !== filters.moneda) {
-          return false
-        }
-
-        // Filtro por servicios
-        if (filters.servicios && filters.servicios.length > 0) {
-          const servicios = oferta.inmueble.servicios || []
-          const serviciosInmueble = servicios.map(s => s.nombre)
-          const tieneServicios = filters.servicios.every(servicio =>
-            serviciosInmueble.includes(servicio)
-          )
-          if (!tieneServicios) return false
-        }
 
         return true
       })
       .map(({ oferta }) => oferta)
   }, [ofertasConDistancia, tipoInmuebleSeleccionado, searchTerm, filters])
 
-  // Limpiar filtros
   const limpiarFiltrosCompleto = () => {
     setFilters({
       precioMin: 0,
@@ -262,7 +197,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     setTipoInmuebleSeleccionado('')
   }
 
-  // Mostrar error
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -280,14 +214,11 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     )
   }
 
-  // Mostrar loading
-  if (loading) {
-    return <Loading message="Cargando ofertas..." />
-  }
+  if (loading) return <Loading message="Cargando ofertas..." />
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Selector de Tipo de Propiedad */}
+      {/* Selector de Tipo */}
       <div className="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -295,7 +226,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
               <button
                 key={id}
                 onClick={() => setTipoInmuebleSeleccionado(id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium ${
                   tipoInmuebleSeleccionado === id
                     ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
                     : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
@@ -309,15 +240,12 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         </div>
       </div>
 
-      {/* Buscador */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
       </div>
 
-      {/* Contenido Principal */}
       <div className="max-w-7xl mx-auto px-4 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filtros */}
           <div className="lg:col-span-1">
             <FiltroSidebar
               ofertas={ofertas}
@@ -328,7 +256,6 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
             />
           </div>
 
-          {/* Resultados */}
           <div className="lg:col-span-3">
             <ResultadosOfertas
               ofertas={ofertasFiltradas}
@@ -340,7 +267,5 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     </div>
   )
 }
-
-
 
 export default CatalogPage
