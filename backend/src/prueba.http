@@ -30,3 +30,26 @@ Content-Type: application/json
   "serviciosIds": [1, 2,3]
 }
 
+
+###
+GET http://localhost:8000/tucasabackend/api/oferta
+
+
+### 
+POST http://localhost:8000/tucasabackend/api/favoritos
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuMUBnbWFpbC5jb20iLCJpYXQiOjE3NjMyNDE4ODUsImV4cCI6MTc2MzMyODI4NX0.yZ8aGFzHrFRINptfYLJf8TXE_9rQzD271cyx0ByNpm4
+
+{
+  "ofertaId": 1
+}
+
+
+###
+DELETE  http://localhost:8000/tucasabackend/api/favoritos
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuMUBnbWFpbC5jb20iLCJpYXQiOjE3NjMyNDE4ODUsImV4cCI6MTc2MzMyODI4NX0.yZ8aGFzHrFRINptfYLJf8TXE_9rQzD271cyx0ByNpm4
+
+{
+  "ofertaId": 1
+}

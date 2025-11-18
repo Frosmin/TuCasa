@@ -6,5 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum TipoOperacion {
     VENTA,
     ALQUILER,
-    ANTICRETICO
+    ANTICRETICO,
+    AVALUO
 }

@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
+import com.tucasa.backend.utils.PropietarioMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.MultimediaResponseDto;
 import com.tucasa.backend.model.dto.OfertaRequestDto;
 import com.tucasa.backend.model.dto.OfertaResponseDto;
+import com.tucasa.backend.model.dto.OfertaResponseFavoritoDto;
 import com.tucasa.backend.model.dto.TiendaRequestDto;
 import com.tucasa.backend.model.dto.TiendaResponseDto;
 import com.tucasa.backend.model.entity.Casa;
@@ -37,14 +40,17 @@ import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
 import com.tucasa.backend.model.entity.Servicio;
 import com.tucasa.backend.model.entity.Tienda;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.repository.CasaRepository;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
+import com.tucasa.backend.model.repository.FavoritoRepository;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.LoteRepository;
 import com.tucasa.backend.model.repository.OfertaRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.repository.TiendaRepository;
+import com.tucasa.backend.model.repository.UsuarioRepository;
 import com.tucasa.backend.model.service.interfaces.OfertaService;
 import com.tucasa.backend.payload.ApiResponse;
 
@@ -53,6 +59,8 @@ import java.util.ArrayList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+
+import org.springframework.security.core.Authentication;
 
 @Service
 public class OfertaServiceImpl implements OfertaService {
@@ -84,6 +92,15 @@ public class OfertaServiceImpl implements OfertaService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private FavoritoRepository favoritoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PropietarioMapper propietarioMapper;
+
     // ---------------------- CRUD OFERTAS ----------------------
     @Override
     public ResponseEntity<?> findAll() {
@@ -106,14 +123,30 @@ public class OfertaServiceImpl implements OfertaService {
     }
 
     @Override
-    public ResponseEntity<?> findById(Long id) {
+    public ResponseEntity<?> findById(Long id, Authentication authentication) {
         String successMessage = Constants.RECORDS_FOUND;
         String errorMessage = "Oferta no encontrada";
 
         try {
             Oferta oferta = ofertaRepository.findCompletoById(id)
                     .orElseThrow(() -> new RuntimeException(errorMessage));
-            return apiResponse.responseSuccess(successMessage, mapToDto(oferta));
+
+            OfertaResponseDto baseDto = mapToDto(oferta);
+            Long totalFavoritos = favoritoRepository.countByOfertaId(id);
+            OfertaResponseFavoritoDto responseDto = new OfertaResponseFavoritoDto(baseDto, totalFavoritos);
+
+            if (authentication != null &&  authentication.isAuthenticated()){
+                String userEmail = authentication.getName();
+                usuarioRepository.findByCorreo(userEmail).ifPresent(usuario -> {
+                    Long userID = usuario.getId();
+                    boolean esFavorito = favoritoRepository.existsByUsuarioIdAndOfertaId(userID, id);
+                    responseDto.setEsFavorito(esFavorito);;
+                });
+
+            }
+
+
+            return apiResponse.responseSuccess(successMessage, responseDto);
         } catch (Exception e) {
             return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
         }
@@ -300,8 +333,10 @@ public class OfertaServiceImpl implements OfertaService {
             inmueble.setDescripcion(dto.getDescripcion());
         if (dto.getActivo() != null)
             inmueble.setActivo(dto.getActivo());
-        if (dto.getIdPropietario() != null)
-            inmueble.setIdPropietario(dto.getIdPropietario());
+        if (dto.getIdPropietario() != null){
+            Usuario propietario = propietarioMapper.getPropietarioEntity(dto.getIdPropietario());
+            inmueble.setPropietario(propietario);
+        }
     }
 
     private void updateServicios(Inmueble inmueble, Set<Long> serviciosIds) {
@@ -337,7 +372,7 @@ public class OfertaServiceImpl implements OfertaService {
         }
 
         Inmueble inmueble;
-
+        Usuario propietario = propietarioMapper.getPropietarioEntity(dto.getIdPropietario());
         switch (dto.getTipo()) {
             case CASA -> {
                 Casa casa = new Casa();
@@ -346,7 +381,7 @@ public class OfertaServiceImpl implements OfertaService {
                 casa.setSuperficie(dto.getSuperficie());
                 casa.setLatitud(dto.getLatitud());
                 casa.setLongitud(dto.getLongitud());
-                casa.setIdPropietario(dto.getIdPropietario());
+                casa.setPropietario(propietario);
                 casa.setDescripcion(dto.getDescripcion());
                 casa.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
                 casa.setTipo(dto.getTipo());
@@ -376,7 +411,7 @@ public class OfertaServiceImpl implements OfertaService {
                 tienda.setSuperficie(dto.getSuperficie());
                 tienda.setLatitud(dto.getLatitud());
                 tienda.setLongitud(dto.getLongitud());
-                tienda.setIdPropietario(dto.getIdPropietario());
+                tienda.setPropietario(propietario);
                 tienda.setDescripcion(dto.getDescripcion());
                 tienda.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
                 tienda.setTipo(dto.getTipo());
@@ -405,7 +440,7 @@ public class OfertaServiceImpl implements OfertaService {
                 departamento.setSuperficie(dto.getSuperficie());
                 departamento.setLongitud(dto.getLongitud());
                 departamento.setLatitud(dto.getLatitud());
-                departamento.setIdPropietario(dto.getIdPropietario());
+                departamento.setPropietario(propietario);
                 departamento.setDescripcion(dto.getDescripcion());
                 departamento.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
                 departamento.setTipo(dto.getTipo()); // esto tiene que ser tipo operacion
@@ -440,7 +475,7 @@ public class OfertaServiceImpl implements OfertaService {
                 lote.setSuperficie(dto.getSuperficie());
                 lote.setLongitud(dto.getLongitud());
                 lote.setLatitud(dto.getLatitud());
-                lote.setIdPropietario(dto.getIdPropietario());
+                lote.setPropietario(propietario);
                 lote.setDescripcion(dto.getDescripcion());
                 lote.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
                 lote.setTipo(dto.getTipo());
@@ -642,6 +677,26 @@ public class OfertaServiceImpl implements OfertaService {
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
         return mapToDto(oferta, false);
+    }
+
+    @Override
+    public ResponseEntity<?> findByUserId(Long id) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = Constants.NO_RECORDS;
+        try {
+            List<Oferta> ofertas = ofertaRepository.findAllByPropietarioId(id);
+            
+            if (!ofertas.isEmpty()) {
+                List<OfertaResponseDto> response = ofertas.stream()
+                        .map(this::mapToDto)
+                        .collect(Collectors.toList());
+                return apiResponse.responseSuccess(successMessage, response);
+            } else {
+                return apiResponse.responseSuccess(successMessage, List.of()); 
+            }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
     }
 
 }

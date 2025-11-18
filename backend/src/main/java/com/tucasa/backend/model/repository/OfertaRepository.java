@@ -28,4 +28,11 @@ public interface OfertaRepository extends JpaRepository<Oferta, Long> {
 
     @Query(value = "SELECT AVG(o.precio) FROM ofertas o WHERE o.id IN :ids", nativeQuery = true)
     BigDecimal findAveragePrecioByIds(@Param("ids") List<Long> ids);
+
+    @EntityGraph(attributePaths = {"inmueble", "inmueble.servicios"})
+    @Query("SELECT o FROM Oferta o " +
+           "WHERE o.inmueble.propietario.id = :propietarioId " +
+           "  AND o.inmueble.activo = true " +
+           "  AND o.activo = true")
+    List<Oferta> findAllByPropietarioId(@Param("propietarioId") Long propietarioId);
 }

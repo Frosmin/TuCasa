@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, Settings, LayoutList } from "lucide-react";
+import { Heart, User, LogOut, LayoutList } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -10,6 +10,11 @@ export default function Header() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -20,6 +25,8 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -66,7 +73,7 @@ export default function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
 
-          {user ? (
+          {!!user && (
             <Link
               href={"/publicar"}
               className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
@@ -74,8 +81,6 @@ export default function Header() {
               Publicar
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
             </Link>
-          ) : (
-            <></>
           )}
         </div>
 
@@ -100,13 +105,16 @@ export default function Header() {
                   className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
                 >
                   <Link
-                    href={"/perfil"}
+                    onClick={() => setMenuOpen(false)}
+                    href={"/pages/perfil"}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <User className="w-4 h-4" /> Perfil
                   </Link>
                   <Link
                     href={"/publicaciones"}
+                    onClick={() => setMenuOpen(false)}
+
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones

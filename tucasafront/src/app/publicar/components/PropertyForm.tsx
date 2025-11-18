@@ -2,7 +2,7 @@
 
 import { PropertyFormData } from '../types/property.types';
 import { useRouter } from 'next/navigation';
-import { CURRENCY_OPTIONS, PAYMENT_TYPE_OPTIONS } from '../data/property.constants';
+import { CURRENCY_OPTIONS, OPERATION_TYPES, PAYMENT_TYPE_OPTIONS } from '../data/property.constants';
 import PropertyTypeSelector from './PropertyTypeSelector';
 import CasaFields from './CasaFields';
 import TiendaFields from './TiendaFields';
@@ -289,8 +289,13 @@ export default function PropertyForm({
               disabled={isSubmitting}
               className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Publicando...' : 'Publicar ahora'}
-            </button>
+
+              {isSubmitting
+                ? "Publicando..."
+                : formData.operacion === OPERATION_TYPES[3].id
+                  ? "Solicitar avaluo"
+                  : "Publicar ahora"}
+              </button>
           </div>
         )}
 
