@@ -5,9 +5,11 @@ import com.tucasa.backend.model.dto.InmuebleRequestDto;
 import com.tucasa.backend.model.dto.InmuebleResponseDto;
 import com.tucasa.backend.model.dto.MultimediaRequestDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
+import com.tucasa.backend.model.dto.UsuarioResponseDto;
 import com.tucasa.backend.model.entity.Inmueble;
 import com.tucasa.backend.model.entity.Multimedia;
 import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.InmuebleRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.InmuebleService;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +47,23 @@ public class InmuebleServiceImpl implements InmuebleService {
             List<Inmueble> inmuebles = inmuebleRepository.findAll();
             if (!inmuebles.isEmpty()) {
                 return apiResponse.responseSuccess(successMessage, inmuebles);
+            } else {
+                return apiResponse.responseDataError(errorMessage, null);
+            }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getZonasWithInmuebles() {
+        String successMessage = "Zonas con inmmuebles registrados encontradas";
+        String errorMessage = "No hay zonas con inmuebles registrados";
+
+        try {
+            List<Map<String, Object>> zonasEncontradas = inmuebleRepository.getZonasWithInmuebles();
+            if (!zonasEncontradas.isEmpty()) {
+                return apiResponse.responseSuccess(successMessage, zonasEncontradas);
             } else {
                 return apiResponse.responseDataError(errorMessage, null);
             }
@@ -121,15 +141,34 @@ public class InmuebleServiceImpl implements InmuebleService {
         }
     }
 
-
+    @Override
+    public ResponseEntity<?> findOwnerById(Long id){
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = "Propietario no encontrado";
+        try {
+            Usuario usuario = inmuebleRepository.findPropietarioByInmuebleId(id);
+            UsuarioResponseDto dto = new UsuarioResponseDto();
+            dto.setId(usuario.getId());
+            dto.setNombre(usuario.getNombre());
+            dto.setApellido(usuario.getApellido());
+            dto.setTelefono(usuario.getTelefono());
+            dto.setDireccion(usuario.getDireccion());
+            dto.setCorreo(usuario.getCorreo());
+            dto.setRol(usuario.getRol());
+            return apiResponse.responseSuccess(successMessage, dto);
+        } catch (Exception e) {
+            return apiResponse.responseNotFoundError(errorMessage, e.getMessage());
+        }
+    }
 
     // --- Mapeo a DTO ---
     private InmuebleResponseDto mapToDto(Inmueble inmueble) {
         InmuebleResponseDto dto = new InmuebleResponseDto();
         dto.setId(inmueble.getId());
         dto.setDireccion(inmueble.getDireccion());
+        dto.setZona(inmueble.getZona());
         dto.setSuperficie(inmueble.getSuperficie());
-        dto.setIdPropietario(inmueble.getIdPropietario());
+        dto.setIdPropietario(inmueble.getPropietario().getId());
         dto.setDescripcion(inmueble.getDescripcion());
         dto.setActivo(inmueble.isActivo());
         dto.setTipo(inmueble.getTipo());

@@ -1,6 +1,6 @@
 // publicar/data/property.constants.ts
 
-import { Home, Building2, Store } from 'lucide-react';
+import { Home, Building2, Store, CircleDollarSign } from 'lucide-react';
 import { PropertyType } from '../types/property.types';
 
 export const PROPERTY_TYPES = [
@@ -32,6 +32,13 @@ export const OPERATION_TYPES = [
     icon: Store,
     colorClass: 'purple',
   },
+  {
+    id: 'AVALUO',
+    label: 'Avaluo',
+    description: 'Avaluo de propiedad',
+    icon: CircleDollarSign,
+    colorClass: 'green',
+  }
 ];
 
 export const CURRENCY_OPTIONS = [
@@ -50,6 +57,7 @@ export const INITIAL_FORM_DATA = {
   direccion: '',
   latitud: '',
   longitud: '',
+  zona: '',
   superficie: '',
   precio: '',
   moneda: 'Bs' as const,

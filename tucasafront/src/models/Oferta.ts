@@ -19,5 +19,8 @@ export interface Oferta {
     fechaPublicacionFin?: string | null
     estadoPublicacion: EstadoPublicacion
     activo: boolean
+
+    esFavorito?: boolean
+    totalFavoritos?: number
 }
 

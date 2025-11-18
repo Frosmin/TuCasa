@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,13 +21,14 @@ public class ApiResponse {
         return new ResponseEntity<Object>( response, HttpStatus.OK );
     }
 
-    public ResponseEntity<Object> responseSearch( String message, Object object, Integer totalResults ){
+    public ResponseEntity<Object> responseSearch(String message, Object object, Integer totalResults, BigDecimal avgPrice ){
         Map<String, Object> response = new HashMap<>();
         response.put( "error", false );
         response.put( "message", message );
         response.put( "status", HttpStatus.OK );
         response.put( "code", HttpStatus.OK.value() );
         response.put("totalResults", totalResults);
+        response.put("average", avgPrice);
         response.put( "data", object );
         return new ResponseEntity<Object>( response, HttpStatus.OK );
     }
