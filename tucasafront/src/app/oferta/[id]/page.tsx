@@ -9,12 +9,9 @@ import { URL_BACKEND } from '@/config/constants'
 import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
 import PropertyLocationMap from './components/PropertyLocationMap'
-
 import LikeButton from '@/components/LikeButton'
 import { useAuth } from '@/context/AuthContext'
-
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
-import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/components/Toast'
 
 export default function DetalleOfertaPage() {
@@ -636,14 +633,14 @@ export default function DetalleOfertaPage() {
               <>
                 <button
                   type="button"
-                  onClick={() => manejarEstado('publicado')}
+                  onClick={() => {manejarEstado('publicado'); router.push("/ventas");}}
                   className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Publicar
                 </button>
                 <button
                   type="button"
-                  onClick={() => manejarEstado('cancelado')}
+                  onClick={() =>{ manejarEstado('cancelado'); router.push("/admin/dashboard");}}
                   className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Rechazar

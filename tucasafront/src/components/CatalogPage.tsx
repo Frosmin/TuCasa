@@ -83,7 +83,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         const result: OfertasResult = await fetchOfertas(tipoOperacion)
 
         // Filtrar inmuebles con coordenadas válidas y corregidas
-        const dataPublicadas = data.filter(o => o.estadoPublicacion === 'publicado');
+        const dataPublicadas = result.ofertas.filter(o => o.estadoPublicacion === 'publicado');
         const datosValidos = dataPublicadas
           .map(o => {
             const { lat, lng } = validarCoordenadas(o.inmueble.latitud, o.inmueble.longitud)
