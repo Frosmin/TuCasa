@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, UserPlus,PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -104,13 +104,22 @@ export default function Header() {
                   ref={menuRef}
                   className="absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
                 >
-                  <Link
-                    onClick={() => setMenuOpen(false)}
+                  {user.rol === "ADMIN" ? (
+                    <Link
+                      href={"/admin/dashboard"}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      <PanelTop className="w-4 h-4" /> Panel Admin
+                    </Link>
+                  ) : (
+                    <Link
+                      onClick={() => setMenuOpen(false)}
                     href={"/pages/perfil"}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    <User className="w-4 h-4" /> Perfil
-                  </Link>
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      <User className="w-4 h-4" /> Perfil
+                    </Link>
+                  )}
                   <Link
                     href={"/publicaciones"}
                     onClick={() => setMenuOpen(false)}

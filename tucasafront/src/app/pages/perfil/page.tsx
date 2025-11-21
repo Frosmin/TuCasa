@@ -3,10 +3,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { User, Phone, Mail, MapPin, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./perfil.module.css";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [zoomOpen, setZoomOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -62,9 +64,8 @@ export default function ProfilePage() {
             onClick={closeModal}
           >
             <div
-              className={`relative max-w-3xl w-full p-4 transform transition-all duration-300 ease-out ${
-                closing ? styles.animateCloseModal : styles.animateOpenModal
-              }`}
+              className={`relative max-w-3xl w-full p-4 transform transition-all duration-300 ease-out ${closing ? styles.animateCloseModal : styles.animateOpenModal
+                }`}
               onClick={(e) => e.stopPropagation()}
             >
               <img
@@ -129,7 +130,9 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full justify-center">
-          <button className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md">
+          <button
+            onClick={() => {router.push("/convertirse-agente")}}
+            className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md">
             Quiero ser agente
           </button>
           <button className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-xl hover:bg-gray-300 transition-all shadow-md">
