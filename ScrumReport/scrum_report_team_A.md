@@ -195,3 +195,39 @@
 - **B:** Problemas de tiempo para la implementacion de las historias.
 
 ---
+
+# Scrum Report #2 — Nov 18
+
+## Daniel
+
+- **Y:** Revision de implementacion entre teams.
+- **T:** Correccion de errores para el AuthContext.
+- **B:** Bug de redireccion cuando un usuario tiene la sesion abierta.
+
+---
+
+## Sergio
+
+- **Y:** Revise la integracion para la demo.
+- **T:** Continuare revisando las integraciones a dev de los demas equipos para la demo.
+- **B:** No tuve ningun problema.
+
+---
+
+# Scrum Report #2 — Nov 21
+
+## Daniel
+
+- **Y:** Asignacion de tareas para el avance.
+- **T:** Implementacion de las tareas asignadas.
+- **B:** No tuve ningun problema
+
+---
+
+## Sergio
+
+- **Y:** Distribucion y organizacion de las historias de usuario entre el equipo
+- **T:** Avanzare en las tareas asignadas.
+- **B:** No tuve ningun problema.
+
+---
