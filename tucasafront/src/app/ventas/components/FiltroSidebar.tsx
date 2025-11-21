@@ -1,7 +1,7 @@
 // components/FiltroSidebar.tsx
 'use client'
-import { useState } from 'react'
-import { ChevronDown, MapPin } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { ChevronDown, MapPin, X } from 'lucide-react'
 import type { Oferta, MonedaType } from '@/models/Oferta'
 import LocationPicker from '@/app/publicar/components/LocationPicker'
 
@@ -20,6 +20,7 @@ export interface Filtros {
   proximidad?: number | null
   latitud: number
   longitud: number
+  zona?: string
 }
 
 interface FiltroSidebarProps {
@@ -38,6 +39,7 @@ export const FiltroSidebar = ({
   ofertas,
 }: FiltroSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    zona: true, // ✅ NUEVO: Sección de zona
     localizacion: false,
     moneda: true,
     precio: true,
@@ -47,12 +49,35 @@ export const FiltroSidebar = ({
     servicios: false,
   })
 
+  // ✅ NUEVO: Estados para el dropdown de zona
+  const [isZonaDropdownOpen, setIsZonaDropdownOpen] = useState(false)
+  const [zonaSearchTerm, setZonaSearchTerm] = useState('')
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section],
     }))
   }
+
+  // ✅ NUEVO: Extraer zonas únicas de las ofertas
+  const zonasUnicas = useMemo(() => {
+    const zonas = new Set<string>()
+    ofertas.forEach(oferta => {
+      if (oferta.inmueble.zona && oferta.inmueble.zona.trim() !== '') {
+        zonas.add(oferta.inmueble.zona.trim())
+      }
+    })
+    return Array.from(zonas).sort()
+  }, [ofertas])
+
+  // ✅ NUEVO: Filtrar zonas según búsqueda
+  const zonasFiltradas = useMemo(() => {
+    if (!zonaSearchTerm) return zonasUnicas
+    return zonasUnicas.filter(zona =>
+      zona.toLowerCase().includes(zonaSearchTerm.toLowerCase())
+    )
+  }, [zonasUnicas, zonaSearchTerm])
 
   // Monedas disponibles
   const monedasUnicas: MonedaType[] = ['$', 'Bs']
@@ -91,6 +116,131 @@ export const FiltroSidebar = ({
 
   return (
     <div className="space-y-4">
+      {zonasUnicas.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => toggleSection('zona')}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+          >
+            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Zona
+            </h3>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${expandedSections.zona ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {expandedSections.zona && (
+            <div className="px-4 py-3 border-t border-gray-200">
+              <div className="relative">
+                {/* Selector Principal */}
+                <button
+                  type="button"
+                  onClick={() => setIsZonaDropdownOpen(!isZonaDropdownOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 bg-white border border-gray-300 rounded-lg hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  <span className={`truncate text-sm ${filters.zona ? 'text-gray-900' : 'text-gray-500'}`}>
+                    {filters.zona || 'Todas las zonas'}
+                  </span>
+
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {filters.zona && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setFilters({ ...filters, zona: '' })
+                          setZonaSearchTerm('')
+                        }}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      >
+                        <X className="w-4 h-4 text-gray-500" />
+                      </button>
+                    )}
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-500 transition-transform ${isZonaDropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                </button>
+
+                {/* Dropdown */}
+                {isZonaDropdownOpen && (
+                  <>
+                    {/* Overlay */}
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsZonaDropdownOpen(false)}
+                    />
+
+                    {/* Menú desplegable */}
+                    <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-hidden">
+                      {/* Buscador */}
+                      <div className="p-2 border-b border-gray-200">
+                        <input
+                          type="text"
+                          placeholder="Buscar zona..."
+                          value={zonaSearchTerm}
+                          onChange={(e) => setZonaSearchTerm(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+
+                      {/* Lista de zonas */}
+                      <div className="overflow-y-auto max-h-64">
+                        {/* Opción "Todas las zonas" */}
+                        <button
+                          onClick={() => {
+                            setFilters({ ...filters, zona: '' })
+                            setIsZonaDropdownOpen(false)
+                            setZonaSearchTerm('')
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
+                            !filters.zona ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Todas las zonas
+                        </button>
+
+                        {/* Opciones de zonas */}
+                        {zonasFiltradas.length > 0 ? (
+                          zonasFiltradas.map((zona) => (
+                            <button
+                              key={zona}
+                              onClick={() => {
+                                setFilters({ ...filters, zona })
+                                setIsZonaDropdownOpen(false)
+                                setZonaSearchTerm('')
+                              }}
+                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
+                                filters.zona === zona ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {zona}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-4 py-8 text-center text-sm text-gray-500">
+                            No se encontraron zonas
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Contador */}
+                      {zonaSearchTerm && zonasFiltradas.length > 0 && (
+                        <div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
+                          {zonasFiltradas.length} zona{zonasFiltradas.length !== 1 ? 's' : ''} encontrada{zonasFiltradas.length !== 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filtro por Localización */}
       <div className="bg-white rounded-lg shadow-sm">
         <button
@@ -144,8 +294,6 @@ export const FiltroSidebar = ({
                 </span>
               </div>
             </div>
-
-            
 
             <button
               onClick={() =>

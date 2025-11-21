@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.service.implement;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -376,6 +377,7 @@ public class OfertaServiceImpl implements OfertaService {
             case CASA -> {
                 Casa casa = new Casa();
                 casa.setDireccion(dto.getDireccion());
+                casa.setZona(dto.getZona());
                 casa.setSuperficie(dto.getSuperficie());
                 casa.setLatitud(dto.getLatitud());
                 casa.setLongitud(dto.getLongitud());
@@ -405,6 +407,7 @@ public class OfertaServiceImpl implements OfertaService {
             case TIENDA -> {
                 Tienda tienda = new Tienda();
                 tienda.setDireccion(dto.getDireccion());
+                tienda.setZona(dto.getZona());
                 tienda.setSuperficie(dto.getSuperficie());
                 tienda.setLatitud(dto.getLatitud());
                 tienda.setLongitud(dto.getLongitud());
@@ -433,6 +436,7 @@ public class OfertaServiceImpl implements OfertaService {
             case DEPARTAMENTO -> {
                 Departamento departamento = new Departamento();
                 departamento.setDireccion(dto.getDireccion());
+                departamento.setZona(dto.getZona());
                 departamento.setSuperficie(dto.getSuperficie());
                 departamento.setLongitud(dto.getLongitud());
                 departamento.setLatitud(dto.getLatitud());
@@ -467,6 +471,7 @@ public class OfertaServiceImpl implements OfertaService {
             case LOTE -> {
                 Lote lote = new Lote();
                 lote.setDireccion(dto.getDireccion());
+                lote.setZona(dto.getZona());
                 lote.setSuperficie(dto.getSuperficie());
                 lote.setLongitud(dto.getLongitud());
                 lote.setLatitud(dto.getLatitud());
@@ -598,6 +603,9 @@ public class OfertaServiceImpl implements OfertaService {
 
         List<Oferta> resultados = ofertaRepository.findAllCompletoByIds(ofertaIds);
 
+        BigDecimal promedioPrecios = ofertaRepository.findAveragePrecioByIds(ofertaIds);
+        promedioPrecios = promedioPrecios != null ? promedioPrecios.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+
         Map<Long, Oferta> ofertasFinded = resultados.stream()
                 .collect(Collectors.toMap(Oferta::getId, Function.identity()));
 
@@ -610,7 +618,7 @@ public class OfertaServiceImpl implements OfertaService {
                 .map(o -> mapToDto(o, compact != null && compact))
                 .toList();
 
-        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size());
+        return apiResponse.responseSearch(Constants.RECORDS_FOUND, response, response.size(), promedioPrecios);
     }
 
     // ---------------------- MAPEOS DTO ----------------------

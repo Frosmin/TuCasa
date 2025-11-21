@@ -23,6 +23,9 @@ public abstract class Inmueble {
     @Column(nullable = false)
     private String direccion;
 
+    @Column(nullable = false)
+    private String zona = "";
+
     @Column(nullable = false, precision = 18, scale = 15)
     private BigDecimal latitud;
 

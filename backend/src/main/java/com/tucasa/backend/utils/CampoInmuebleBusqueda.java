@@ -9,6 +9,8 @@ public enum CampoInmuebleBusqueda {
     TIPO_OPERACION("tipoOperacion", "o.tipo_operacion", TipoCampo.TEXTO),
     TIPO_INMUEBLE("tipoInmueble", "i.tipo_inmueble", TipoCampo.TEXTO),
     MONEDA("moneda", "o.moneda", TipoCampo.TEXTO),
+    ZONA("zona", "i.zona", TipoCampo.TEXTO),
+    DIRECCION("direccion", "i.direccion", TipoCampo.TEXTO),
 
     // ---- Campos numéricos ----
     NUM_DORMITORIOS("numDormitorios", "c.num_dormitorios", TipoCampo.NUMERICO),
