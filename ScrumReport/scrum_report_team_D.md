@@ -20,7 +20,7 @@
 - **B:** No he tenido ningun problema hasta el momento.
 
 ---
-# 🧾 Scrum Report #1 — Oct 10
+# 🧾 Scrum Report #2 — Oct 10
 
 ## Johan
 - Y (Yesterday):
@@ -49,7 +49,7 @@ Problemas menores al mapear EnumType.STRING en la entidad TipoInmueble.
 - **B:** 
 
 ---
-# 🧾 Scrum Report #1 — Oct 14
+# 🧾 Scrum Report #3 — Oct 14
 
 ## Johan
 - Y:
@@ -77,7 +77,7 @@ Error de constraint por null en el campo tamanio de Lote, solucionado agregando 
 - **B:** 
 
 ---
-# 🧾 Scrum Report #1 — Oct 17
+# 🧾 Scrum Report #4 — Oct 17
 
 ## Johan
 - Y:
@@ -108,7 +108,7 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 - **B:**  no se tuvo problemas hasta el momento
 
 ---
-# 🧾 Scrum Report #1 — Oct 21
+# 🧾 Scrum Report #5 — Oct 21
 
 ## Johan
 - Y:
@@ -130,7 +130,7 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 - **B:**  
 
 ---
-# 🧾 Scrum Report #1 — Oct 24
+# 🧾 Scrum Report #6 — Oct 24
 
 ## Johan
 - Y:
@@ -152,7 +152,7 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 - **B:**  
 
 ---
-# 🧾 Scrum Report #1 — Oct 28
+# 🧾 Scrum Report #7 — Oct 28
 
 ## Johan
 - Y:
@@ -173,3 +173,142 @@ Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores 
 - **B:**  
 
 ---
+# 🧾 Scrum Report #8 — Oct 31
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** corregi los errores para editar las imagenes  y complete toda la funcionalidad para actualizar los datos de un inmueble. Tambien hice la integracion de con las otras funcionalidades de mi equipo.
+- **T:** Revisare la integracion y corregire los errores en caso de que exista con la integracion de los demas equipos.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+---
+# 🧾 Scrum Report #9 — Nov 04
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Revise las historias que se asignaron a mi equipo y tambien inicie el diseño del panel de administracion.
+- **T:** Corregire y completare las funcionalidades segun las observaciones del demo anterior.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+
+---
+# 🧾 Scrum Report #10 — Nov 07
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Inicie en el frontend con el diseño de la tabla de aprovacion de solitudes para ser agente, para el panel de administracion.
+- **T:** cree un panel de navegacion para gestionar las solicitudes de agentes y las publicaciones de inmuebles.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**
+  ---
+# 🧾 Scrum Report #11 — Nov 11
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Trabaje en el flujo de inicio de Sesión como administrador.
+- **T:** Implementare el Login como administrador, creando por defecto dentro la bd un usuario con rol de "ADMIN" y trabajare en las funcionalidades "aprobar o rechazar", las solicitudes de los clientes para ser agente.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**
+  ---
+# 🧾 Scrum Report #12 — Nov 14
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Termine la pantalla de la gestion de agentes( "aprobar o rechar la solicitud y ver los detalles de la solicitud") por el administrador.
+- **T:** Corregire en backend para cargar su cv("archivo pdf") de las solicitudes de "quiero ser agente" y en el fronted implementare la vista del archivo pdf para mostrar su CV del solicitante.
+- **B:** No tuve ningun problema 
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**
+  ---
+# 🧾 Scrum Report #13 — Nov 18
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Hice la integracion de las funcionalidades de administrador para aprobar o rechazar solicitudes de agentes y publicaciones.
+- **T:** Revisare y corregire en caso de que existan errores durante la integracion.
+- **B:** Tuve problemas al integrar, debido a la modificacion de las entidades por los otros equipos, las funcionlidades de administracion tenian fallas.
+
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
+---
+# 🧾 Scrum Report #14 — Nov 21
+
+## Johan
+- Y:
+- T:
+- B:
+---
+
+## Luis
+- **Y:** Revise e inicie el flujo de  la funcionalidad para la vista de agentes por el cliente (HU 423).
+- **T:** Implentare en el frontend la vista de los agentes por un cliente para que puedan contactarse con los agentes.
+- **B:**  No tuve ningun problema.
+---
+
+## Javier
+- **Y: 
+- **T:** 
+- **B:**  
