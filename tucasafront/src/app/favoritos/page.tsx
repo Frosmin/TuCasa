@@ -18,7 +18,7 @@ export default function FavoritosPage() {
   const { user, token } = useAuth();
   const router = useRouter();
   
-  const [favoritos, setFavoritos] = useState<FavoritoResponse[]>([]);
+  const [favoritos, setFavoritos] = useState<Oferta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -79,9 +79,9 @@ export default function FavoritosPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {favoritos.map((fav) => (
-              <div key={fav.id} className="h-full">
-                <OfertaCard oferta={fav.oferta} />
+            {favoritos.map((oferta) => (
+              <div key={oferta.id} className="h-full">
+                <OfertaCard oferta={oferta} />
               </div>
             ))}
           </div>
