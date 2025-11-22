@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import java.security.Principal;
 
 
 import java.util.List;
@@ -57,8 +58,10 @@ public class OfertaController {
 
     // 
 
-    @GetMapping("/propietario/{propietarioId}")
-    public ResponseEntity<List<OfertaResponseDto>> getOfertasPorPropietario(@PathVariable Long propietarioId) {
-        return (ResponseEntity<List<OfertaResponseDto>>) ofertaService.findByUserId(propietarioId);
+     @GetMapping("/favoritos")
+    public ResponseEntity<?> getFavoritos(Principal principal) {
+        return ofertaService.findFavoritosByUserId(principal.getName());
     }
+
+
 }
