@@ -14,4 +14,6 @@ public interface OfertaService {
     ResponseEntity<?> delete(Long id);
     ResponseEntity<?> search(Map<String, String> params, Boolean compact);
     ResponseEntity<?> findByUserId(Long id);
+    ResponseEntity<?> findFavoritosByUserId(String userEmail);
+
 }

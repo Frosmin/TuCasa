@@ -61,4 +61,6 @@ public class OfertaController {
     public ResponseEntity<List<OfertaResponseDto>> getOfertasPorPropietario(@PathVariable Long propietarioId) {
         return (ResponseEntity<List<OfertaResponseDto>>) ofertaService.findByUserId(propietarioId);
     }
+
+
 }

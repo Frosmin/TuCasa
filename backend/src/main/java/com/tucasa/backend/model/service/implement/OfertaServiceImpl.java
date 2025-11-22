@@ -35,6 +35,7 @@ import com.tucasa.backend.model.dto.TiendaRequestDto;
 import com.tucasa.backend.model.dto.TiendaResponseDto;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Departamento;
+import com.tucasa.backend.model.entity.Favorito;
 import com.tucasa.backend.model.entity.Inmueble;
 import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
@@ -694,6 +695,34 @@ public class OfertaServiceImpl implements OfertaService {
             } else {
                 return apiResponse.responseSuccess(successMessage, List.of()); 
             }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> findFavoritosByUserId(String userEmail) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = Constants.NO_RECORDS;
+        var usuarioOpt = usuarioRepository.findByCorreo(userEmail);
+        var usuario = usuarioOpt.get();
+
+        try {
+            // 1. Buscar en la tabla de favoritos por ID de usuario
+            List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuario.getId());
+
+            if (favoritos.isEmpty()) {
+                return apiResponse.responseSuccess(successMessage, List.of());
+            }
+
+            // 2. Transformar la lista de Favoritos a OfertaResponseDto
+            List<OfertaResponseDto> response = favoritos.stream()
+                    .map(Favorito::getOferta)       // Extraer la entidad Oferta
+                    .filter(Oferta::isActivo)       // Opcional: Solo mostrar si la oferta sigue activa
+                    .map(this::mapToDto)            // Reutilizar tu método mapToDto existente
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess(successMessage, response);
+
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }
