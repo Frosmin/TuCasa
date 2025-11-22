@@ -11,7 +11,7 @@ import com.tucasa.backend.model.dto.FavoritoRequestDto;
 import com.tucasa.backend.model.service.interfaces.FavoritoService;
 
 @RestController
-@RequestMapping("/api/favoritos")
+@RequestMapping("api/oferta/favoritos")
 public class FavoritoController {
 
     @Autowired
@@ -30,8 +30,8 @@ public class FavoritoController {
         return favoritoService.delete(favoritoRequestDto, principal.getName());
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> listMine(Principal principal) {
-        return favoritoService.findByUsuarioEmail(principal.getName());
-    }
+    // @GetMapping("")
+    // public ResponseEntity<?> listMine(Principal principal) {
+    //     return favoritoService.findByUsuarioEmail(principal.getName());
+    // }
 }
