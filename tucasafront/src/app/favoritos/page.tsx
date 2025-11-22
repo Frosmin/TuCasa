@@ -7,6 +7,7 @@ import { getMyFavorites } from "@/api/favorito.service";
 import { OfertaCard } from "@/components/OfertaCard";
 import { Loader2 } from "lucide-react";
 import type { Oferta } from "@/models/Oferta";
+import LoadingSpinner from '@/components/Loading';
 
 interface FavoritoResponse {
   id: number;
@@ -51,9 +52,10 @@ export default function FavoritosPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-      </div>
+      <LoadingSpinner 
+        message="Cargando favoritos..." 
+        fullScreen={true} 
+      />
     );
   }
 
