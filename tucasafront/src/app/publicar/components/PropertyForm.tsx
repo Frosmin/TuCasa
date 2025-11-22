@@ -44,6 +44,8 @@ export default function PropertyForm({
 }: PropertyFormProps) {
   const router = useRouter();
   return (
+
+    
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Tipo de Propiedad */}
       {mode === "registro" && (

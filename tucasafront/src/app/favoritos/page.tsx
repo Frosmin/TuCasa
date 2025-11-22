@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getMyFavorites } from '@/api/favorito.service'
 import { Oferta } from '@/models/Oferta'
 import { OfertaCard } from '@/components/OfertaCard'
+import LoadingSpinner from '@/components/Loading';
 
 export default function FavoritosPage() {
   const { token, user } = useAuth()
@@ -69,10 +70,11 @@ export default function FavoritosPage() {
 
   if (loading) {
     return (
-      <div className="flex h-[50vh] w-full items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-      </div>
-    )
+      <LoadingSpinner 
+        message="Cargando favoritos..." 
+        fullScreen={true} 
+      />
+    );
   }
 
   return (
