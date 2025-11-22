@@ -242,3 +242,26 @@
 -   **T:** Hoy voy a dar soporte a la integración
 -   **B:** No he tenido problemas
 
+# Scrum Report #11 — Nov 21
+
+## Pablo
+
+-   **Y:** Trabajé en agregar los estados de "terminado" y "cancelado" para publicaciones
+-   **T:** Hoy voy a dar hacer consultas para la consulta de precio historico de inmuebles
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabaje en la planificación de historias y tareas para este sprint
+-   **T:** Hoy voy a analizar como implementar la terminacion y reactivacion de publicaciones
+-   **B:** No he tenido mas problemas
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en la planificaiones de tareas
+-   **T:** Hoy voy a hacer bocetos de interfaz para la seccion de historico de inmuebles
+-   **B:** No he tenido problemas
