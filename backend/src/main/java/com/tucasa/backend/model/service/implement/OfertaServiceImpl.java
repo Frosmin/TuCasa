@@ -677,7 +677,7 @@ public class OfertaServiceImpl implements OfertaService {
     }
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
-        return mapToDto(oferta, false);
+        return mapToDto(oferta, false);              
     }
 
     @Override
@@ -707,18 +707,18 @@ public class OfertaServiceImpl implements OfertaService {
         var usuario = usuarioOpt.get();
 
         try {
-            // 1. Buscar en la tabla de favoritos por ID de usuario
+           
             List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuario.getId());
 
             if (favoritos.isEmpty()) {
                 return apiResponse.responseSuccess(successMessage, List.of());
             }
 
-            // 2. Transformar la lista de Favoritos a OfertaResponseDto
+            
             List<OfertaResponseDto> response = favoritos.stream()
-                    .map(Favorito::getOferta)       // Extraer la entidad Oferta
-                    .filter(Oferta::isActivo)       // Opcional: Solo mostrar si la oferta sigue activa
-                    .map(this::mapToDto)            // Reutilizar tu método mapToDto existente
+                    .map(Favorito::getOferta)       
+                    .filter(Oferta::isActivo)       // si sigue activa
+                    .map(this::mapToDto)            
                     .collect(Collectors.toList());
 
             return apiResponse.responseSuccess(successMessage, response);
