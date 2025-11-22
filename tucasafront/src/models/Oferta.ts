@@ -2,7 +2,7 @@ import type { Inmueble } from "./Inmueble"
 
 export type MonedaType = '$' | 'Bs'
 
-export type EstadoPublicacion = 'pendiente' | 'cancelado' | 'publicado'| 'borrador' | 'rechazado';
+export type EstadoPublicacion = 'pendiente' | 'cancelado' | 'publicado'| 'borrador' | 'rechazado' | 'terminado';
 export type TipoOperacion = 'VENTA' | 'ALQUILER' | 'ANTICRETICO'
 
 export interface Oferta {

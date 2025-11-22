@@ -2,6 +2,7 @@ package com.tucasa.backend.model.service.implement;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
+import com.tucasa.backend.utils.Functions;
 import com.tucasa.backend.utils.PropietarioMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -330,6 +332,8 @@ public class OfertaServiceImpl implements OfertaService {
             inmueble.setLatitud(dto.getLatitud());
         if (dto.getLongitud() != null)
             inmueble.setLongitud(dto.getLongitud());
+        if (dto.getZona() != null)
+            inmueble.setZona(dto.getZona());
         if (dto.getDescripcion() != null)
             inmueble.setDescripcion(dto.getDescripcion());
         if (dto.getActivo() != null)
@@ -692,11 +696,24 @@ public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPubli
         List<String> estadosValidos = List.of(
                 "pendiente",
                 "cancelado",
-                "publicado"
+                "publicado",
+                "terminado"
         );
 
         if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
             return apiResponse.responseDataError("Estado no válido", null);
+        }
+
+        if(Objects.equals(estadoPublicacion, "pulicado")
+        ){
+            oferta.setFechaPublicacionInicio(LocalDateTime.now());
+        }
+
+
+        if(Objects.equals(estadoPublicacion, "cancelado") ||
+                Objects.equals(estadoPublicacion, "terminado")
+        ){
+            oferta.setFechaPublicacionFin(LocalDateTime.now());
         }
 
         oferta.setEstadoPublicacion(estadoPublicacion);
