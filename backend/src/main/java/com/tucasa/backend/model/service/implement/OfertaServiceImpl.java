@@ -714,9 +714,15 @@ public class OfertaServiceImpl implements OfertaService {
                 return apiResponse.responseSuccess(successMessage, List.of());
             }
 
+
+
+            List<Long> ofertaIds = favoritos.stream()
+                    .map(f -> f.getOferta().getId())
+                    .toList();
+
+            List<Oferta> ofertaCompleta = ofertaRepository.findAllCompletoByIds(ofertaIds);
             
-            List<OfertaResponseDto> response = favoritos.stream()
-                    .map(Favorito::getOferta)       
+            List<OfertaResponseDto> response = ofertaCompleta.stream()
                     .filter(Oferta::isActivo)       // si sigue activa
                     .map(this::mapToDto)            
                     .collect(Collectors.toList());
