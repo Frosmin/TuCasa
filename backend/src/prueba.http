@@ -38,7 +38,17 @@ GET http://localhost:8000/tucasabackend/api/oferta
 ### 
 POST http://localhost:8000/tucasabackend/api/favoritos
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuMUBnbWFpbC5jb20iLCJpYXQiOjE3NjMyNDE4ODUsImV4cCI6MTc2MzMyODI4NX0.yZ8aGFzHrFRINptfYLJf8TXE_9rQzD271cyx0ByNpm4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpYXQiOjE3NjM4NDI0OTgsImV4cCI6MTc2MzkyODg5OH0.7O6LPBM3stp0wLY5MYEryGkw3GvF6uDU1vwLyZ_68-0
+
+{
+  "ofertaId": 2
+}
+
+
+###
+DELETE  http://localhost:8000/tucasabackend/api/favoritos
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpYXQiOjE3NjM4NDI0OTgsImV4cCI6MTc2MzkyODg5OH0.7O6LPBM3stp0wLY5MYEryGkw3GvF6uDU1vwLyZ_68-0
 
 {
   "ofertaId": 1
@@ -46,10 +56,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuMUBnbWFpbC5jb20iLCJpY
 
 
 ###
-DELETE  http://localhost:8000/tucasabackend/api/favoritos
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuMUBnbWFpbC5jb20iLCJpYXQiOjE3NjMyNDE4ODUsImV4cCI6MTc2MzMyODI4NX0.yZ8aGFzHrFRINptfYLJf8TXE_9rQzD271cyx0ByNpm4
-
-{
-  "ofertaId": 1
-}
+GET http://localhost:8000/tucasabackend/api/oferta/favoritos/propietario
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpYXQiOjE3NjM4NDI0OTgsImV4cCI6MTc2MzkyODg5OH0.7O6LPBM3stp0wLY5MYEryGkw3GvF6uDU1vwLyZ_68-0
