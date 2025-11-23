@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.tucasa.backend.security.auth.utils.SecurityUtils;
+import com.tucasa.backend.model.dto.*;
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
 import com.tucasa.backend.utils.Functions;
 import com.tucasa.backend.utils.PropietarioMapper;
@@ -23,21 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tucasa.backend.Constants.Constants;
-import com.tucasa.backend.model.dto.CasaRequestDto;
-import com.tucasa.backend.model.dto.CasaResponseDto;
-import com.tucasa.backend.model.dto.DepartamentoRequestDto;
-import com.tucasa.backend.model.dto.DepartamentoResponseDto;
-import com.tucasa.backend.model.dto.InmuebleRequestDto;
-import com.tucasa.backend.model.dto.InmuebleResponseDto;
-import com.tucasa.backend.model.dto.LoteRequestDto;
-import com.tucasa.backend.model.dto.LoteResponseDto;
-import com.tucasa.backend.model.dto.MultimediaRequestDto;
-import com.tucasa.backend.model.dto.MultimediaResponseDto;
-import com.tucasa.backend.model.dto.OfertaRequestDto;
-import com.tucasa.backend.model.dto.OfertaResponseDto;
-import com.tucasa.backend.model.dto.OfertaResponseFavoritoDto;
-import com.tucasa.backend.model.dto.TiendaRequestDto;
-import com.tucasa.backend.model.dto.TiendaResponseDto;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Departamento;
 import com.tucasa.backend.model.entity.Inmueble;
@@ -684,6 +670,105 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+
+    @Override
+    public ResponseEntity<?> searchHistorico(Map<String, String> params) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                        "EXTRACT(YEAR FROM o.fecha_publicacion_inicio) as anio, " +
+                        "EXTRACT(MONTH FROM o.fecha_publicacion_inicio) as mes, " +
+                        "AVG(o.precio) as promedio_precio, " +
+                        "COUNT(o.id) as cantidad_ofertas " +
+                        "FROM ofertas o " +
+                        "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
+                        "LEFT JOIN casas c ON i.id = c.id " +
+                        "LEFT JOIN tiendas t ON i.id = t.id " +
+                        "LEFT JOIN departamentos d ON i.id = d.id " +
+                        "LEFT JOIN lote l ON i.id = l.id " +
+                        "WHERE o.activo = true AND i.activo = true " +
+                        "AND UPPER(o.tipo_operacion) <> 'AVALUO' " +
+                        "AND ( UPPER(o.estado_publicacion) = 'PUBLICADO' " +
+                                "OR UPPER(o.estado_publicacion) = 'TERMINADO') "
+        );
+
+        // Filtro obligatorio por rango de fechas
+        String fechaInicio = params.get("fechaInicio");
+        String fechaFin = params.get("fechaFin");
+
+        if (fechaInicio == null || fechaInicio.isBlank() || fechaFin == null || fechaFin.isBlank()) {
+            return apiResponse.responseDataError("Los parámetros fechaInicio y fechaFin son obligatorios", null);
+        }
+
+        sql.append(" AND o.fecha_publicacion_inicio >= '").append(fechaInicio.replace("'", "''")).append("'");
+        sql.append(" AND o.fecha_publicacion_inicio <= '").append(fechaFin.replace("'", "''")).append("'");
+
+        // Aplicar los mismos filtros que en search
+        for (var entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            // Saltar los parámetros de fecha y control
+            if (key.equals("fechaInicio") || key.equals("fechaFin") ||
+                    key.equals("latitud") || key.equals("longitud") || key.equals("proximidad") ||
+                    value == null || value.isBlank()) {
+                continue;
+            }
+
+            CampoInmuebleBusqueda campo = CampoInmuebleBusqueda.fromParam(key);
+
+            if (campo == null) continue;
+
+            switch (campo.getTipo()) {
+                case TEXTO -> sql.append(" AND ")
+                        .append(campo.getColumna())
+                        .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
+                case NUMERICO -> {
+                    try {
+                        new BigDecimal(value);
+                        if (key.equals("precioMin")) sql.append(" AND ").append(campo.getColumna()).append(" >= ").append(value);
+                        else if (key.equals("precioMax")) sql.append(" AND ").append(campo.getColumna()).append(" <= ").append(value);
+                        else sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                    } catch (NumberFormatException ignored) {}
+                }
+                case BOOLEANO -> {
+                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+                        sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                }
+            }
+        }
+
+        // Filtro de proximidad geográfica
+        Double latitud = params.containsKey("latitud") ? Double.valueOf(params.get("latitud")) : null;
+        Double longitud = params.containsKey("longitud") ? Double.valueOf(params.get("longitud")) : null;
+        Double proximidad = params.containsKey("proximidad") ? Double.valueOf(params.get("proximidad")) : null;
+
+        if (latitud != null && longitud != null && proximidad != null) {
+            sql.append(" AND (")
+                    .append("6371 * acos(")
+                    .append("cos(radians(").append(latitud).append(")) * cos(radians(i.latitud)) * ")
+                    .append("cos(radians(i.longitud) - radians(").append(longitud).append(")) + ")
+                    .append("sin(radians(").append(latitud).append(")) * sin(radians(i.latitud))")
+                    .append(")")
+                    .append(") <= ").append(proximidad);
+        }
+
+        // Agrupar por año y mes
+        sql.append(" GROUP BY anio, mes");
+        sql.append(" ORDER BY anio ASC, mes ASC");
+
+        try {
+            Query query = entityManager.createNativeQuery(sql.toString());
+            List<Object[]> resultados = query.getResultList();
+
+            List<OfertaHistoricoResponseDto> historico = OfertaHistoricoResponseDto.mapToList(resultados);
+
+            return apiResponse.responseSuccess(Constants.RECORDS_FOUND, historico);
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener histórico de precios", e.getMessage());
+        }
+    }
+
+
 
     @Override
     public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion) {
