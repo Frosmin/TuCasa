@@ -6,6 +6,7 @@ import { PropertyService } from '../services/property.service';
 import { buildPropertyPayload, handleApiError } from '../utils/property.utils';
 import { useToast } from '@/components/Toast';
 import { UploadService } from '../services/upload.service';
+import { useAuth } from '@/context/AuthContext';
 
 export function usePropertyForm() {
   const [step, setStep] = useState(1);
@@ -13,7 +14,19 @@ export function usePropertyForm() {
   const [formData, setFormData] = useState<PropertyFormData>(INITIAL_FORM_DATA);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { showSuccess, showError } = useToast();
+  const { user } = useAuth();
 
+  useEffect(() => {
+      if (user && user.id) { 
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          idPropietario: user.id, 
+        }));
+      }
+      console.log(formData);
+    console.log(isSubmitting);
+      
+  }, [isSubmitting]); 
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -47,7 +60,7 @@ export function usePropertyForm() {
       const newFiles = Array.from(files);
       const localUrls = newFiles.map(file => URL.createObjectURL(file));
       setImageFiles(prev => [...prev, ...newFiles]);
-      setFormData((prev) => ({ ...prev, images: [...prev.images, ...localUrls]}));
+      setFormData((prev) => ({ ...prev, images: [...prev.images, ...localUrls] }));
       showSuccess(`Imágenes seleccionadas (${newFiles.length})`); // Mensaje opcional
     } catch (err) {
       console.error(err);
@@ -59,14 +72,14 @@ export function usePropertyForm() {
 
   const handleImageRemove = (indexToRemove: number) => {
     const urlToRemove = formData.images[indexToRemove];
-    if (urlToRemove?.startsWith('blob:')){
+    if (urlToRemove?.startsWith('blob:')) {
       URL.revokeObjectURL(urlToRemove);
     }
     setFormData((prev) => ({
       ...prev,
       images: prev.images.filter((_, idx) => idx !== indexToRemove),
     }));
-    
+
     setImageFiles((prev) =>
       prev.filter((_, idx) => idx !== indexToRemove)
     );
@@ -87,6 +100,10 @@ export function usePropertyForm() {
       direccion: address,
     }));
   };
+  const handleZonaChange = (zona: string) => {
+    setFormData(prev => ({ ...prev, zona }));
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,10 +112,10 @@ export function usePropertyForm() {
     let uploadedImageUrls: string[] = [];
 
     try {
-      if (imageFiles.length > 0){
+      if (imageFiles.length > 0) {
         const assets = await UploadService.uploadImages(imageFiles);
         uploadedImageUrls = assets.map((a) => a.url);
-      }else{
+      } else {
         showError('Debes Subir al menos una imagen.');
         setIsSubmitting(false);
         return;
@@ -109,8 +126,10 @@ export function usePropertyForm() {
         images: uploadedImageUrls,
       };
       const payload = buildPropertyPayload(finalFormData);
+      console.log('📦 PAYLOAD A ENVIAR:', JSON.stringify(payload, null, 2));
+
       const data = await PropertyService.createProperty(payload);
-      console.log('Respuesta del servidor:',data);
+      console.log('Respuesta del servidor:', data);
       showSuccess('Propiedad publicada exitosamente! :D');
       setStep(1);
       formData.images.forEach((url) => {
@@ -118,7 +137,7 @@ export function usePropertyForm() {
       });
       setImageFiles([]);
       setFormData(INITIAL_FORM_DATA);
-      
+
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -153,6 +172,7 @@ export function usePropertyForm() {
     handleSubmit,
     resetToStep1,
     handleLocationChange,
-    handleAddressChange, // AGREGAR AQUÍ
+    handleAddressChange,
+    handleZonaChange,
   };
 }

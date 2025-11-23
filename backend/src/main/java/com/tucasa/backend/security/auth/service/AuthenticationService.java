@@ -1,5 +1,7 @@
 package com.tucasa.backend.security.auth.service;
 
+
+import com.tucasa.backend.model.dto.UsuarioResponseDto;
 import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.enums.TipoUsuario;
 import com.tucasa.backend.model.repository.UsuarioRepository;
@@ -50,9 +52,18 @@ public class AuthenticationService {
 
         Usuario savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser.getCorreo());
+
+        UsuarioResponseDto dto = new UsuarioResponseDto();
+        dto.setId(user.getId());
+        dto.setNombre(user.getNombre());
+        dto.setApellido(user.getApellido());
+        dto.setTelefono(user.getTelefono());
+        dto.setDireccion(user.getDireccion());
+        dto.setCorreo(user.getCorreo());
+        dto.setRol(user.getRol());
         
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("usuario", savedUser);
+        responseData.put("usuario", dto);
         responseData.put("token", token);
         
         return responseData;
@@ -66,8 +77,18 @@ public class AuthenticationService {
         Usuario user = userRepository.findByCorreo(request.email())
                 .orElseThrow();
         String token = jwtService.generateToken(user.getCorreo());
+
+        UsuarioResponseDto dto = new UsuarioResponseDto();
+        dto.setId(user.getId());
+        dto.setNombre(user.getNombre());
+        dto.setApellido(user.getApellido());
+        dto.setTelefono(user.getTelefono());
+        dto.setDireccion(user.getDireccion());
+        dto.setCorreo(user.getCorreo());
+        dto.setRol(user.getRol());
+
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("usuario", user);
+        responseData.put("usuario", dto);
         responseData.put("token", token);
         return responseData;
     }
