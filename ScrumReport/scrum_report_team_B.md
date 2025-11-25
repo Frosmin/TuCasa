@@ -265,3 +265,27 @@
 -   **Y:** Trabajé en la planificaiones de tareas
 -   **T:** Hoy voy a hacer bocetos de interfaz para la seccion de historico de inmuebles
 -   **B:** No he tenido problemas
+
+# Scrum Report #12 — Nov 25
+
+## Pablo
+
+-   **Y:** Trabajé en la consulta de historico de precios de inmuebles
+-   **T:** Hoy voy a coordinar aspectos del historico de precios
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabaje en la interfaz para mostrar historicos de precios
+-   **T:** Hoy voy a analizar como implementar filtros de inmueble al historico de precios
+-   **B:** Tuve problemas para definir que filtros aplicar
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en la republicacion y terminacion de ofertas
+-   **T:** Hoy voy a hacer pruebas para la desactivacion de una oferta
+-   **B:** No he tenido problemas
