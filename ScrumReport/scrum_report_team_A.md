@@ -34,7 +34,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 14
+# Scrum Report #3 — Oct 14
 
 ## Daniel
 
@@ -52,7 +52,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 17
+# Scrum Report #4 — Oct 17
 
 ## Daniel
 
@@ -70,7 +70,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 21
+# Scrum Report #5 — Oct 21
 
 ## Daniel
 
@@ -88,7 +88,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 24
+# Scrum Report #6 — Oct 24
 
 ## Daniel
 
@@ -106,7 +106,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 28
+# Scrum Report #7 — Oct 28
 
 ## Daniel
 
@@ -124,7 +124,7 @@
 
 ---
 
-# Scrum Report #2 — Oct 31
+# Scrum Report #8 — Oct 31
 
 ## Daniel
 
@@ -142,7 +142,7 @@
 
 ---
 
-# Scrum Report #2 — Nov 04
+# Scrum Report #9 — Nov 04
 
 ## Daniel
 
@@ -160,7 +160,7 @@
 
 ---
 
-# Scrum Report #2 — Nov 07
+# Scrum Report #10 — Nov 07
 
 ## Daniel
 
@@ -178,7 +178,7 @@
 
 ---
 
-# Scrum Report #2 — Nov 11
+# Scrum Report #11 — Nov 11
 
 ## Daniel
 
@@ -196,7 +196,7 @@
 
 ---
 
-# Scrum Report #2 — Nov 18
+# Scrum Report #12 — Nov 18
 
 ## Daniel
 
@@ -214,7 +214,7 @@
 
 ---
 
-# Scrum Report #2 — Nov 21
+# Scrum Report #13 — Nov 21
 
 ## Daniel
 
@@ -228,6 +228,24 @@
 
 - **Y:** Distribucion y organizacion de las historias de usuario entre el equipo
 - **T:** Avanzare en las tareas asignadas.
+- **B:** No tuve ningun problema.
+
+---
+
+# Scrum Report #14 — Nov 25
+
+## Daniel
+
+- **Y:** Cambio de variable constante de backend en frontend.
+- **T:** Trabaje en la implementacion de la tarea respecto a dejar de ser agente.
+- **B:** No tuve ningun problema.
+
+---
+
+## Sergio
+
+- **Y:** Revise el refactor del frontend para el deploy
+- **T:** Trabaje en la implementacion sobre dejar de ser agente en el backend
 - **B:** No tuve ningun problema.
 
 ---
