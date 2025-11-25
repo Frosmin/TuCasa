@@ -94,7 +94,7 @@ export const OfertaCard = ({ oferta, onFavorite }: OfertaCardProps) => {
               />
             )}
 
-            {/* Botón Favorito */}
+            {/* Botón Favorito 
             <button
               onClick={handleFavorite}
               className="absolute top-6 right-6 h-8 w-8 rounded-full bg-white shadow-md flex items-center justify-center transition-all hover:scale-110 z-10"
@@ -103,6 +103,7 @@ export const OfertaCard = ({ oferta, onFavorite }: OfertaCardProps) => {
                 className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
               />
             </button>
+            */}
           </div>
 
           {/* Contenido */}

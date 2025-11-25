@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +26,13 @@ public interface OfertaRepository extends JpaRepository<Oferta, Long> {
     @Query("SELECT o FROM Oferta o WHERE o.id IN :ids")
     List<Oferta> findAllCompletoByIds(@Param("ids") List<Long> ids);
 
+    @Query(value = "SELECT AVG(o.precio) FROM ofertas o WHERE o.id IN :ids", nativeQuery = true)
+    BigDecimal findAveragePrecioByIds(@Param("ids") List<Long> ids);
+
     @EntityGraph(attributePaths = {"inmueble", "inmueble.servicios"})
     @Query("SELECT o FROM Oferta o " +
            "WHERE o.inmueble.propietario.id = :propietarioId " +
            "  AND o.inmueble.activo = true " +
-           "  AND o.activo = true") 
+           "  AND o.activo = true")
     List<Oferta> findAllByPropietarioId(@Param("propietarioId") Long propietarioId);
 }

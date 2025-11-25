@@ -6,16 +6,21 @@ import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart, X, ChevronLeft, Che
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
-
+import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
+import PropertyLocationMap from './components/PropertyLocationMap'
+import LikeButton from '@/components/LikeButton'
+import { useAuth } from '@/context/AuthContext'
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
+import { useToast } from '@/components/Toast'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+  const { showError, showSuccess } = useToast();
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
@@ -25,6 +30,9 @@ export default function DetalleOfertaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  //botoncito like
+  const {token} =useAuth()
+
   const [owner, setOwner] = useState<Owner>(OWNER_INITIAL_DATA);
 
   type Multimedia = {
@@ -39,9 +47,14 @@ export default function DetalleOfertaPage() {
         setError(null)
 
         console.log('🔍 Buscando oferta con ID:', id)
-
-        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
-
+        
+        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, {
+          cache: 'no-store',
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          }
+        })
+        
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
         }
@@ -86,7 +99,9 @@ export default function DetalleOfertaPage() {
     if (id) {
       fetchData()
     }
-  }, [id])
+  }, [id, token])
+
+
 
   const fetchOwner = async (idPropietario: number | unknown) => {
     try {
@@ -267,6 +282,33 @@ export default function DetalleOfertaPage() {
     return labels[tipoPago] || tipoPago
   }
 
+  const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
+    try {
+      const res = await fetch(`${URL_BACKEND}/api/oferta/${id}/estado?estadoPublicacion=${nuevoEstado}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Mostrar error real del backend
+        throw new Error(data?.message || `Error ${res.status}`);
+      }
+
+      showSuccess(`la oferta ha sido ${nuevoEstado}`)
+      setOferta(prev => prev ? { ...prev, estadoPublicacion: nuevoEstado } : prev);
+
+    } catch (err) {
+      showError("No se puede completar la operación");
+      console.error(err);
+    }
+  }
+
+
+
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       {/* Encabezado */}
@@ -275,14 +317,12 @@ export default function DetalleOfertaPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="font-medium">Volver al catálogo</span>
         </Link>
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="p-3 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
-        >
-          <Heart
-            className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
-          />
-        </button>
+        {/* megusta/favorito */}
+        <LikeButton
+          ofertaId={Number(id)}
+          initialIsFavorite={oferta.esFavorito || false}
+          initialCount={oferta.totalFavoritos ?? null}
+        />
       </div>
 
       {/* Carrusel clickeable */}
@@ -415,16 +455,6 @@ export default function DetalleOfertaPage() {
           </div>
         </div>
 
-        {/* Dirección con icono destacado */}
-        <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
-          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <MapPin className="h-5 w-5 text-blue-600" />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 font-medium">Ubicación</p>
-            <p className="text-lg font-semibold text-gray-900">{inmueble?.direccion || 'Dirección no especificada'}</p>
-          </div>
-        </div>
       </div>
 
       {/* Características principales en cards */}
@@ -582,23 +612,48 @@ export default function DetalleOfertaPage() {
         )}
       </div>
 
+      <PropertyLocationMap
+        latitude={oferta.inmueble.latitud}
+        longitude={oferta.inmueble.longitud}
+        address={oferta.inmueble.direccion}
+        zone={oferta.inmueble.zona}
+        propertyName={oferta.descripcion}
+      />
+
       {/* Botón de acción destacado */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
-        <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            type='button'
-            onClick={() => { router.push(`/editar/${id}`) }}
-            className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-          >
-            ✏️ Editar oferta
-          </button>
-          <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
-            📞 Contactar
-          </button>
+      {user && user.rol === "ADMIN" && (
+
+
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
+          <h3 className="text-2xl font-bold text-white mb-2">¿Editar Estado</h3>
+          <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center"></div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {(
+              <>
+                <button
+                  type="button"
+                  onClick={() => {manejarEstado('publicado'); router.push("/ventas");}}
+                  className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Publicar
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>{ manejarEstado('cancelado'); router.push("/admin/dashboard");}}
+                  className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Rechazar
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+
+      )}
+
+
     </div>
+
   )
 }

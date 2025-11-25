@@ -73,14 +73,8 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     private UsuarioResponseDto mapToDto(Usuario usuario) {
-        UsuarioResponseDto dto = new UsuarioResponseDto();
-        dto.setId(usuario.getId());
-        dto.setNombre(usuario.getNombre());
-        dto.setApellido(usuario.getApellido());
-        dto.setTelefono(usuario.getTelefono());
-        dto.setDireccion(usuario.getDireccion());
-        dto.setCorreo(usuario.getCorreo());
-        dto.setRol(usuario.getRol());
+        UsuarioResponseDto dto = new UsuarioResponseDto(usuario);
+        
         return dto;
     }
 }
