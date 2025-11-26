@@ -18,7 +18,7 @@ export interface SolicitudAval {
 }
 
 const Solicitudes = () => {
-  const {token} = useAuth();
+  const {token, user} = useAuth();
   const {showError} = useToast();
 
   // cambiar la lista hardcodeada con la recuperacion desde el back
