@@ -63,16 +63,18 @@ const Solicitudes = () => {
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
         {list.length !== 0 ? (
-          list.map((e, idx) => {
+          list.map((e,index) => {
             return (
               <div className="">
-                <SolicitudAvalCard key={idx} solicitud={e} />
+                <SolicitudAvalCard key={index} solicitud={e} />
               </div>
             );
           })
         ) : (
           <div className="flex flex-col justify-center items-center rounded-2xl w-full mt-5 mb-5 p-10 bg-gray-100">
-            <h1 className="text-lg font-semibold">Aún no existen solicitudes de avaluo.</h1>
+            <h1 className="text-lg font-semibold">
+              Aún no existen solicitudes de avaluo.
+            </h1>
           </div>
         )}
       </div>
