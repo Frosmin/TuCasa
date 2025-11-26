@@ -70,7 +70,6 @@ const Solicitudes = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
         const data = await getSolicitudes();
         setSolicitudes(data);
       } catch (error) {
