@@ -63,12 +63,8 @@ const Solicitudes = () => {
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
         {list.length !== 0 ? (
-          list.map((e,index) => {
-            return (
-              <div className="">
-                <SolicitudAvalCard key={index} solicitud={e} />
-              </div>
-            );
+          list.map((e, index) => {
+            return <SolicitudAvalCard key={index} solicitud={e} />;
           })
         ) : (
           <div className="flex flex-col justify-center items-center rounded-2xl w-full mt-5 mb-5 p-10 bg-gray-100">
