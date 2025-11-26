@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, DollarSign } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -131,6 +131,18 @@ export default function Header() {
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones
                   </Link>
+
+                  {/* solicitud avaluo */}
+                  { user.rol as string === "AGENTE_INMOBILIARIO" && (
+                    <Link 
+                      href={"/solicitudes_avaluo"} 
+                      onClick={()=>setMenuOpen(false)}
+                      
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      <DollarSign className="w-4 h-4" /> Solicitudes avaluo
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       setMenuOpen(false);
