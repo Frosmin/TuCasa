@@ -33,7 +33,6 @@ const Avaluo = () => {
     formData.append("latitud", latitude);
 
     // mandar al back el formdata
-
   };
 
   return (
