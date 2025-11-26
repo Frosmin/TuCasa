@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SolicitudAvalCard from "./components/solicitudAvalCard";
 import { getSolicitudes } from "./services/getSolicitudes";
 import LoadingSpinner from "@/components/Loading";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/components/Toast";
 
 export interface SolicitudAval {
   tipo: string;
@@ -11,82 +13,48 @@ export interface SolicitudAval {
   lat: number;
   lng: number;
   estado: string;
+  direccion?: string;
+  fechaSolicitud?: string;
 }
 
 const Solicitudes = () => {
-  const list: SolicitudAval[] = [
-    {
-      tipo: "CASA",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-    {
-      tipo: "DEPARTAMENTO",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-    {
-      tipo: "TIENDA",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-    {
-      tipo: "LOTE",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-    {
-      tipo: "CASA",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-    {
-      tipo: "CASA",
-      propietario: "Ricardo Rojas Carvajal",
-      celular: 123123,
-      lat: -17.3922,
-      lng: -66.1598,
-      estado: "ACTIVE",
-    },
-  ];
+  const {token} = useAuth();
+  const {showError} = useToast();
+
   // cambiar la lista hardcodeada con la recuperacion desde el back
   const [solicitudes, setSolicitudes] = useState<SolicitudAval[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getSolicitudes();
-        setSolicitudes(data);
-      } catch (error) {
-        console.log("Error: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchData = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      setLoading(true);
+      const data = await getSolicitudes(token);
+      setSolicitudes(data);
+    } catch (error: any) {
+      console.error("Error cargando solicitudes:", error);
+      showError("No se pudieron cargar las solicitudes de avalúo.");
+    } finally {
+      setLoading(false);
+    }
+  }, [token, showError]);
+
+
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // al aceptar cambiar el estado de active a EN_CURSO o algo similar
 
+
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner message="Cargando solicitudes..." />
+      </div>
+    );
   }
 
   return (
@@ -97,10 +65,13 @@ const Solicitudes = () => {
         Gestiona los avaluos de inmuebles que han publicado.
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
-        {list.length !== 0 ? ( // cambiar el list por state de solicitudes
-          list.map((e, index) => {
-            return <SolicitudAvalCard key={index} solicitud={e} />;
-          })
+        {solicitudes.length > 0 ? (
+            solicitudes.map((solicitud, index) => (
+              <SolicitudAvalCard 
+                key={index} 
+                solicitud={solicitud} 
+              />
+            ))
         ) : (
           <div className="flex flex-col justify-center items-center rounded-2xl w-full mt-5 mb-5 p-10 bg-gray-100">
             <h1 className="text-lg font-semibold">

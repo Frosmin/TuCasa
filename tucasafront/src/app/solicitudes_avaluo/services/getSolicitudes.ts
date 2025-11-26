@@ -1,12 +1,33 @@
+import { URL_BACKEND } from "@/config/constants";
 import { SolicitudAval } from "../page";
+interface SolicitudResponse {
+  error: boolean;
+  message: string;
+  code: number;
+  data: SolicitudAval[];
+}
 
+export const getSolicitudes = async (token: string): Promise<SolicitudAval[]> => {
+  try {
+    const res = await fetch(`${URL_BACKEND}/api/solicitudes-avaluo`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-export const getSolicitudes = async (): Promise<SolicitudAval[]> => {
-  const res = await fetch("asdjf.../solicitudes_avaluo");
+    if (!res.ok) {
+      throw new Error(`Error ${res.status}: No se pudieron obtener las solicitudes`);
+    }
 
-  if (!res.ok) {
-    throw new Error("Error al obtener las solicitudes");
+    const response: SolicitudResponse = await res.json();
+    
+    
+    return response.data || [];
+    
+  } catch (error) {
+    console.error("Error en getSolicitudes:", error);
+    throw error;
   }
-
-  return res.json();
 };
