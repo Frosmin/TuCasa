@@ -29,7 +29,7 @@ const Avaluo = () => {
     <div className="flex flex-col justify-center items-center h-full">
       <div className="grid grid-cols-2 grid-rows-[1fr_2fr_1fr] gap-4">
         <div className="col-span-2 flex justify-center items-center">
-          <h1 className="font-bold text-4xl">Solicitar Avaluo</h1>
+          <h1 className="font-extrabold text-4xl">Solicitar Avaluo</h1>
         </div>
 
         <div className="flex flex-col justify-center m-4 h-full">
