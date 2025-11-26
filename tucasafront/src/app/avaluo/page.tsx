@@ -25,7 +25,7 @@ const Avaluo = () => {
   //
   const { user, token } = useAuth();
   const { showSuccess, showError } = useToast();
-  const [isSubmititing, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -102,12 +102,24 @@ const Avaluo = () => {
             />
           </div>
         </div>
-        <div className="m-2">
+        <div className="mt-8 w-full max-w-md px-4">
           <button
             type="submit"
-            className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md"
+            disabled={isSubmitting}
+            className={`w-full py-4 text-white font-bold text-lg rounded-xl shadow-lg transform transition-all duration-200
+              ${isSubmitting 
+                ? "bg-blue-400 cursor-not-allowed" 
+                : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] hover:shadow-xl"
+              }`}
           >
-            Solicitar Avaluo
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Enviando...</span>
+              </div>
+            ) : (
+              "Solicitar Avalúo"
+            )}
           </button>
         </div>
       </div>
