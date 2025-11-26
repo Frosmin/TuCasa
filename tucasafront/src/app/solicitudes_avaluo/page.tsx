@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import SolicitudAvalCard from "./components/solicitudAvalCard";
 import { getSolicitudes } from "./services/getSolicitudes";
+import LoadingSpinner from "@/components/Loading";
 
 export interface SolicitudAval {
   tipo: string;
@@ -85,7 +86,7 @@ const Solicitudes = () => {
   // al aceptar cambiar el estado de active a EN_CURSO o algo similar
 
   if (loading) {
-    return <div>Carganding..</div>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -96,7 +97,7 @@ const Solicitudes = () => {
         Gestiona los avaluos de inmuebles que han publicado.
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
-        {list.length !== 0 ? ( // cambiar el list por state de solicitudes 
+        {list.length !== 0 ? ( // cambiar el list por state de solicitudes
           list.map((e, index) => {
             return <SolicitudAvalCard key={index} solicitud={e} />;
           })
