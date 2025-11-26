@@ -6,6 +6,8 @@ import { TipoInmueble } from "./types/types";
 import MiContacto from "./components/MiContacto";
 import LocationPicker from "../publicar/components/LocationPicker";
 import { useAuth } from "@/context/AuthContext";
+import { URL_BACKEND } from "@/config/constants";
+import { useToast } from "@/components/Toast";
 
 const Avaluo = () => {
   const [type, setType] = useState<TipoInmueble>("CASA");
@@ -21,18 +23,55 @@ const Avaluo = () => {
     setLongitude(lng.toString());
   };
   //
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const [isSubmititing, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("tipo", type);
-    formData.append("user", user.id);
-    formData.append("celular", contact);
-    formData.append("longitud", longitude);
-    formData.append("latitud", latitude);
+    
 
     // mandar al back el formdata
+    if (!contact || !latitude || !longitude){
+      showError("Por favor completa todos los campos y selecciona una ubicacion.");
+      return;
+    }
+    setIsSubmitting(true);
+
+    const payload = {
+      tipoInmueble: type,
+      idUsuario: user?.id,
+      celularContacot: contact,
+      latitud: latitude,
+      longitud: longitude
+    };
+
+    try{
+      const response = await fetch(`${URL_BACKEND}/api/solicitudes-avaluo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'applicatio/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        throw new Error(data.message || 'Error al enviar la solicitud');
+      }
+
+      showSuccess('Solicitud envviada! Un agente se pondra en contacto contigo.');
+
+      setContact("");
+    } catch (error: any){
+      console.error(error);
+      showError(error.message || 'Ocurrio un error al procesar tu solicitud.');
+    } finally{
+      setIsSubmitting(false);
+    }
   };
 
   return (
