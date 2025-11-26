@@ -42,7 +42,7 @@ const Avaluo = () => {
     const payload = {
       tipoInmueble: type,
       idUsuario: user?.id,
-      celularContacot: contact,
+      celularContacto: contact,
       latitud: latitude,
       longitud: longitude
     };
