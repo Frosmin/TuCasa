@@ -128,13 +128,24 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full justify-center">
-          <button
-            onClick={() => {router.push("/convertirse-agente")}}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md">
-            Quiero ser agente
-          </button>
+
+          {user.rol !== "AGENTE_INMOBILIARIO" ? (
+            <button
+              onClick={() => router.push("/convertirse-agente")}
+              className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md"
+            >
+              Quiero ser agente
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push("/dejar-de-ser-agente")}
+              className="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all shadow-md"
+            >
+              Dejar de ser agente
+            </button>
+          )}
+
           <button className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-xl hover:bg-gray-300 transition-all shadow-md">
             Editar perfil
           </button>
