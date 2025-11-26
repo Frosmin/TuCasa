@@ -1,5 +1,7 @@
 "use client";
+import { useEffect, useState } from "react";
 import SolicitudAvalCard from "./components/solicitudAvalCard";
+import { getSolicitudes } from "./services/getSolicitudes";
 
 export interface SolicitudAval {
   tipo: string;
@@ -7,6 +9,7 @@ export interface SolicitudAval {
   celular: number;
   lat: number;
   lng: number;
+  estado: string;
 }
 
 const Solicitudes = () => {
@@ -17,6 +20,7 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
     {
       tipo: "DEPARTAMENTO",
@@ -24,6 +28,7 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
     {
       tipo: "TIENDA",
@@ -31,6 +36,7 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
     {
       tipo: "LOTE",
@@ -38,6 +44,7 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
     {
       tipo: "CASA",
@@ -45,6 +52,7 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
     {
       tipo: "CASA",
@@ -52,8 +60,35 @@ const Solicitudes = () => {
       celular: 123123,
       lat: -17.3922,
       lng: -66.1598,
+      estado: "ACTIVE",
     },
   ];
+  // cambiar la lista hardcodeada con la recuperacion desde el back
+  const [solicitudes, setSolicitudes] = useState<SolicitudAval[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await getSolicitudes();
+        setSolicitudes(data);
+      } catch (error) {
+        console.log("Error: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // al aceptar cambiar el estado de active a EN_CURSO o algo similar
+
+  if (loading) {
+    return <div>Carganding..</div>;
+  }
+
   return (
     <div className="flex flex-col justify-center items-center">
       <h1 className="text-3xl font-extrabold mt-5">Solicitudes de avaluo</h1>
@@ -62,7 +97,7 @@ const Solicitudes = () => {
         Gestiona los avaluos de inmuebles que han publicado.
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
-        {list.length !== 0 ? (
+        {list.length !== 0 ? ( // cambiar el list por state de solicitudes 
           list.map((e, index) => {
             return <SolicitudAvalCard key={index} solicitud={e} />;
           })
