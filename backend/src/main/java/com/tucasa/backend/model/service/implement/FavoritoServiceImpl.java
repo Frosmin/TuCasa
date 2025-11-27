@@ -1,29 +1,24 @@
 package com.tucasa.backend.model.service.implement;
 
-import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.dto.FavoritoRequestDto;
 import com.tucasa.backend.model.entity.Favorito;
-import com.tucasa.backend.model.entity.Oferta;
-import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.FavoritoRepository;
 import com.tucasa.backend.model.repository.OfertaRepository;
 import com.tucasa.backend.model.repository.UsuarioRepository;
 import com.tucasa.backend.model.service.interfaces.FavoritoService;
 import com.tucasa.backend.payload.ApiResponse;
-import com.tucasa.backend.payload.ResponseSuccess;
+// import com.tucasa.backend.payload.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FavoritoServiceImpl implements FavoritoService {
 
-    private final ResponseSuccess responseSuccess;
+    // private final ResponseSuccess responseSuccess;
 
     @Autowired
     private FavoritoRepository favoritoRepository;
@@ -37,9 +32,9 @@ public class FavoritoServiceImpl implements FavoritoService {
     @Autowired
     private ApiResponse apiResponse;
 
-    FavoritoServiceImpl(ResponseSuccess responseSuccess) {
-        this.responseSuccess = responseSuccess;
-    }
+    // FavoritoServiceImpl(ResponseSuccess responseSuccess) {
+    //     this.responseSuccess = responseSuccess;
+    // }
 
         @Override
     @Transactional
