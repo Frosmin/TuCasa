@@ -7,7 +7,6 @@ import PropertyForm from "./components/PropertyForm";
 import PropertyPreview from "./components/PropertyPreview";
 
 import ProtectedRoute from "@/context/ProtectedRoute";
-import { OPERATION_TYPES } from "./data/property.constants";
 
 export default function VenderPage() {
   const {
@@ -53,8 +52,7 @@ export default function VenderPage() {
           {/* Formulario */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              ¿Qué tipo de propiedad quieres
-              {formData.operacion === OPERATION_TYPES[3].id ? " avaluar?" : " publicar?"}
+              ¿Qué tipo de propiedad quieres publicar?
             </h1>
             <p className="text-gray-600 mb-2">
               Operación:{" "}

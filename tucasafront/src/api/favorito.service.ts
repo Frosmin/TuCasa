@@ -2,7 +2,7 @@
 import { URL_BACKEND } from "@/config/constants";
 import type { ApiResponse } from "./api";
 
-const API_URL = `${URL_BACKEND}/api/favoritos`;
+const API_URL = `${URL_BACKEND}/api/oferta/favoritos`;
 
 /**
  * Maneja la respuesta estándar de la API
