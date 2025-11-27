@@ -527,7 +527,10 @@ public class OfertaServiceImpl implements OfertaService {
                         "LEFT JOIN tiendas t ON i.id = t.id " +
                         "LEFT JOIN departamentos d ON i.id = d.id " +
                         "LEFT JOIN lote l ON i.id = l.id " +
-                        "WHERE o.activo = true AND i.activo = true ");
+                        "WHERE o.activo = true AND i.activo = true " +
+                        "AND UPPER(o.tipo_operacion) <> 'AVALUO' " +
+                        "AND UPPER(o.estado_publicacion) = 'PUBLICADO' "
+        );
 
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
