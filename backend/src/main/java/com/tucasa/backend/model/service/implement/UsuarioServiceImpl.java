@@ -72,6 +72,26 @@ public class UsuarioServiceImpl implements UsuarioService{
         }
     }
 
+    @Override
+    public ResponseEntity<?> volverACliente(Long id){
+        String successMessage = "Cambio de rol a Agente exitoso";
+        String errorMessage = "No se pudo hacer el cambio de rol";
+        String badRequestMessage = "No se puede realizar esta operacion con este usuario.";
+        try {
+            Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(errorMessage));
+            if (usuario.getRol() == TipoUsuario.AGENTE_INMOBILIARIO) {
+                usuario.setRol(TipoUsuario.CLIENTE);
+                Usuario userUpdated = usuarioRepository.save(usuario);
+                return apiResponse.responseSuccess(successMessage, mapToDto(userUpdated));
+            } else {
+                return apiResponse.responseBadRequest(badRequestMessage);
+            }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e);
+        }
+    }
+
     private UsuarioResponseDto mapToDto(Usuario usuario) {
         UsuarioResponseDto dto = new UsuarioResponseDto(usuario);
         
