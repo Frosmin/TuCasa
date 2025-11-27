@@ -20,7 +20,6 @@ const Avaluo = () => {
   const [zona, setZona] = useState<string>("");
   const router = useRouter();
   const onLocationChange = (lat: number, lng: number) => {
-    console.log("CAMBIÓ LA UBICACIÓN", lat, lng);
     setLatitude(lat.toString());
     setLongitude(lng.toString());
   };
@@ -49,7 +48,6 @@ const Avaluo = () => {
     };
 
     try {
-      console.log(payload);
       const response = await fetch(`${URL_BACKEND}/api/oferta/avaluo`, {
         method: "POST",
         headers: {
