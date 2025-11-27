@@ -9,7 +9,7 @@ interface OperationSelectorProps {
 export default function OperationSelector({ onSelect }: OperationSelectorProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
-      <div className="max-w-4xl w-full mx-4">
+      <div className="max-w-2xl w-full mx-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 text-center">
             ¿Qué tipo de operación deseas realizar?
@@ -17,7 +17,7 @@ export default function OperationSelector({ onSelect }: OperationSelectorProps) 
           <p className="text-gray-600 mb-10 text-center">
             Selecciona una opción para continuar
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {OPERATION_TYPES.map(({ id, label, description, icon: Icon, colorClass }) => (
               <button
                 key={id}
