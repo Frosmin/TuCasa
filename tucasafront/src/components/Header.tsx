@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList, UserPlus,PanelTop } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, UserPlus, PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -82,6 +82,13 @@ export default function Header() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
             </Link>
           )}
+          <Link
+            href={"/agentes"}
+            className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+          >
+            Agentes
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+          </Link>
         </div>
 
         {/* User Actions */}
@@ -114,7 +121,7 @@ export default function Header() {
                   ) : (
                     <Link
                       onClick={() => setMenuOpen(false)}
-                    href={"/pages/perfil"}
+                      href={"/pages/perfil"}
                       className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       <User className="w-4 h-4" /> Perfil
