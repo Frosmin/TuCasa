@@ -8,6 +8,7 @@ import LocationPicker from "../publicar/components/LocationPicker";
 import { useAuth } from "@/context/AuthContext";
 import { URL_BACKEND } from "@/config/constants";
 import { useToast } from "@/components/Toast";
+import { useRouter } from "next/router";
 
 const Avaluo = () => {
   const [type, setType] = useState<TipoInmueble>("CASA");
@@ -17,6 +18,7 @@ const Avaluo = () => {
   const [longitude, setLongitude] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [zona, setZona] = useState<string>("");
+  const router = useRouter();
   const onLocationChange = (lat: number, lng: number) => {
     console.log("CAMBIÓ LA UBICACIÓN", lat, lng);
     setLatitude(lat.toString());
@@ -27,49 +29,52 @@ const Avaluo = () => {
   const { showSuccess, showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
 
-    // mandar al back el formdata
-    if (!contact || !latitude || !longitude){
-      showError("Por favor completa todos los campos y selecciona una ubicacion.");
+    if (!contact || !latitude || !longitude) {
+      showError(
+        "Por favor completa todos los campos y selecciona una ubicacion."
+      );
       return;
     }
     setIsSubmitting(true);
 
     const payload = {
       tipoInmueble: type,
-      idUsuario: user?.id,
       celularContacto: contact,
-      latitud: latitude,
-      longitud: longitude
+      latitud: parseFloat(latitude),
+      longitud: parseFloat(longitude),
+      direccion: "av random",
     };
 
-    try{
-      const response = await fetch(`${URL_BACKEND}/api/solicitudes-avaluo`, {
-        method: 'POST',
+    try {
+      console.log(payload);
+      const response = await fetch(`${URL_BACKEND}/api/oferta/avaluo`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'applicatio/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
-      if(!response.ok){
-        throw new Error(data.message || 'Error al enviar la solicitud');
+      if (!response.ok) {
+        throw new Error(data.message || "Error al enviar la solicitud");
       }
 
-      showSuccess('Solicitud envviada! Un agente se pondra en contacto contigo.');
+      showSuccess(
+        "Solicitud envviada! Un agente se pondra en contacto contigo."
+      );
+      router.replace("/");
 
       setContact("");
-    } catch (error: any){
+    } catch (error: any) {
       console.error(error);
-      showError(error.message || 'Ocurrio un error al procesar tu solicitud.');
-    } finally{
+      showError(error.message || "Ocurrio un error al procesar tu solicitud.");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -107,9 +112,10 @@ const Avaluo = () => {
             type="submit"
             disabled={isSubmitting}
             className={`w-full py-4 text-white font-bold text-lg rounded-xl shadow-lg transform transition-all duration-200
-              ${isSubmitting 
-                ? "bg-blue-400 cursor-not-allowed" 
-                : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] hover:shadow-xl"
+              ${
+                isSubmitting
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] hover:shadow-xl"
               }`}
           >
             {isSubmitting ? (

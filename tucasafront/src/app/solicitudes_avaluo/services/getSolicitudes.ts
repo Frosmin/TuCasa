@@ -9,7 +9,7 @@ interface SolicitudResponse {
 
 export const getSolicitudes = async (token: string): Promise<SolicitudAval[]> => {
   try {
-    const res = await fetch(`${URL_BACKEND}/api/solicitudes-avaluo`, {
+    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/lista/pendientes`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -12,7 +12,7 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
     TIENDA: Store,
     LOTE: Map,
   };
-  const Icon: LucideIcon = icons[solicitud.tipo];
+  const Icon: LucideIcon = icons[solicitud.tipoInmueble];
   const openMaps = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   };
@@ -28,7 +28,7 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
           <div className="m-1">
             <h1 className=" inline m-2 text-md font-semibold">Inmueble:</h1>
             <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-              {solicitud.tipo}
+              {solicitud.tipoInmueble}
             </span>
           </div>
           <div className="m-1">
@@ -48,7 +48,7 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
       {/* Ubicacion */}
       <div className="flex justify-center items-center">
         <button
-          onClick={() => openMaps(solicitud.lat, solicitud.lng)}
+          onClick={() => openMaps(solicitud.latitud, solicitud.longitud)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg"
         >
           Ver ubicación

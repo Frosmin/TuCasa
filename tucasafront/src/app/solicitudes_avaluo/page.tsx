@@ -7,24 +7,23 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
 
 export interface SolicitudAval {
-  tipo: string;
-  propietario: string;
+  tipoInmueble: string;
+  propietario: number;
   celular: number;
-  lat: number;
-  lng: number;
+  latitud: number;
+  longitud: number;
   estado: string;
-  direccion?: string;
-  fechaSolicitud?: string;
+  direccion: string;
+  // fechaSolicitud?: string;
 }
 
 const Solicitudes = () => {
-  const {token, user} = useAuth();
-  const {showError} = useToast();
+  const { token, user } = useAuth();
+  const { showError } = useToast();
 
   // cambiar la lista hardcodeada con la recuperacion desde el back
   const [solicitudes, setSolicitudes] = useState<SolicitudAval[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -32,6 +31,7 @@ const Solicitudes = () => {
     try {
       setLoading(true);
       const data = await getSolicitudes(token);
+      console.log("data:", data);
       setSolicitudes(data);
     } catch (error: any) {
       console.error("Error cargando solicitudes:", error);
@@ -41,13 +41,11 @@ const Solicitudes = () => {
     }
   }, [token, showError]);
 
-
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   // al aceptar cambiar el estado de active a EN_CURSO o algo similar
-
 
   if (loading) {
     return (
@@ -66,12 +64,9 @@ const Solicitudes = () => {
       </p>
       <div className="flex flex-col justify-center items-center w-[50%]">
         {solicitudes.length > 0 ? (
-            solicitudes.map((solicitud, index) => (
-              <SolicitudAvalCard 
-                key={index} 
-                solicitud={solicitud} 
-              />
-            ))
+          solicitudes.map((solicitud, index) => (
+            <SolicitudAvalCard key={index} solicitud={solicitud} />
+          ))
         ) : (
           <div className="flex flex-col justify-center items-center rounded-2xl w-full mt-5 mb-5 p-10 bg-gray-100">
             <h1 className="text-lg font-semibold">
