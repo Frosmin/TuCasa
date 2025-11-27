@@ -55,6 +55,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     zona: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
+  
 
   const zonasUnicas = useMemo(() => {
     const zonas = new Set(
@@ -326,10 +327,24 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       <div className="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide flex-1">
-              {/* ... botones existentes ... */}
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {tiposPropiedad.map(({ id, label, icon: Icon }) => {
+                const length = ofertas.filter(o => id === '' || o.inmueble.tipo === id).length
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setTipoInmuebleSeleccionado(id)}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
+                      }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {label} ({length})
+                  </button>
+                )
+              })}
             </div>
-
             {/* Botón de Histórico */}
             <button
               onClick={() => setMostrarHistorico(true)}

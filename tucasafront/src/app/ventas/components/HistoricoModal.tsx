@@ -1,6 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
-import { X, TrendingUp, Calendar, DollarSign, Filter, BarChart3 } from 'lucide-react'
+import { X, TrendingUp, Calendar, DollarSign, Filter, BarChart3, Home } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import { fetchHistorico, type HistoricoParams, type HistoricoData } from '@/app/api/historico'
 import type { TipoOperacion } from '@/models/Oferta'
@@ -39,6 +39,8 @@ export const HistoricoModal = ({
   const [zona, setZona] = useState('')
   const [moneda, setMoneda] = useState<'Bs' | '$' | ''>('')
   const [tipoInmueble, setTipoInmueble] = useState('')
+  //Filtros adicionales para cada tipo de inmueble
+  const [filtrosAdicionales, setFiltrosAdicionales] = useState<Record<string, any>>({})
 
   // Generar array de años disponibles (últimos 5 años + año actual)
   const aniosDisponibles = useMemo(() => {
@@ -46,9 +48,57 @@ export const HistoricoModal = ({
     return Array.from({ length: 6 }, (_, i) => anioActual - i)
   }, [])
 
+  interface FiltroConfig {
+    key: string
+    label: string
+    type: 'select' | 'boolean' | 'number'
+    options?: string[]
+  }
+
+  const filtrosDisponibles = useMemo((): FiltroConfig[] => {
+    if (!tipoInmueble) return []
+
+    const filtrosBase: Record<string, FiltroConfig[]> = {
+      CASA: [
+        { key: 'numDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5+'] },
+        { key: 'numBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'numPisos', label: 'Pisos', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'garaje', label: 'Garaje', type: 'boolean' },
+        { key: 'patio', label: 'Patio', type: 'boolean' },
+        { key: 'amoblado', label: 'Amoblado', type: 'boolean' },
+        { key: 'sotano', label: 'Sótano', type: 'boolean' }
+      ],
+      DEPARTAMENTO: [
+        { key: 'deptoNumDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'deptoNumBanos', label: 'Baños', type: 'select', options: ['1', '2', '3+'] },
+        { key: 'deptoPiso', label: 'Piso', type: 'select', options: ['1', '2', '3', '4', '5', '6+'] },
+        { key: 'deptoAmoblado', label: 'Amoblado', type: 'boolean' },
+        { key: 'ascensor', label: 'Ascensor', type: 'boolean' },
+        { key: 'balcon', label: 'Balcón', type: 'boolean' }
+      ],
+      LOTE: [
+        { key: 'tamano', label: 'Tamaño mínimo (m²)', type: 'number' },
+        { key: 'muroPerimetral', label: 'Muro Perimetral', type: 'boolean' }
+      ],
+      TIENDA: [
+        { key: 'tamano', label: 'Tamaño mínimo (m²)', type: 'number' },
+        { key: 'numAmbientes', label: 'Ambientes', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'banoPrivado', label: 'Baño Privado', type: 'boolean' },
+        { key: 'deposito', label: 'Depósito', type: 'boolean' }
+      ]
+    }
+
+    return filtrosBase[tipoInmueble as keyof typeof filtrosBase] || []
+  }, [tipoInmueble])
+
   const cargarHistorico = async () => {
     if (!anio) {
       setError('Debe seleccionar un año')
+      return
+    }
+
+    if (!tipoInmueble) {
+      setError('Debe seleccionar un tipo de inmueble')
       return
     }
 
@@ -56,23 +106,22 @@ export const HistoricoModal = ({
       setLoading(true)
       setError(null)
 
-      // Convertir año a fechaInicio y fechaFin
       const fechaInicio = `${anio}-01-01`
       const fechaFin = `${anio}-12-31`
 
       const params: HistoricoParams = {
         fechaInicio,
         fechaFin,
-        tipoOperacion
+        tipoOperacion,
+        tipoInmueble,
+        ...filtrosAdicionales
       }
 
       if (zona) params.zona = zona
       if (moneda) params.moneda = moneda
-      if (tipoInmueble) params.tipoInmueble = tipoInmueble
 
       const response = await fetchHistorico(params)
-      
-      // Ordenar por mes
+
       const datosOrdenados = response.data.sort((a, b) => a.mes - b.mes)
       setDatos(datosOrdenados)
 
@@ -85,7 +134,6 @@ export const HistoricoModal = ({
       setLoading(false)
     }
   }
-
   // Preparar datos para el gráfico
   const datosGrafico = useMemo(() => {
     return datos.map(d => ({
@@ -119,6 +167,7 @@ export const HistoricoModal = ({
       maximumFractionDigits: 0,
     })
   }
+
 
   // Tooltip personalizado para el gráfico
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; payload: { mesCompleto: string; ofertas: number } }> }) => {
@@ -180,17 +229,21 @@ export const HistoricoModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <DollarSign className="w-4 h-4 inline mr-1" />
-                Moneda
+                <Home className="w-4 h-4 inline mr-1" />
+                Tipo de Inmueble *
               </label>
               <select
-                value={moneda}
-                onChange={(e) => setMoneda(e.target.value as 'Bs' | '$' | '')}
+                value={tipoInmueble}
+                onChange={(e) => {
+                  setTipoInmueble(e.target.value)
+                  setFiltrosAdicionales({}) // Limpiar filtros al cambiar tipo
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Todas</option>
-                <option value="$">Dólares ($)</option>
-                <option value="Bs">Bolivianos (Bs)</option>
+                <option value="">Seleccione un tipo</option>
+                {tiposInmueble.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
               </select>
             </div>
 
@@ -213,26 +266,85 @@ export const HistoricoModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Filter className="w-4 h-4 inline mr-1" />
-                Tipo de Inmueble
+                <DollarSign className="w-4 h-4 inline mr-1" />
+                Moneda
               </label>
               <select
-                value={tipoInmueble}
-                onChange={(e) => setTipoInmueble(e.target.value)}
+                value={moneda}
+                onChange={(e) => setMoneda(e.target.value as 'Bs' | '$' | '')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Todos</option>
-                {tiposInmueble.map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
+                <option value="">Todas</option>
+                <option value="$">Dólares ($)</option>
+                <option value="Bs">Bolivianos (Bs)</option>
               </select>
             </div>
           </div>
 
+          {/* Filtros Dinámicos según tipo de inmueble */}
+          {tipoInmueble && filtrosDisponibles.length > 0 && (
+            <div className="border-t pt-4 mt-4">
+              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filtros Adicionales
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {filtrosDisponibles.map(filtro => (
+                  <div key={filtro.key}>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      {filtro.label}
+                    </label>
+                    {filtro.type === 'select' && (
+                      <select
+                        value={filtrosAdicionales[filtro.key] || ''}
+                        onChange={(e) => setFiltrosAdicionales(prev => ({
+                          ...prev,
+                          [filtro.key]: e.target.value
+                        }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Todos</option>
+                        {filtro.options?.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    )}
+                    {filtro.type === 'boolean' && (
+                      <select
+                        value={filtrosAdicionales[filtro.key] || ''}
+                        onChange={(e) => setFiltrosAdicionales(prev => ({
+                          ...prev,
+                          [filtro.key]: e.target.value
+                        }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Indiferente</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                      </select>
+                    )}
+                    {filtro.type === 'number' && (
+                      <input
+                        type="number"
+                        value={filtrosAdicionales[filtro.key] || ''}
+                        onChange={(e) => setFiltrosAdicionales(prev => ({
+                          ...prev,
+                          [filtro.key]: e.target.value
+                        }))}
+                        placeholder="Mínimo"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={cargarHistorico}
-            disabled={loading || !anio}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-lg transition"
+            disabled={loading || !anio || !tipoInmueble}
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-lg transition mt-4"
           >
             {loading ? 'Cargando...' : 'Consultar Histórico'}
           </button>
@@ -294,26 +406,26 @@ export const HistoricoModal = ({
                   <AreaChart data={datosGrafico}>
                     <defs>
                       <linearGradient id="colorPrecio" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis 
-                      dataKey="mes" 
+                    <XAxis
+                      dataKey="mes"
                       stroke="#6b7280"
                       style={{ fontSize: '12px' }}
                     />
-                    <YAxis 
+                    <YAxis
                       stroke="#6b7280"
                       style={{ fontSize: '12px' }}
                       tickFormatter={(value: number) => formatearPrecio(value)}
                     />
                     <Tooltip content={<CustomTooltip />} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="precio" 
-                      stroke="#3b82f6" 
+                    <Area
+                      type="monotone"
+                      dataKey="precio"
+                      stroke="#3b82f6"
                       strokeWidth={3}
                       fill="url(#colorPrecio)"
                       name="Precio Promedio"
@@ -353,9 +465,8 @@ export const HistoricoModal = ({
                             </td>
                             <td className="px-4 py-3 text-sm text-right">
                               {index > 0 ? (
-                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                  esPositivo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                }`}>
+                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${esPositivo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                  }`}>
                                   {esPositivo ? '↑' : '↓'} {Math.abs(cambio).toFixed(1)}%
                                 </span>
                               ) : (
