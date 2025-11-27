@@ -6,6 +6,5 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum TipoAvaluo {
     PENDIENTE,      
     EN_PROCESO,     
-    COMPLETADO,     
-    CANCELADO       
+    COMPLETADO     
 }
