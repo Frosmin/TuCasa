@@ -65,9 +65,10 @@ public class Usuario implements UserDetails{
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return List.of();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of((GrantedAuthority) () -> "ROLE_" + rol.name());
     }
+
     
     @Override
     public boolean isAccountNonExpired(){

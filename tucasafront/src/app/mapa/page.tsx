@@ -23,6 +23,7 @@ import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
 import LoadingSpinner from '@/components/Loading';
+import { URL_BACKEND } from '@/config/constants';
 
 
 type TipoOperacion = 'TODOS' | 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
@@ -53,7 +54,7 @@ const OPERACION_CONFIG = {
   AVALUO: { color: '#9810fa', label: 'Avaluo', bgLight: '#fffbeb' },
 } as const;
 const COCHABAMBA_CENTER = { lat: -17.3895, lng: -66.1568 };
-const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
+const API_BASE_URL = URL_BACKEND + '/api';
 
 export default function MapaPage() {
   const { isLoaded, loadError } = useGoogleMaps();

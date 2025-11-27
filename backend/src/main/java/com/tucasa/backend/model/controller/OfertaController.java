@@ -50,6 +50,12 @@ public class OfertaController {
     public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
         return ofertaService.search(params, false);
     }
+         @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Long id,
+            @RequestParam String estadoPublicacion) {
+        return ofertaService.actualizarEstadoPublicacion(id, estadoPublicacion);
+    }
 
     @GetMapping("/map")
     public ResponseEntity<?> searchOnMap(@RequestParam Map<String, String> params) {

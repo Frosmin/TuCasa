@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
 import com.tucasa.backend.utils.PropietarioMapper;
@@ -527,7 +528,10 @@ public class OfertaServiceImpl implements OfertaService {
                         "LEFT JOIN tiendas t ON i.id = t.id " +
                         "LEFT JOIN departamentos d ON i.id = d.id " +
                         "LEFT JOIN lote l ON i.id = l.id " +
-                        "WHERE o.activo = true AND i.activo = true ");
+                        "WHERE o.activo = true AND i.activo = true " +
+                        "AND UPPER(o.tipo_operacion) <> 'AVALUO' " +
+                        "AND UPPER(o.estado_publicacion) = 'PUBLICADO' "
+        );
 
         for (var entry : params.entrySet()) {
             String key = entry.getKey();
@@ -675,6 +679,37 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+    @Override
+public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion) {
+    try {
+        Optional<Oferta> optional = ofertaRepository.findById(id);
+
+        if (optional.isEmpty()) {
+            return apiResponse.responseDataError("La oferta no existe", null);
+        }
+
+        Oferta oferta = optional.get();
+
+        List<String> estadosValidos = List.of(
+                "pendiente",
+                "cancelado",
+                "publicado"
+        );
+
+        if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
+            return apiResponse.responseDataError("Estado no válido", null);
+        }
+
+        oferta.setEstadoPublicacion(estadoPublicacion);
+        ofertaRepository.save(oferta);
+   return apiResponse.responseSuccess("Estado actualizado correctamente", mapToDto(oferta));
+
+       
+
+    } catch (Exception e) {
+        return apiResponse.responseDataError("Error interno", e.getMessage());
+    }
+}
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
         return mapToDto(oferta, false);              

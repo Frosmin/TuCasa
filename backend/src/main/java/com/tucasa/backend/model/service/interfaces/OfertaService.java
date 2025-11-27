@@ -12,6 +12,8 @@ public interface OfertaService {
     ResponseEntity<?> create(OfertaRequestDto oferta);
     ResponseEntity<?> update(Long id, OfertaRequestDto oferta);
     ResponseEntity<?> delete(Long id);
+
+    ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion);
     ResponseEntity<?> search(Map<String, String> params, Boolean compact);
     ResponseEntity<?> findByUserId(Long id);
     ResponseEntity<?> findFavoritosByUserId(String userEmail);

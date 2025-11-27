@@ -6,17 +6,19 @@ import { Bed, Bath, Maximize, Car, MapPin, ArrowLeft, Heart, X, ChevronLeft, Che
 import Link from 'next/link'
 import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
+import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
 import PropertyLocationMap from './components/PropertyLocationMap'
-
 import LikeButton from '@/components/LikeButton'
 import { useAuth } from '@/context/AuthContext'
-
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
+import { useToast } from '@/components/Toast'
 
 export default function DetalleOfertaPage() {
   const { id } = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+  const { showError, showSuccess } = useToast();
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -279,6 +281,33 @@ export default function DetalleOfertaPage() {
     }
     return labels[tipoPago] || tipoPago
   }
+
+  const manejarEstado = async (nuevoEstado: EstadoPublicacion) => {
+    try {
+      const res = await fetch(`${URL_BACKEND}/api/oferta/${id}/estado?estadoPublicacion=${nuevoEstado}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Mostrar error real del backend
+        throw new Error(data?.message || `Error ${res.status}`);
+      }
+
+      showSuccess(`la oferta ha sido ${nuevoEstado}`)
+      setOferta(prev => prev ? { ...prev, estadoPublicacion: nuevoEstado } : prev);
+
+    } catch (err) {
+      showError("No se puede completar la operación");
+      console.error(err);
+    }
+  }
+
+
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
@@ -592,22 +621,39 @@ export default function DetalleOfertaPage() {
       />
 
       {/* Botón de acción destacado */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">¿Te interesa esta propiedad?</h3>
-        <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            type='button'
-            onClick={() => { router.push(`/editar/${id}`) }}
-            className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-          >
-            ✏️ Editar oferta
-          </button>
-          <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors">
-            📞 Contactar
-          </button>
+      {user && user.rol === "ADMIN" && (
+
+
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center mb-8">
+          <h3 className="text-2xl font-bold text-white mb-2">¿Editar Estado</h3>
+          <p className="text-blue-100 mb-6">Contacta al propietario para más información</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center"></div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {(
+              <>
+                <button
+                  type="button"
+                  onClick={() => {manejarEstado('publicado'); router.push("/ventas");}}
+                  className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Publicar
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>{ manejarEstado('cancelado'); router.push("/admin/dashboard");}}
+                  className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Rechazar
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+
+      )}
+
+
     </div>
+
   )
 }
