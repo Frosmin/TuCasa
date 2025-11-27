@@ -18,8 +18,10 @@ import com.tucasa.backend.model.enums.TipoUsuario;
 import com.tucasa.backend.model.enums.EstadoSolicitud;
 import com.tucasa.backend.model.repository.SolicitudAgenteRepository;
 import com.tucasa.backend.model.repository.UsuarioRepository;
+import com.tucasa.backend.model.service.interfaces.AgenteService;
 import com.tucasa.backend.model.service.interfaces.SolicitudAgenteService;
 import com.tucasa.backend.Constants.Constants;
+import com.tucasa.backend.model.dto.AgenteRequestDto;
 import com.tucasa.backend.model.dto.SolicitudAgenteRequestDto;
 import com.tucasa.backend.model.dto.SolicitudAgenteResponseDto;
 import com.tucasa.backend.model.dto.UsuarioResponseDto;
@@ -36,6 +38,9 @@ public class SolicitudAgenteServiceImpl implements SolicitudAgenteService {
 
     @Autowired
     private ApiResponse apiResponse;
+
+    @Autowired
+    private AgenteService agenteService;
 
     private static final String UPLOAD_DIR = "uploads/cv/";
 
@@ -155,12 +160,26 @@ public class SolicitudAgenteServiceImpl implements SolicitudAgenteService {
             Usuario usuario = solicitud.getUsuario();
             usuario.setRol(TipoUsuario.AGENTE_INMOBILIARIO);
             usuarioRepository.save(usuario);
+            
+            createAgente(solicitud);
+
 
             return apiResponse.responseSuccess("Solicitud aprobada correctamente", null);
 
         } catch (Exception e) {
             return apiResponse.responseDataError("No se pudo aprobar la solicitud", e.getMessage());
         }
+    }
+
+    private void createAgente(SolicitudAgente solicitud) {
+        AgenteRequestDto dto = new AgenteRequestDto();
+        dto.setUsuario(solicitud.getUsuario());
+        dto.setDescripcion(solicitud.getDescripcion());
+        dto.setExperiencia(solicitud.getExperiencia());
+        dto.setMatricula(solicitud.getMatricula());
+        dto.setCv(solicitud.getCvPath());
+
+        agenteService.create(dto);
     }
 
     @Override
