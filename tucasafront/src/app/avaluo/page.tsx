@@ -8,7 +8,7 @@ import LocationPicker from "../publicar/components/LocationPicker";
 import { useAuth } from "@/context/AuthContext";
 import { URL_BACKEND } from "@/config/constants";
 import { useToast } from "@/components/Toast";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Avaluo = () => {
   const [type, setType] = useState<TipoInmueble>("CASA");
