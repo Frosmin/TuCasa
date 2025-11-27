@@ -43,6 +43,7 @@ public class AvaluoServiceImpl implements AvaluoService {
             avaluo.setCelular_Contacto(dto.getCelularContacto());
             avaluo.setLatitud(dto.getLatitud());
             avaluo.setLongitud(dto.getLongitud());
+            avaluo.setDireccion(dto.getDireccion());
             
         
             avaluo.setTipoAvaluo(TipoAvaluo.PENDIENTE);

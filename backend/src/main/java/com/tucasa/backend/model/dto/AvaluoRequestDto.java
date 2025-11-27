@@ -19,4 +19,7 @@ public class AvaluoRequestDto {
 
     @NotNull(message = "La longitud es obligatoria")
     private BigDecimal longitud;
+
+    @NotNull(message = "La direccion es obligatoria")
+    private String direccion;
 }
