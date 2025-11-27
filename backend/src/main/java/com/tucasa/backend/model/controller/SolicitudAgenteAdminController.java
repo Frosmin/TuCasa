@@ -9,42 +9,40 @@ import org.springframework.web.bind.annotation.*;
 
 import com.tucasa.backend.model.entity.SolicitudAgente;
 import com.tucasa.backend.model.enums.EstadoSolicitud;
-import com.tucasa.backend.model.service.implement.SolicitudAgenteService;
+import com.tucasa.backend.model.service.implement.SolicitudAgenteServiceImpl;
+import com.tucasa.backend.model.service.interfaces.SolicitudAgenteService;
 
 @RestController
-@RequestMapping("/api/admin/solicitudes/agentes") 
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api/admin/solicitudes/agentes")
+//@PreAuthorize("hasRole('ADMIN')")
 @CrossOrigin(origins = "*")
 public class SolicitudAgenteAdminController {
 
     @Autowired
-    private SolicitudAgenteService solicitudAgenteService;
+    private SolicitudAgenteService solicitudService;
 
     @GetMapping
-    public ResponseEntity<List<SolicitudAgente>> listarTodas() {
-        return ResponseEntity.ok(solicitudAgenteService.listarTodas());
+    public ResponseEntity<?> findAll() {
+        return solicitudService.findAll();
     }
 
     @GetMapping("/pendientes")
-    public ResponseEntity<List<SolicitudAgente>> listarPendientes() {
-        return ResponseEntity.ok(solicitudAgenteService.listarSolicitudesPendientes());
+    public ResponseEntity<?> findPending() {
+        return solicitudService.findPendig();
     }
 
     @PutMapping("/{id}/aprobar")
-    public ResponseEntity<String> aprobar(@PathVariable Long id) {
-        solicitudAgenteService.aprobarSolicitud(id);
-        return ResponseEntity.ok("Solicitud aprobada correctamente.");
+    public ResponseEntity<?> aproveRequest(@PathVariable Long id) {
+        return solicitudService.aproveRequest(id);
     }
 
     @PutMapping("/{id}/rechazar")
-    public ResponseEntity<String> rechazar(@PathVariable Long id) {
-        solicitudAgenteService.rechazarSolicitud(id);
-        return ResponseEntity.ok("Solicitud rechazada correctamente.");
+    public ResponseEntity<?> rejectRequest(@PathVariable Long id) {
+        return solicitudService.rejectRequest(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Long id) {
-        solicitudAgenteService.eliminarSolicitud(id);
-        return ResponseEntity.ok("Solicitud eliminada correctamente.");
+    public ResponseEntity<?> deleteRequest(@PathVariable Long id) {
+        return solicitudService.deleteRequest(id);
     }
 }

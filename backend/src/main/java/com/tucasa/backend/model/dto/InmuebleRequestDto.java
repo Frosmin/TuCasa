@@ -41,6 +41,9 @@ public class InmuebleRequestDto {
     @NotBlank(message = "La dirección es obligatoria", groups = Create.class)
     private String direccion;
 
+    @NotBlank(message = "La zona es obligatoria", groups = Create.class)
+    private String zona;
+
     @NotNull(message = "La latitud es obligatoria", groups = Create.class)
     private BigDecimal latitud;
 

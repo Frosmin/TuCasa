@@ -18,7 +18,13 @@ export interface SolicitudAgente {
   estado: "PENDIENTE" | "APROBADA" | "RECHAZADA";
 }
 
-export async function obtenerSolicitudesPendientes(): Promise<SolicitudAgente[]> {
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data: SolicitudAgente[];
+}
+
+export async function obtenerSolicitudesPendientes(): Promise<ApiResponse> {
   const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

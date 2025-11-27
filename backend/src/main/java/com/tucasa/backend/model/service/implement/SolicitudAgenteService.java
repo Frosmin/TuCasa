@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tucasa.backend.model.entity.SolicitudAgente;
 import com.tucasa.backend.model.entity.Usuario;
-import com.tucasa.backend.model.enums.TipoUsuario;
 import com.tucasa.backend.model.enums.EstadoSolicitud; 
 import com.tucasa.backend.model.repository.SolicitudAgenteRepository;
 import com.tucasa.backend.model.repository.UsuarioRepository;
@@ -59,46 +57,4 @@ public class SolicitudAgenteService {
         return solicitudRepository.save(solicitud);
     }
 
-    public List<SolicitudAgente> listarTodas() {
-        return solicitudRepository.findAll();
-    }
-
-    public List<SolicitudAgente> listarSolicitudesPendientes() {
-        return solicitudRepository.findByEstado(EstadoSolicitud.PENDIENTE);
-    }
-
-    public void aprobarSolicitud(Long solicitudId) {
-        SolicitudAgente solicitud = solicitudRepository.findById(solicitudId)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada."));
-
-        if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
-            throw new RuntimeException("La solicitud ya fue procesada.");
-        }
-
-        solicitud.setEstado(EstadoSolicitud.APROBADA);
-        solicitudRepository.save(solicitud);
-
-        Usuario usuario = solicitud.getUsuario();
-        usuario.setRol(TipoUsuario.AGENTE_INMOBILIARIO);
-        usuarioRepository.save(usuario);
-    }
-
-    public void rechazarSolicitud(Long solicitudId) {
-        SolicitudAgente solicitud = solicitudRepository.findById(solicitudId)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada."));
-
-        if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
-            throw new RuntimeException("La solicitud ya fue procesada.");
-        }
-
-        solicitud.setEstado(EstadoSolicitud.RECHAZADA);
-        solicitudRepository.save(solicitud);
-    }
-
-    public void eliminarSolicitud(Long solicitudId) {
-        if (!solicitudRepository.existsById(solicitudId)) {
-            throw new RuntimeException("Solicitud no encontrada.");
-        }
-        solicitudRepository.deleteById(solicitudId);
-    }
-}
+   }

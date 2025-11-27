@@ -41,8 +41,8 @@ export default function DashboardAdmin() {
   const cargarSolicitudes = async () => {
     try {
       const data = await obtenerSolicitudesPendientes();
-      setSolicitudes(data);
-      setFilteredData(data);
+      setSolicitudes(data.data);
+      setFilteredData(data.data);
     } catch (error: any) {
       showError("Error al cargar las solicitudes");
     } finally {
@@ -141,11 +141,10 @@ export default function DashboardAdmin() {
                   setPanelSeleccionado(id);
                   if (id === "PUBLICACIONES") cargarOfertas();
                 }}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${
-                  panelSeleccionado === id
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${panelSeleccionado === id
                     ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md"
                     : "border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 {label}
@@ -192,13 +191,12 @@ export default function DashboardAdmin() {
                     <td className="px-6 py-4">{s.usuario.telefono}</td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                          s.estado === "APROBADA"
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${s.estado === "APROBADA"
                             ? "bg-green-100 text-green-700"
                             : s.estado === "PENDIENTE"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {s.estado}
                       </span>
@@ -218,61 +216,6 @@ export default function DashboardAdmin() {
           </div>
         </div>
       )}
-
-     {/* TABLA DE PUBLICACIONES */}
-{panelSeleccionado === "PUBLICACIONES" && (
-  <div className="max-w-7xl mx-auto px-4 mt-3">
-    <h2 className="text-xl font-bold">Gestión de Publicaciones</h2>
-    {loadingOfertas ? (
-      <Loading message="Cargando ofertas..."/>
-    ) : ofertas.length === 0 ? (
-      <p>No hay ofertas disponibles</p>
-    ) : (
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-200 text-gray-800 uppercase text-base">
-            <tr>
-              <th className="px-6 py-5">Tipo</th>
-              <th className="px-6 py-5">Operacion</th>
-              <th className="px-6 py-5">Precio</th>
-              <th className="px-6 py-5">Estado</th>
-              <th className="px-6 py-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ofertas.map((o) => (
-              <tr key={o.id} className="border-b-2 border-gray-200 hover:bg-gray-100 text-gray-700">
-                <td className="px-6 py-4">{o.inmueble.tipo}</td>
-                <td className="px-6 py-4">{o.tipo}</td>
-                <td className="px-6 py-4">{o.moneda} {o.precio}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    o.estadoPublicacion === "publicado"
-                      ? "bg-green-100 text-green-700"
-                      : o.estadoPublicacion === "borrador"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
-                  }`}>
-                    {o.estadoPublicacion}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <a
-                    href={`/oferta/${o.id}`}
-                    className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                  >
-                    Ver detalles
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-)}
-
       {/* MODAL DE AGENTES */}
       {modalOpen && solicitudSeleccionada && (
         <ModalDetails
@@ -281,6 +224,59 @@ export default function DashboardAdmin() {
           handleRechazar={handleRechazar}
           cerrarModal={cerrarModal}
         />
+      )}
+
+      {/* TABLA DE PUBLICACIONES */}
+      {panelSeleccionado === "PUBLICACIONES" && (
+        <div className="max-w-7xl mx-auto px-4 mt-3">
+          <h2 className="text-xl font-bold">Gestión de Publicaciones</h2>
+          {loadingOfertas ? (
+            <Loading message="Cargando ofertas..." />
+          ) : ofertas.length === 0 ? (
+            <p>No hay ofertas disponibles</p>
+          ) : (
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-gray-200 text-gray-800 uppercase text-base">
+                  <tr>
+                    <th className="px-6 py-5">Tipo</th>
+                    <th className="px-6 py-5">Operacion</th>
+                    <th className="px-6 py-5">Precio</th>
+                    <th className="px-6 py-5">Estado</th>
+                    <th className="px-6 py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ofertas.map((o) => (
+                    <tr key={o.id} className="border-b-2 border-gray-200 hover:bg-gray-100 text-gray-700">
+                      <td className="px-6 py-4">{o.inmueble.tipo}</td>
+                      <td className="px-6 py-4">{o.tipo}</td>
+                      <td className="px-6 py-4">{o.moneda} {o.precio}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${o.estadoPublicacion === "publicado"
+                            ? "bg-green-100 text-green-700"
+                            : o.estadoPublicacion === "borrador"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-red-100 text-red-700"
+                          }`}>
+                          {o.estadoPublicacion}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <a
+                          href={`/oferta/${o.id}`}
+                          className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                        >
+                          Ver detalles
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       )}
     </div >
   );

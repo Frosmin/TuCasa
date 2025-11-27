@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList, UserPlus,PanelTop } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, UserPlus, PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
@@ -10,6 +10,11 @@ export default function Header() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -20,6 +25,8 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -66,29 +73,22 @@ export default function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
 
-          {/* Mostrar solo si hay usuario */}
-          {user && (
-            <>
-              <Link
-                href={"/publicar"}
-                className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
-              >
-                Publicar
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
-              </Link>
-
-              {/* Mostrar botón "Convertirse en Agente!" si no es agente */}
-              {user.rol === "CLIENTE" && (
-                <Link
-                  href={"/convertirse-agente"}
-                  className="ml-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center gap-2"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  ¡Convertirse en agente!
-                </Link>
-              )}
-            </>
+          {!!user && (
+            <Link
+              href={"/publicar"}
+              className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+            >
+              Publicar
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+            </Link>
           )}
+          <Link
+            href={"/agentes"}
+            className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+          >
+            Agentes
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+          </Link>
         </div>
 
         {/* User Actions */}
@@ -120,7 +120,8 @@ export default function Header() {
                     </Link>
                   ) : (
                     <Link
-                      href={"/perfil"}
+                      onClick={() => setMenuOpen(false)}
+                      href={"/pages/perfil"}
                       className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       <User className="w-4 h-4" /> Perfil
@@ -128,6 +129,8 @@ export default function Header() {
                   )}
                   <Link
                     href={"/publicaciones"}
+                    onClick={() => setMenuOpen(false)}
+
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones

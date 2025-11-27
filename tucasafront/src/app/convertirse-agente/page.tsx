@@ -38,6 +38,8 @@ export default function ConvertirseAgentePage() {
         body: formData,
       });
 
+      console.log("valor de res", res);
+
       const text = await res.text();
       console.log("Respuesta del servidor:", text);
 

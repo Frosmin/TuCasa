@@ -6,10 +6,12 @@ import com.tucasa.backend.model.dto.DepartamentoResponseDto;
 import com.tucasa.backend.model.dto.ServicioResponseDto;
 import com.tucasa.backend.model.entity.Departamento;
 import com.tucasa.backend.model.entity.Servicio;
+import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.repository.DepartamentoRepository;
 import com.tucasa.backend.model.repository.ServicioRepository;
 import com.tucasa.backend.model.service.interfaces.DepartamentoService;
 import com.tucasa.backend.payload.ApiResponse;
+import com.tucasa.backend.utils.PropietarioMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -34,10 +36,9 @@ public class DepartamentoServiceImpl implements DepartamentoService {
     @Autowired
     private ApiResponse apiResponse;
 
-
-
-
-
+    @Autowired
+    private PropietarioMapper propietarioMapper;
+    
     @Override
     public ResponseEntity<?> findAll() {
         try {
@@ -74,12 +75,13 @@ public class DepartamentoServiceImpl implements DepartamentoService {
         String errorMessage = Constants.RECORD_NOT_CREATED;
 
         try {
+            Usuario propietario = propietarioMapper.getPropietarioEntity(dto.getIdPropietario());
             Departamento departamento = new Departamento();
             departamento.setDireccion(dto.getDireccion());
             departamento.setLatitud(dto.getLatitud());
             departamento.setLongitud(dto.getLongitud());
             departamento.setSuperficie(dto.getSuperficie());
-            departamento.setIdPropietario(dto.getIdPropietario());
+            departamento.setPropietario(propietario);
             departamento.setDescripcion(dto.getDescripcion());
             departamento.setActivo(true);
             departamento.setTipo(dto.getTipo());

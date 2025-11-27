@@ -8,7 +8,10 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
+import PropertyLocationMap from './components/PropertyLocationMap'
+import LikeButton from '@/components/LikeButton'
 import { useAuth } from '@/context/AuthContext'
+import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
 import { useToast } from '@/components/Toast'
 
 export default function DetalleOfertaPage() {
@@ -18,7 +21,6 @@ export default function DetalleOfertaPage() {
   const { showError, showSuccess } = useToast();
   const [oferta, setOferta] = useState<Oferta | null>(null)
   const [imageError, setImageError] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [rawData, setRawData] = useState<any>(null)
@@ -28,6 +30,10 @@ export default function DetalleOfertaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0)
+  //botoncito like
+  const {token} =useAuth()
+
+  const [owner, setOwner] = useState<Owner>(OWNER_INITIAL_DATA);
 
   type Multimedia = {
     url: string;
@@ -41,9 +47,14 @@ export default function DetalleOfertaPage() {
         setError(null)
 
         console.log('🔍 Buscando oferta con ID:', id)
-
-        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`)
-
+        
+        const res = await fetch(`${URL_BACKEND}/api/oferta/${id}`, {
+          cache: 'no-store',
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          }
+        })
+        
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`)
         }
@@ -75,6 +86,7 @@ export default function DetalleOfertaPage() {
 
         console.log('✅ Oferta extraída:', ofertaData)
         setOferta(ofertaData)
+        fetchOwner(ofertaData.inmueble.idPropietario);
 
       } catch (err) {
         console.error('❌ Error cargando la oferta:', err)
@@ -87,7 +99,32 @@ export default function DetalleOfertaPage() {
     if (id) {
       fetchData()
     }
-  }, [id])
+  }, [id, token])
+
+
+
+  const fetchOwner = async (idPropietario: number | unknown) => {
+    try {
+      const response = await fetch(`${URL_BACKEND}/api/inmueble/propietario/${idPropietario}`);
+      const { data } = await response.json();
+
+      if (!response.ok) {
+        setOwner(OWNER_INITIAL_DATA);
+        throw new Error(`Error al obtener el propietario del inmueble.`);
+      }
+      const ownr: Owner = {
+        name: data.nombre,
+        lastname: data.apellido,
+        email: data.correo,
+        phone: data.telefono
+      }
+      setOwner(ownr);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message ?? "Error al obtener datos del propietario.")
+      }
+    }
+  }
 
   // Funciones para el modal
   const openModal = (index: number = 0) => {
@@ -280,14 +317,12 @@ export default function DetalleOfertaPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="font-medium">Volver al catálogo</span>
         </Link>
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="p-3 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
-        >
-          <Heart
-            className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
-          />
-        </button>
+        {/* megusta/favorito */}
+        <LikeButton
+          ofertaId={Number(id)}
+          initialIsFavorite={oferta.esFavorito || false}
+          initialCount={oferta.totalFavoritos ?? null}
+        />
       </div>
 
       {/* Carrusel clickeable */}
@@ -420,16 +455,6 @@ export default function DetalleOfertaPage() {
           </div>
         </div>
 
-        {/* Dirección con icono destacado */}
-        <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
-          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <MapPin className="h-5 w-5 text-blue-600" />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 font-medium">Ubicación</p>
-            <p className="text-lg font-semibold text-gray-900">{inmueble?.direccion || 'Dirección no especificada'}</p>
-          </div>
-        </div>
       </div>
 
       {/* Características principales en cards */}
@@ -492,6 +517,45 @@ export default function DetalleOfertaPage() {
         </div>
       </div>
 
+      {/* Info Propietario */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm mb-8 overflow-hidden">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            <div className="flex-1 py-4 px-6 text-center font-medium text-sm border-b-2 border-blue-500 text-blue-600 bg-blue-50">
+              📋 Información del Propietario
+            </div>
+          </nav>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-6 p-6">
+
+          <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-gray-200">
+            <img
+              src={'/profile.png'}
+              alt={`${owner.name ?? "Desconocido"} ${owner.lastname ?? ""}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Nombre</span>
+              <span>{owner.name ?? "Desconocido"} {owner.lastname ?? ""}</span>
+            </div>
+
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Correo</span>
+              <span>{owner.email ?? "Desconocido"}</span>
+            </div>
+
+            <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
+              <span className="text-xs text-gray-500 mb-1">Teléfono</span>
+              <span>{owner.phone ?? "Desconocido"}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       {/* Servicios y características */}
       <div className="grid md:grid-cols-2 gap-8 mb-8">
         {/* Servicios incluidos */}
@@ -548,6 +612,14 @@ export default function DetalleOfertaPage() {
         )}
       </div>
 
+      <PropertyLocationMap
+        latitude={oferta.inmueble.latitud}
+        longitude={oferta.inmueble.longitud}
+        address={oferta.inmueble.direccion}
+        zone={oferta.inmueble.zona}
+        propertyName={oferta.descripcion}
+      />
+
       {/* Botón de acción destacado */}
       {user && user.rol === "ADMIN" && (
 
@@ -561,14 +633,14 @@ export default function DetalleOfertaPage() {
               <>
                 <button
                   type="button"
-                  onClick={() => manejarEstado('publicado')}
+                  onClick={() => {manejarEstado('publicado'); router.push("/ventas");}}
                   className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Publicar
                 </button>
                 <button
                   type="button"
-                  onClick={() => manejarEstado('cancelado')}
+                  onClick={() =>{ manejarEstado('cancelado'); router.push("/admin/dashboard");}}
                   className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Rechazar

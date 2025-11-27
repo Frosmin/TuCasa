@@ -8,7 +8,8 @@ interface User {
   nombre: string;
   apellido: string;
   telefono: string;
-  email: string;
+  correo: string;
+  direccion:string 
   rol: "CLIENTE" | "ADMIN" | "AGENTE_INMOBILIARIO";
 }
 
@@ -51,10 +52,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!response.ok) return false;
 
       const data = await response.json();
-      setUser(data.data);
-      setToken(data.token);
-      localStorage.setItem("user", JSON.stringify(data.data));
-      localStorage.setItem("token", data.token);
+      const userData: User = data.data;
+      const userToken: string =
+       data.token;
+
+      setUser(userData);
+      setToken(userToken);
+
+      localStorage.setItem("token", userToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      
+      setUser(userData);
+      setToken(userToken);
       return data.data;
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

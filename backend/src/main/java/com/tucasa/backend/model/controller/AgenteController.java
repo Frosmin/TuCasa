@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tucasa.backend.model.entity.SolicitudAgente;
 import com.tucasa.backend.model.service.implement.SolicitudAgenteService;
+import com.tucasa.backend.model.service.interfaces.AgenteService;
 
 @RestController
 @RequestMapping("/api/agentes")
@@ -18,6 +19,8 @@ public class AgenteController {
     @Autowired
     private SolicitudAgenteService solicitudAgenteService;
 
+    @Autowired
+    private AgenteService agenteService;
 
     @PostMapping("/solicitar")
     public ResponseEntity<?> solicitarAgente(
@@ -36,4 +39,15 @@ public class AgenteController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> findAll() {
+        return agenteService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return agenteService.findById(id);
+    }
+
 }
