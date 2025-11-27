@@ -34,7 +34,9 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
           <div className="m-1">
             <h2 className=" inline m-2 text-md font-semibold">Propietario:</h2>
             <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-              {solicitud.propietario}
+              {solicitud.propietario.nombre +
+                " " +
+                solicitud.propietario.apellido}
             </span>
           </div>
           <div className="m-1">

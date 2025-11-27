@@ -6,9 +6,19 @@ import LoadingSpinner from "@/components/Loading";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
 
+export interface Usuario{
+  id: number;
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  direccion: string;
+  correo: string;
+  rol: string;
+}
+
 export interface SolicitudAval {
   tipoInmueble: string;
-  propietario: number;
+  propietario: Usuario;
   celular: number;
   latitud: number;
   longitud: number;

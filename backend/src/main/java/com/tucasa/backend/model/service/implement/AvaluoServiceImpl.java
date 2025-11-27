@@ -75,7 +75,6 @@ public class AvaluoServiceImpl implements AvaluoService {
         try {   //busca los pendientes
             List<Avaluo> pendientes = avaluoRepository.findByTipoAvaluo(TipoAvaluo.PENDIENTE);
 
-
             List<AvaluoResponseDto> dtos = pendientes.stream()
                     .map(AvaluoResponseDto::new)
                     .collect(Collectors.toList());

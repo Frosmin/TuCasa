@@ -8,14 +8,13 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Data
 @NoArgsConstructor
 public class AvaluoResponseDto {
 
     private Long id;
     private TipoInmueble tipoInmueble;
-    private Long propietario;
+    private UsuarioResponseDto propietario;
     private String celular;
     private BigDecimal latitud;
     private BigDecimal longitud;
@@ -25,7 +24,16 @@ public class AvaluoResponseDto {
 
     public AvaluoResponseDto(Avaluo avaluo) {
         this.id = avaluo.getId();
-        this.propietario = avaluo.getUsuario().getId();
+        
+        this.propietario = new UsuarioResponseDto();
+        this.propietario.setId(avaluo.getUsuario().getId());
+        this.propietario.setNombre(avaluo.getUsuario().getNombre());
+        this.propietario.setApellido(avaluo.getUsuario().getApellido());
+        this.propietario.setTelefono(avaluo.getUsuario().getTelefono());
+        this.propietario.setDireccion(avaluo.getUsuario().getDireccion());
+        this.propietario.setCorreo(avaluo.getUsuario().getCorreo());
+        this.propietario.setRol(avaluo.getUsuario().getRol());
+
         this.tipoInmueble = avaluo.getTipo();
         this.celular = avaluo.getCelular_Contacto();
         this.latitud = avaluo.getLatitud();
