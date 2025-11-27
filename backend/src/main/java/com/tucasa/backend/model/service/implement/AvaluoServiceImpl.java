@@ -1,6 +1,7 @@
 package com.tucasa.backend.model.service.implement;
 
 import com.tucasa.backend.model.dto.AvaluoRequestDto;
+import com.tucasa.backend.model.dto.AvaluoResponseDto;
 import com.tucasa.backend.model.entity.Avaluo;
 import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.enums.TipoAvaluo;
@@ -12,9 +13,9 @@ import com.tucasa.backend.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.tucasa.backend.model.enums.TipoUsuario;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AvaluoServiceImpl implements AvaluoService {
@@ -73,7 +74,13 @@ public class AvaluoServiceImpl implements AvaluoService {
 
         try {   //busca los pendientes
             List<Avaluo> pendientes = avaluoRepository.findByTipoAvaluo(TipoAvaluo.PENDIENTE);
-            return apiResponse.responseSuccess("Avalúos pendientes encontrados", pendientes);
+
+
+            List<AvaluoResponseDto> dtos = pendientes.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess("Avalúos pendientes encontrados", dtos);
         } catch (Exception e) {
             return apiResponse.responseDataError("Error al buscar pendientes", e.getMessage());
         }
