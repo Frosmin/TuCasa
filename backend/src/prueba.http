@@ -58,3 +58,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpY
 ###
 GET http://localhost:8000/tucasabackend/api/oferta/favoritos/propietario
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpYXQiOjE3NjM4NDI0OTgsImV4cCI6MTc2MzkyODg5OH0.7O6LPBM3stp0wLY5MYEryGkw3GvF6uDU1vwLyZ_68-0
+
+###
+POST http://localhost:8000/tucasabackend/api/oferta/avaluo
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaW1vbkBnbWFpbC5jb20iLCJpYXQiOjE3NjM4NDI0OTgsImV4cCI6MTc2MzkyODg5OH0.7O6LPBM3stp0wLY5MYEryGkw3GvF6uDU1vwLyZ_68-0
+
+{
+  "tipoInmueble": "CASA",
+  "celularContacto": "70712345",
+  "latitud": -17.3938,
+  "longitud": -66.1569
+}

@@ -32,11 +32,6 @@ public class AvaluoController {
         return avaluoService.create(avaluoRequestDto, principal.getName());
     }
 
-    @GetMapping("lista/pendientes")
-    public String getMethodName(@RequestParam String param) {
-        return new String();
-    }
-    
     @GetMapping("/lista/pendientes")
     public ResponseEntity<?> getPendientes(Principal principal) {
         return avaluoService.getPendientes(principal.getName());
