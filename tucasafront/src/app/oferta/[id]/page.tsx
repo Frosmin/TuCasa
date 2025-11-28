@@ -8,7 +8,7 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
-import PropertyLocationMap from './components/PropertyLocationMap'
+import PropertyLocationMap from '../../../components/PropertyLocationMap'
 import LikeButton from '@/components/LikeButton'
 import { useAuth } from '@/context/AuthContext'
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
@@ -115,7 +115,7 @@ export default function DetalleOfertaPage() {
       const ownr: Owner = {
         name: data.nombre,
         lastname: data.apellido,
-        email: data.correo,
+        correo: data.correo,
         phone: data.telefono
       }
       setOwner(ownr);
@@ -544,7 +544,7 @@ export default function DetalleOfertaPage() {
 
             <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">
               <span className="text-xs text-gray-500 mb-1">Correo</span>
-              <span>{owner.email ?? "Desconocido"}</span>
+              <span>{owner.correo ?? "Desconocido"}</span>
             </div>
 
             <div className="flex flex-col bg-gray-100 p-3 rounded-xl shadow-sm hover:shadow-md transition hover:bg-blue-50">

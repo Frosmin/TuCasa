@@ -1,0 +1,152 @@
+package com.tucasa.backend.model.service.implement;
+
+import com.tucasa.backend.model.dto.AvaluoRequestDto;
+import com.tucasa.backend.model.dto.AvaluoResponseDto;
+import com.tucasa.backend.model.entity.Avaluo;
+import com.tucasa.backend.model.entity.Usuario;
+import com.tucasa.backend.model.enums.TipoAvaluo;
+import com.tucasa.backend.model.enums.TipoUsuario;
+import com.tucasa.backend.model.repository.AvaluoRepository;
+import com.tucasa.backend.model.repository.UsuarioRepository;
+import com.tucasa.backend.model.service.interfaces.AvaluoService;
+import com.tucasa.backend.payload.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class AvaluoServiceImpl implements AvaluoService {
+
+    @Autowired
+    private AvaluoRepository avaluoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ApiResponse apiResponse;
+
+    @Override
+    public ResponseEntity<?> create(AvaluoRequestDto dto, String userEmail) {
+        var usuarioOpt = usuarioRepository.findByCorreo(userEmail);
+        if (usuarioOpt.isEmpty()) {
+            return apiResponse.responseNotFoundError("Usuario no encontrado", null);
+        }
+        try {
+            var usuario = usuarioOpt.get();;
+            Avaluo avaluo = new Avaluo();
+
+            avaluo.setUsuario(usuario);
+            avaluo.setTipo(dto.getTipoInmueble());
+            avaluo.setCelular_Contacto(dto.getCelularContacto());
+            avaluo.setLatitud(dto.getLatitud());
+            avaluo.setLongitud(dto.getLongitud());
+            avaluo.setDireccion(dto.getDireccion());
+            
+        
+            avaluo.setTipoAvaluo(TipoAvaluo.PENDIENTE);
+
+            avaluoRepository.save(avaluo);
+            
+            return apiResponse.responseCreate("Avaluo creado correctamente", null);
+           } catch (Exception e) {
+        return apiResponse.responseDataError("Error al crear la solicitud de avalúo", e.getMessage());
+     }
+    }
+
+    @Override
+    public ResponseEntity<?> getPendientes(String userEmail) {
+
+        var usuarioOpt = usuarioRepository.findByCorreo(userEmail);
+        if (usuarioOpt.isEmpty()) {
+            return apiResponse.responseNotFoundError("Usuario no encontrado", null);
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        
+        if (usuario.getRol() != TipoUsuario.AGENTE_INMOBILIARIO) {
+            return apiResponse.responseDataError("No tienes permisos para ver esta información", null);
+        }
+
+        try {   //busca los pendientes
+            List<Avaluo> pendientes = avaluoRepository.findByTipoAvaluo(TipoAvaluo.PENDIENTE);
+
+            List<AvaluoResponseDto> dtos = pendientes.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess("Avalúos pendientes encontrados", dtos);
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al buscar pendientes", e.getMessage());
+        }
+    }
+    @Override
+    public ResponseEntity<?> getAllAvaluos() {
+        try {
+            List<Avaluo> lista = avaluoRepository.findAll();
+
+            List<AvaluoResponseDto> dtos = lista.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess("Todos los avalúos encontrados", dtos);
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener los avalúos", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAvaluosPorAgente(Long idAgente) {
+        try {
+            List<Avaluo> lista = avaluoRepository.findByAgente_Id(idAgente);
+
+            List<AvaluoResponseDto> dtos = lista.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess("Avalúos del agente encontrados", dtos);
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener los avalúos del agente", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAvaluoById(Long id) {
+        try {
+            var optAvaluo = avaluoRepository.findById(id);
+            if(optAvaluo.isEmpty()) {
+                return apiResponse.responseNotFoundError("Avalúo no encontrado", null);
+            }
+            AvaluoResponseDto dto = new AvaluoResponseDto(optAvaluo.get());
+            return apiResponse.responseSuccess("Avalúo encontrado", dto);
+        } catch(Exception e) {
+            return apiResponse.responseDataError("Error al obtener avalúo", e.getMessage());
+        }
+    }
+    @Override
+    public ResponseEntity<?> actualizarEstado(Long id, TipoAvaluo nuevoEstado) {
+        var optAvaluo = avaluoRepository.findById(id);
+
+        if (optAvaluo.isEmpty()) {
+            return apiResponse.responseNotFoundError("Avaluó no encontrado", null);
+        }
+
+        try {
+            Avaluo avaluo = optAvaluo.get();
+            avaluo.setTipoAvaluo(nuevoEstado);
+            avaluoRepository.save(avaluo);
+
+            return apiResponse.responseSuccess("Estado actualizado correctamente", new AvaluoResponseDto(avaluo));
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al actualizar estado", e.getMessage());
+        }
+    }
+
+
+}

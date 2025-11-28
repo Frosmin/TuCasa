@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import com.tucasa.backend.Constants.Constants;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Departamento;
+import com.tucasa.backend.model.entity.Favorito;
 import com.tucasa.backend.model.entity.Inmueble;
 import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
@@ -883,7 +884,7 @@ public class OfertaServiceImpl implements OfertaService {
     }
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
-        return mapToDto(oferta, false);
+        return mapToDto(oferta, false);              
     }
 
     @Override
@@ -901,6 +902,40 @@ public class OfertaServiceImpl implements OfertaService {
             } else {
                 return apiResponse.responseSuccess(successMessage, List.of()); 
             }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> findFavoritosByUserId(String userEmail) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = Constants.NO_RECORDS;
+        var usuarioOpt = usuarioRepository.findByCorreo(userEmail);
+        var usuario = usuarioOpt.get();
+
+        try {
+           
+            List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuario.getId());
+
+            if (favoritos.isEmpty()) {
+                return apiResponse.responseSuccess(successMessage, List.of());
+            }
+
+
+
+            List<Long> ofertaIds = favoritos.stream()
+                    .map(f -> f.getOferta().getId())
+                    .toList();
+
+            List<Oferta> ofertaCompleta = ofertaRepository.findAllCompletoByIds(ofertaIds);
+            
+            List<OfertaResponseDto> response = ofertaCompleta.stream()
+                    .filter(Oferta::isActivo)       // si sigue activa
+                    .map(this::mapToDto)            
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess(successMessage, response);
+
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }

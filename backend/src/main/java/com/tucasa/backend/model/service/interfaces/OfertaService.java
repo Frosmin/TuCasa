@@ -18,6 +18,8 @@ public interface OfertaService {
 
     ResponseEntity<?> search(Map<String, String> params, Boolean compact);
     ResponseEntity<?> findByUserId(Long id);
+    ResponseEntity<?> findFavoritosByUserId(String userEmail);
+
 
     ResponseEntity<?> searchHistorico(Map<String, String> params);
 }
