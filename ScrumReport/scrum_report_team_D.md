@@ -1,314 +1,288 @@
-# 🧾 Scrum Report #1 — Oct 8
-
-## Johan
-- **Y (Yesterday):** Finalicé el flujo principal de las historias para las vistas de “Oferta de Lote” y “Anticrético”. Ajusté los estados en el tablero de Jira.  
-- **T (Today):** Inicializaré el proyecto base del frontend con Next.js + TypeScript, configurando rutas y estructura de carpetas. Planeo dejar integrado el layout general.  
-- **B (Blockers):** Ninguno por ahora. En caso de que surja un conflicto con dependencias de Next, revisaré la compatibilidad con Node 18.
+# 🧾 **Scrum Reports — Consolidado (Oct 8 → Nov 21)**
 
 ---
 
-## Luis
-- **Y:** Trabaje en completar las historias para el registro e edicion de ofertas y la estructura para aprobacion de publicaciones.
-- **T:** inicie el diseño para la vista de aprobacion de publicaciones.
-- **B:** No he tenido ningun problema hasta el momento.
+## **Scrum Report #1 — Oct 8**
+
+### Johan
+
+* **Y:** Finalicé el flujo principal de las vistas “Oferta de Lote” y “Anticrético”. Ajusté estados en Jira.
+* **T:** Inicializar el proyecto frontend con Next.js + TypeScript, creando rutas y layout base.
+* **B:** Ninguno. Posible conflicto con dependencias de Next si surge.
+
+### Luis
+
+* **Y:** Completé historias para registro y edición de ofertas; estructura para aprobación de publicaciones.
+* **T:** Iniciar diseño de la vista de aprobación.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y:** Finalicé flujo para vista de registro de publicación.
+* **T:** Iniciar diseño de la vista.
+* **B:** Ninguno.
 
 ---
 
-## Javier
-- **Y:** Finalicé el flujo principal de las historias para la vista de registro de publicacion.
-- **T:** inicie el diseño para la vista de registro de publicacion.
-- **B:** No he tenido ningun problema hasta el momento.
+## **Scrum Report #2 — Oct 10**
 
----
-# 🧾 Scrum Report #2 — Oct 10
+### Johan
 
-## Johan
-- Y (Yesterday):
-Definí las entidades principales del sistema: Inmueble, Lote, Casa, Departamento, Publicación y Usuario.
-Configuré la estructura de herencia en JPA utilizando @Inheritance(strategy = InheritanceType.JOINED) y @DiscriminatorColumn.
-Establecí la conexión inicial con Supabase (PostgreSQL), configurando el application.properties con variables base (spring.datasource.url, user, password).
-- T (Today):
-Iniciar pruebas de persistencia en Supabase y verificar la estructura de tablas generada.
-Crear controladores de prueba para Inmueble y Lote.
-- B (Blockers):
-Error de mapeo ambiguo entre clases hijas y el DiscriminatorColumn.
-Problemas menores al mapear EnumType.STRING en la entidad TipoInmueble.
+* **Y:** Definí entidades del sistema. Configuré herencia JPA y conexión con Supabase.
+* **T:** Pruebas de persistencia; crear controladores de prueba para Inmueble y Lote.
+* **B:** Error de mapeo con DiscriminatorColumn y EnumType.STRING.
 
----
+### Luis
 
-## Luis
-- **Y:** inicie con la vista de aprobacion de ofertas por parte del administrador
-- **T:** hice la conexion del backend con mi base de datos local
-- **B:** No he tenido problemas hasta el momento
+* **Y:** Avancé en vista de aprobación de ofertas.
+* **T:** Conexión backend con base local.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y:** —
+* **T:** —
+* **B:** —
 
 ---
 
-## Javier
-- **Y:** 
-- **T:** 
-- **B:** 
+## **Scrum Report #3 — Oct 14**
 
----
-# 🧾 Scrum Report #3 — Oct 14
+### Johan
 
-## Johan
-- Y:
-Corregí los errores de mapeo y ajusté DTOs para Inmueble y Lote (LoteRequestDto, InmuebleRequestDto).
-Implementé los servicios y controladores base (InmuebleService, LoteService) con respuestas ResponseEntity estandarizadas.
-Añadí validaciones (@NotNull, @NotBlank, @Valid) y separación de grupos de validación (Create, Update).
-- T:
-Probar los endpoints con Insomnia y documentar los flujos funcionales.
-Revisar que las entidades persistidas se reflejen correctamente en Supabase.
-- B:
-Error de constraint por null en el campo tamanio de Lote, solucionado agregando @Column(nullable = false) y ajuste en el DTO.
+* **Y:** Corregí mapeos; creé DTOs; implementé servicios y controladores base; añadí validaciones.
+* **T:** Probar endpoints con Insomnia; verificar persistencia real en Supabase.
+* **B:** Error de constraint por null en *tamanio* de Lote, ya solucionado.
 
----
+### Luis
 
-## Luis
-- **Y:** cree el endpoint para crear un inmueble de tipo lote
-- **T:** complete la creacion de endpoints para crear, actualizar y obtener lote por id
-- **B:** No he tenido problemas hasta el momento
+* **Y:** Endpoint para crear lote.
+* **T:** CRUD completo para lote.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y:** 
-- **T:** 
-- **B:** 
+## **Scrum Report #4 — Oct 17**
 
----
-# 🧾 Scrum Report #4 — Oct 17
+### Johan
 
-## Johan
-- Y:
-Finalicé la configuración estable de Supabase:
-Se ajustó la conexión JDBC con el formato correcto postgresql://usuario:contraseña@host:5432/postgres.
-Se verificó el acceso con pgAdmin y conexión directa desde Spring Boot.
-Se probó la autenticación y persistencia de datos en Supabase.
-Monté y validé los endpoints de prueba para crear y listar Lotes e Inmuebles.
-Generé ejemplos curl y documentación de endpoints para el equipo frontend.
-Inicié la definición del esquema de Publicaciones de terrenos, vinculando con Usuario e Inmueble.
-- T:
-Integrar todos los módulos (Inmueble, Lote, Publicación, Usuario) y generar el informe técnico para revisión del sprint.
-- B:
-Persistencia intermitente en relaciones con CascadeType.ALL y problemas menores al serializar entidades anidadas.
+* **Y:** Configuración estable de Supabase; validación con pgAdmin; endpoints de prueba; documentación; inicio de esquema de Publicaciones.
+* **T:** Integrar módulos y generar informe técnico.
+* **B:** Persistencia intermitente con CascadeType.ALL y serialización anidada.
 
----
+### Luis
 
-## Luis
-- **Y:** hice la conexion del frontend con el backend para registrar un lote y agregue los campos de detalles de lote en el formulario de registro
-- **T:** hice las correcciones en el frontend para los filtros de busqueda de un lote
-- **B:** No tuve ningun problema hasta el momento.
+* **Y:** Conexión frontend–backend para registrar lote; formulario ampliado.
+* **T:** Correcciones para filtros de búsqueda.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y:** Finalizó y corrigió endpoints de leer/eliminar lotes.
+* **T:** —
+* **B:** Ninguno.
 
 ---
 
-## Javier
-- **Y: se finalizo los endpoints de leer y eliminar lotes 
-- **T:** se corrigió los archivos de lotes de los endpoints  de leer y eliminar
-- **B:**  no se tuvo problemas hasta el momento
+## **Scrum Report #5 — Oct 21**
 
----
-# 🧾 Scrum Report #5 — Oct 21
+### Johan
 
-## Johan
-- Y:
-- T:
-- B:
+* **Y:** Revisé módulo de Publicaciones y ajusté relaciones con Usuario e Inmueble. Actualicé DTOs.
+* **T:** Implementar endpoints base de Publicaciones y verificar persistencia.
+* **B:** Desfase entre migraciones locales y Supabase.
 
----
+### Luis
 
-## Luis
-- **Y:** implemente y corregi los endpoints para obtener una oferta en especifica mediante "idOferta"
-- **T:**iniciare el flujo de navegacion(redirigir y cargar datos de la oferta en el formulario de registro) para actualizar datos de una oferta.
-- **B:** tuve problemas al hacer conexion con supabase(BD), pero logre solucionarlo
+* **Y:** Endpoints para obtener oferta por id.
+* **T:** Flujo de navegación para editar oferta.
+* **B:** Problemas temporales con Supabase, solucionados.
 
----
+### Javier
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
-
----
-# 🧾 Scrum Report #6 — Oct 24
-
-## Johan
-- Y:
-- T:
-- B:
+* **Y / T / B:** —
 
 ---
 
-## Luis
-- **Y:** Recupere los datos de una oferta en especifica mediante "idOferta" desde el backend y en el frontend cargue los datos recuperados al formulario de registro de oferta.
-- **T:** Hare la conexion con el backend y trabajare en la actualizacion de datos de inmueble para editar una oferta e inmueble.
-- **B:** No tuve ningun problema
+## **Scrum Report #6 — Oct 24**
+
+### Johan
+
+* **Y:** Implementé controlador y servicio inicial de Publicación. Probé relaciones en Insomnia.
+* **T:** Integrar carga de imágenes y probar flujo de creación completo.
+* **B:** Referencias circulares al serializar entidades.
+
+### Luis
+
+* **Y:** Carga de datos por idOferta al formulario.
+* **T:** Conexión para actualización de inmueble.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
+## **Scrum Report #7 — Oct 28**
 
----
-# 🧾 Scrum Report #7 — Oct 28
+### Johan
 
-## Johan
-- Y:
-- T:
-- B:
----
+* **Y:** Organicé el módulo de Publicaciones; ajusté DTOs y entidades.
+* **T:** Probar flujos completos antes de integrar con frontend.
+* **B:** Inconsistencias en mapeo de herencia según tipo de inmueble.
 
-## Luis
-- **Y:** complete en el backend en el servicio de oferta, para actualizar los datos de un inmueble segun su tipo(Casa, departamento, tienda y lote) y en el frontend complete la funcion de editar los datos de oferta e inmueble.
-- **T:** haré la integracion con la pantalla de ver "detalles de inmueble" agregando un boton "editar oferta" para redirigir a la pantalla de edicion y completare la navegacion entre ambas pantallas.
-- **B:** No tuve ningun problema 
+### Luis
 
----
+* **Y:** Actualización completa de inmueble según tipo; función de edición en frontend.
+* **T:** Integrar botón “editar oferta” en detalle de inmueble.
+* **B:** Ninguno.
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
+### Javier
 
----
-# 🧾 Scrum Report #8 — Oct 31
-
-## Johan
-- Y:
-- T:
-- B:
----
-
-## Luis
-- **Y:** corregi los errores para editar las imagenes  y complete toda la funcionalidad para actualizar los datos de un inmueble. Tambien hice la integracion de con las otras funcionalidades de mi equipo.
-- **T:** Revisare la integracion y corregire los errores en caso de que exista con la integracion de los demas equipos.
-- **B:** No tuve ningun problema 
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
----
-# 🧾 Scrum Report #9 — Nov 04
+## **Scrum Report #8 — Oct 31**
 
-## Johan
-- Y:
-- T:
-- B:
----
+### Johan
 
-## Luis
-- **Y:** Revise las historias que se asignaron a mi equipo y tambien inicie el diseño del panel de administracion.
-- **T:** Corregire y completare las funcionalidades segun las observaciones del demo anterior.
-- **B:** No tuve ningun problema 
+* **Y:** Pruebas de validación en Supabase; optimización de consultas.
+* **T:** Documentación de endpoints para revisión de sprint.
+* **B:** Errores intermitentes de CORS en carga de imágenes.
 
----
+### Luis
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
+* **Y:** Correcciones en edición de imágenes y flujo completo de actualización.
+* **T:** Revisar integración con equipo.
+* **B:** Ninguno.
 
----
-# 🧾 Scrum Report #10 — Nov 07
+### Javier
 
-## Johan
-- Y:
-- T:
-- B:
----
-
-## Luis
-- **Y:** Inicie en el frontend con el diseño de la tabla de aprovacion de solitudes para ser agente, para el panel de administracion.
-- **T:** cree un panel de navegacion para gestionar las solicitudes de agentes y las publicaciones de inmuebles.
-- **B:** No tuve ningun problema 
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**
-  ---
-# 🧾 Scrum Report #11 — Nov 11
+## **Scrum Report #9 — Nov 04**
 
-## Johan
-- Y:
-- T:
-- B:
----
+### Johan
 
-## Luis
-- **Y:** Trabaje en el flujo de inicio de Sesión como administrador.
-- **T:** Implementare el Login como administrador, creando por defecto dentro la bd un usuario con rol de "ADMIN" y trabajare en las funcionalidades "aprobar o rechazar", las solicitudes de los clientes para ser agente.
-- **B:** No tuve ningun problema 
+* **Y:** Revisé historias del backend; ajustes en validadores y DTOs.
+* **T:** Afinar controladores finales de Publicación e Inmueble.
+* **B:** Ninguno.
 
----
+### Luis
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**
-  ---
-# 🧾 Scrum Report #12 — Nov 14
+* **Y:** Revisión de historias; inicié diseño del panel admin.
+* **T:** Corregir funcionalidades según observaciones del demo.
+* **B:** Ninguno.
 
-## Johan
-- Y:
-- T:
-- B:
----
+### Javier
 
-## Luis
-- **Y:** Termine la pantalla de la gestion de agentes( "aprobar o rechar la solicitud y ver los detalles de la solicitud") por el administrador.
-- **T:** Corregire en backend para cargar su cv("archivo pdf") de las solicitudes de "quiero ser agente" y en el fronted implementare la vista del archivo pdf para mostrar su CV del solicitante.
-- **B:** No tuve ningun problema 
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**
-  ---
-# 🧾 Scrum Report #13 — Nov 18
+## **Scrum Report #10 — Nov 07**
 
-## Johan
-- Y:
-- T:
-- B:
+### Johan
+
+* **Y:** Documenté endpoints y verifiqué relaciones entre entidades.
+* **T:** Preparar pruebas automáticas de servicios.
+* **B:** Falta unificar estándar de respuestas entre equipos.
+
+### Luis
+
+* **Y:** Diseño de tabla de aprobación de solicitudes.
+* **T:** Panel de navegación para solicitudes de agentes y publicaciones.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
+
 ---
 
-## Luis
-- **Y:** Hice la integracion de las funcionalidades de administrador para aprobar o rechazar solicitudes de agentes y publicaciones.
-- **T:** Revisare y corregire en caso de que existan errores durante la integracion.
-- **B:** Tuve problemas al integrar, debido a la modificacion de las entidades por los otros equipos, las funcionlidades de administracion tenian fallas.
+## **Scrum Report #11 — Nov 11**
+
+### Johan
+
+* **Y:** Ajusté controladores de Usuario y Publicación para alinearlos con roles.
+* **T:** Probar flujo completo de roles (USER, AGENTE, ADMIN).
+* **B:** Asignación inconsistente de roles predeterminados.
+
+### Luis
+
+* **Y:** Flujo de inicio de sesión admin.
+* **T:** Implementar login admin y funcionalidad para aprobar/rechazar solicitudes.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
 
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
----
-# 🧾 Scrum Report #14 — Nov 21
+## **Scrum Report #12 — Nov 14**
 
-## Johan
-- Y:
-- T:
-- B:
+### Johan
+
+* **Y:** Integré soporte para archivos PDF usando Supabase Storage.
+* **T:** Documentar manejo de Storage y verificar visualización desde frontend.
+* **B:** Problemas con archivos grandes; revisar límites.
+
+### Luis
+
+* **Y:** Terminada la gestión de agentes (aprobar/rechazar y detalles).
+* **T:** Cargar y visualizar CV en PDF.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
+
 ---
 
-## Luis
-- **Y:** Revise e inicie el flujo de  la funcionalidad para la vista de agentes por el cliente (HU 423).
-- **T:** Implentare en el frontend la vista de los agentes por un cliente para que puedan contactarse con los agentes.
-- **B:**  No tuve ningun problema.
+## **Scrum Report #13 — Nov 18**
+
+### Johan
+
+* **Y:** Revisé integraciones e hice ajustes por cambios en entidades de otros equipos.
+* **T:** Pruebas integradas del módulo de administración.
+* **B:** Incompatibilidades por modificaciones externas.
+
+### Luis
+
+* **Y:** Integración de funcionalidades admin para agentes y publicaciones.
+* **T:** Corregir errores durante integración.
+* **B:** Fallas por cambios en entidades de otros equipos.
+
+### Javier
+
+* **Y / T / B:** —
+
 ---
 
-## Javier
-- **Y: 
-- **T:** 
-- **B:**  
+## **Scrum Report #14 — Nov 21**
+
+### Johan
+
+* **Y:** Pruebas funcionales del módulo de agentes y flujos cliente.
+* **T:** Ajustes finales para cierre del sprint.
+* **B:** Ninguno.
+
+### Luis
+
+* **Y:** Inicio del flujo para vista de agentes (HU 423).
+* **T:** Implementar vista de agentes para interacción con clientes.
+* **B:** Ninguno.
+
+### Javier
+
+* **Y / T / B:** —
+
