@@ -1,5 +1,3 @@
-
-
 export function mapOfertaFormData(oferta: any) {
 
     type Multimedia = {
@@ -27,6 +25,7 @@ export function mapOfertaFormData(oferta: any) {
         operacion: oferta.tipo,
         propertyType: tipo,
         direccion: inmueble.direccion,
+        zona: inmueble.zona || '', 
         latitud: String(inmueble.latitud),
         longitud: String(inmueble.longitud),
         superficie: String(inmueble.superficie),
