@@ -12,9 +12,9 @@
 
 ### Luis
 
-* **Y:** Completé historias para registro y edición de ofertas; estructura para aprobación de publicaciones.
-* **T:** Iniciar diseño de la vista de aprobación.
-* **B:** Ninguno.
+* **Y:**Trabaje en completar las historias para el registro e edicion de ofertas y la estructura para aprobacion de publicaciones.
+* **T:** Iniciare con el diseño de la tabla para la vista de aprobacion de publicaciones.
+* **B:** No he tenido ningun problema hasta el momento.
 
 ### Javier
 
@@ -34,9 +34,9 @@
 
 ### Luis
 
-* **Y:** Avancé en vista de aprobación de ofertas.
-* **T:** Conexión backend con base local.
-* **B:** Ninguno.
+* **Y:** Inicie en Frontend con la creacion de la tabla para la aprobacion de ofertas por parte del administrador.
+* **T:** Creare y hare la conexión a mi base de datos local e implementare la entidad "Lote", para la publicacion de oferta de un Lote.
+* **B:** No he tenido ningun problema hasta el momento.
 
 ### Javier
 
@@ -57,8 +57,8 @@
 
 ### Luis
 
-* **Y:** Endpoint para crear lote.
-* **T:** CRUD completo para lote.
+* **Y:** Cree los mapeos dtos "Request" y "Response" para la entidad Lote.
+* **T:** Creare los Servicios para Registrar, Actualizar y Obtener un inmueble de tipo Lote, ademas creare sus respectivos Enpoints implementado los controladores.
 * **B:** Ninguno.
 
 ### Javier
@@ -80,9 +80,9 @@
 
 ### Luis
 
-* **Y:** Conexión frontend–backend para registrar lote; formulario ampliado.
-* **T:** Correcciones para filtros de búsqueda.
-* **B:** Ninguno.
+* **Y:** Trabaje en Frontend completando los campos de Lote en el "FormData" y complete los servicios para registrar una publicacion de inmueble de tipo Lote, ademas hice las correcciones en filtros de busqueda.
+* **T:** Hare la conexion entre  el fronted y backend(aplicando el fetch) para registrar ofertas de Lote y complementare en el formulario de publicacion de oferta los campos para registrar un Lote.
+* **B:** No he tenido ningun problema hasta el momento.
 
 ### Javier
 
@@ -102,8 +102,8 @@
 
 ### Luis
 
-* **Y:** Endpoints para obtener oferta por id.
-* **T:** Flujo de navegación para editar oferta.
+* **Y:** Implemente el endpoint en backend, para obtener una oferta en especifica mediante el "idOferta" y complete el servicio de actualizar oferta, para un tipo de inmueble en especifico.
+* **T:** Hare el flujo de navegacion y redireccion al formulario de registro de ofertas, ademas cargare los datos de una oferta en el formulario para la edicion de una oferta en especifica.
 * **B:** Problemas temporales con Supabase, solucionados.
 
 ### Javier
@@ -122,9 +122,9 @@
 
 ### Luis
 
-* **Y:** Carga de datos por idOferta al formulario.
-* **T:** Conexión para actualización de inmueble.
-* **B:** Ninguno.
+* **Y:** Cree los mapeos en fronted para recuperar una oferta y cargar en formulario de registro de ofertas(para reutilizar el formulario de registro para editar una oferta) y complemente los servicios para editar una oferta.
+* **T:** Hare la conexion del frontend con el backend(aplicando los fectchs), para modificar los datos de una oferta en especifica.
+* **B:** No tuve ningun problema hasta el momento.
 
 ### Javier
 
@@ -145,8 +145,8 @@
 
 ### Luis
 
-* **Y:** Actualización completa de inmueble según tipo; función de edición en frontend.
-* **T:** Integrar botón “editar oferta” en detalle de inmueble.
+* **Y:**Agregue un boton y hice la redireccion de la pantalla de "Detalles de oferta" a la pantalla "Editar oferta", para poder editar los datos de dicha oferta.
+* **T:** Hare la integracion con los demas modulos y corregire los enrrores o bugs en caso de que haya.
 * **B:** Ninguno.
 
 ### Javier
@@ -164,9 +164,9 @@
 
 ### Luis
 
-* **Y:** Correcciones en edición de imágenes y flujo completo de actualización.
-* **T:** Revisar integración con equipo.
-* **B:** Ninguno.
+* **Y:** Hice la integracion  con el modulo de "Actualizar imagenes" del team C y complete y modifique los Servicios para actualizar las imagenes de una oferta integrando con Cloudinary.
+* **T:** Hare la integracion y corregire los errores o funcionalidades en caso de que sean incosistentes o tengan fallas.
+* **B:** No tuve ningun problema.
 
 ### Javier
 
@@ -186,9 +186,9 @@
 
 ### Luis
 
-* **Y:** Revisión de historias; inicié diseño del panel admin.
-* **T:** Corregir funcionalidades según observaciones del demo.
-* **B:** Ninguno.
+* **Y:** Revise y complete las tareas para el inicio de sesion como administrador y inicie con la implementacion de la tabla de aprobacion de agentes.
+* **T:** Corregire y complentare las funcionalidades segun las observaciones del demo anterior.
+* **B:** No tuve ningun problema.
 
 ### Javier
 
@@ -208,9 +208,9 @@
 
 ### Luis
 
-* **Y:** Diseño de tabla de aprobación de solicitudes.
-* **T:** Panel de navegación para solicitudes de agentes y publicaciones.
-* **B:** Ninguno.
+* **Y:** Trabaje en frontend con la implementacion de la tabla de gestion de solicitudes y agentes para la aprobacion o rechazo de una solicitud, "ser agente".
+* **T:** Creare un panel de navegacion en el dashboard, para la gestion de agentes y gestion de ofertas(aprobacion de publicaciones de una oferta).
+* **B:** No tuve ningun problema.
 
 ### Javier
 
@@ -231,9 +231,9 @@
 
 ### Luis
 
-* **Y:** Flujo de inicio de sesión admin.
-* **T:** Implementar login admin y funcionalidad para aprobar/rechazar solicitudes.
-* **B:** Ninguno.
+* **Y:** Trabaje en backend con el flujo de inicio de sesion como administrador y corregi los servios de aprobacion de solicitudes "ser agente".
+* **T:** Implementare el Login como administrador, creando por defecto dentro la bd un usuario con rol de "ADMIN" y trabajare en frontend en los servicios para "aprobar o rechazar", las solicitudes de los clientes para ser agente.
+* **B:** No tuve ningun problema.
 
 ### Javier
 
@@ -254,9 +254,9 @@
 
 ### Luis
 
-* **Y:** Terminada la gestión de agentes (aprobar/rechazar y detalles).
-* **T:** Cargar y visualizar CV en PDF.
-* **B:** Ninguno.
+* **Y:** Cree un modal en frontend para mostrar los detalles de la solicitud, y agregue las opciones para aprobar o rechazar una solicitud de "ser agente".
+* **T:** Corregire en backend, el servicio de registrar una solicitud, para que el cliente pueda cargar su cv en un archivo pdf y en frontend agregare la funcionalidad para mostrar su cv.
+* **B:** No he tenido ningun problema.
 
 ### Javier
 
@@ -277,9 +277,9 @@
 
 ### Luis
 
-* **Y:** Integración de funcionalidades admin para agentes y publicaciones.
-* **T:** Corregir errores durante integración.
-* **B:** Fallas por cambios en entidades de otros equipos.
+* **Y:** Hice la integracion con el modulo de "envio de solicitudes para ser agente" con el panel de administracion de "gestion de agentes" y complete el flujo de solicitud, aprobacion o rechazo, de "ser agente".
+* **T:** Hare la integracion con los demas equipos y corregire los errores que vayan ocurriendo.
+* **B:** Tuve problemas al integrar, debido a la modificacion de las entidades por los otros equipos, las funcionalidades de administracion tenian fallas. Cree los dtos respectivos para las solicitudes "ser agente" y modifique los servicios de enviar, aprobar o rechazar una solicitud "ser agente" en backend, para solucionar los problemas.
 
 ### Javier
 
@@ -300,9 +300,9 @@
 
 ### Luis
 
-* **Y:** Inicio del flujo para vista de agentes (HU 423).
-* **T:** Implementar vista de agentes para interacción con clientes.
-* **B:** Ninguno.
+* **Y:** Revise e inicie el flujo de  la funcionalidad para la vista de agentes por el cliente (HU 423)..
+* **T:** Implentare en el frontend la vista de los agentes por un cliente creando una tabla para mostrar los diferentes agentes que hay registrados en el sistema.
+* **B:** No tuve problemas.
 
 ### Javier
 
@@ -310,4 +310,49 @@
 * **Y:** Se arreglo el estilo de tablas en el frontend 
 * **T:** Implento la conexion al frontend los endpoints de ver publicaciones y editar estado de una
 * **B:** Ninguno
+  
+---
 
+## **Scrum Report #15 — Nov 25**
+
+### Johan
+
+* **Y:** 
+* **T:** 
+* **B:** 
+
+### Luis
+
+* **Y:** Cree en frontend la vista de perfil de un agente para mostrar los detalles de sus datos personales mas su descripcion, experiencia y su cv, para que el cliente pueda contactarse en caso de requerir sus servicios.
+* **T:** Modificare y corregire en backend la endidad "Agente", para registrar los datos de un agente e implentare los dtos respectivos mas los servicios para crear, eliminar y obtener a un agente.
+* **B:** No tuve problemas.
+
+### Javier
+
+
+* **Y:** 
+* **T:** 
+* **B:**
+
+---
+
+## **Scrum Report #16 — Nov 28**
+
+### Johan
+
+* **Y:** 
+* **T:** 
+* **B:** 
+
+### Luis
+
+* **Y:** Hice la conexion del frontend con el backend para obtener agentes y modifique los servicios para aprobar o rechazar un agente por el administrador en backend, corregiendo los errores que estaban ocurriendo al aprovar o rechazar una solicitud "ser agente".
+* **T:**  Revisare los errores que hayan durante la integracion y corregire los bugs que surgen para hacer el build para el deployment.
+* **B:** No tuve problemas hasta el momento.
+
+### Javier
+
+
+* **Y:** 
+* **T:** 
+* **B:** 
