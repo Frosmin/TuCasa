@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.tucasa.backend.model.dto.UsuarioRequestDto;
 import com.tucasa.backend.model.dto.UsuarioResponseDto;
+import com.tucasa.backend.model.entity.Avaluo;
 import com.tucasa.backend.model.entity.Usuario;
+import com.tucasa.backend.model.enums.TipoAvaluo;
 import com.tucasa.backend.model.enums.TipoUsuario;
+import com.tucasa.backend.model.repository.AvaluoRepository;
+import com.tucasa.backend.model.repository.SolicitudAgenteRepository;
 import com.tucasa.backend.model.repository.UsuarioRepository;
 import com.tucasa.backend.model.service.interfaces.UsuarioService;
 import com.tucasa.backend.payload.ApiResponse;
@@ -24,6 +28,12 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Autowired
     private ApiResponse apiResponse;
+
+    @Autowired
+    private SolicitudAgenteRepository solicitudAgenteRepository;
+
+    @Autowired
+    private AvaluoRepository avaluoRepository;
 
     @Override
     public ResponseEntity<?> getAll(){
@@ -82,6 +92,17 @@ public class UsuarioServiceImpl implements UsuarioService{
                 .orElseThrow(() -> new RuntimeException(errorMessage));
             if (usuario.getRol() == TipoUsuario.AGENTE_INMOBILIARIO) {
                 usuario.setRol(TipoUsuario.CLIENTE);
+                // Eliminacion de Solicitudes de agente
+                solicitudAgenteRepository.deleteByUsuarioId(id);
+                // Cambio de estado a PENDIENTE para avaluos que fueron asignados al agente.
+                List<Avaluo> avaluosAsignados = avaluoRepository.findByAgenteId(id);
+                if (!avaluosAsignados.isEmpty()) {
+                    for (Avaluo avaluo : avaluosAsignados) {
+                        avaluo.setTipoAvaluo(TipoAvaluo.PENDIENTE);
+                        avaluo.setAgente(null);
+                        avaluoRepository.save(avaluo);
+                    }
+                }
                 Usuario userUpdated = usuarioRepository.save(usuario);
                 return apiResponse.responseSuccess(successMessage, mapToDto(userUpdated));
             } else {
