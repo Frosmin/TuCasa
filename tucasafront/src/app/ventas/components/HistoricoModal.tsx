@@ -59,18 +59,18 @@ export const HistoricoModal = ({
 
     const filtrosBase: Record<string, FiltroConfig[]> = {
       CASA: [
-        { key: 'numDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5+'] },
-        { key: 'numBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4+'] },
-        { key: 'numPisos', label: 'Pisos', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'numDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12','13','14','15'] },
+        { key: 'numBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'numPisos', label: 'Pisos', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
         { key: 'garaje', label: 'Garaje', type: 'boolean' },
         { key: 'patio', label: 'Patio', type: 'boolean' },
         { key: 'amoblado', label: 'Amoblado', type: 'boolean' },
         { key: 'sotano', label: 'Sótano', type: 'boolean' }
       ],
       DEPARTAMENTO: [
-        { key: 'deptoNumDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4+'] },
-        { key: 'deptoNumBanos', label: 'Baños', type: 'select', options: ['1', '2', '3+'] },
-        { key: 'deptoPiso', label: 'Piso', type: 'select', options: ['1', '2', '3', '4', '5', '6+'] },
+        { key: 'deptoNumDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'deptoNumBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'deptoPiso', label: 'Piso', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12','13','14','15']  },
         { key: 'deptoAmoblado', label: 'Amoblado', type: 'boolean' },
         { key: 'ascensor', label: 'Ascensor', type: 'boolean' },
         { key: 'balcon', label: 'Balcón', type: 'boolean' }
@@ -81,7 +81,7 @@ export const HistoricoModal = ({
       ],
       TIENDA: [
         { key: 'tamano', label: 'Tamaño mínimo (m²)', type: 'number' },
-        { key: 'numAmbientes', label: 'Ambientes', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'numAmbientes', label: 'Ambientes', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
         { key: 'banoPrivado', label: 'Baño Privado', type: 'boolean' },
         { key: 'deposito', label: 'Depósito', type: 'boolean' }
       ]
@@ -118,6 +118,7 @@ export const HistoricoModal = ({
 
       if (zona) params.zona = zona
       if (moneda) params.moneda = moneda
+      
 
       const response = await fetchHistorico(params)
 
