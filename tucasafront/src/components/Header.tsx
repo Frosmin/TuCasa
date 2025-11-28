@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList, UserPlus, PanelTop, DollarSign } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, DollarSign, UserPlus,PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { div } from "framer-motion/client";

@@ -22,8 +22,8 @@ import {
 import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
-import { URL_BACKEND } from '@/config/constants';
 import LoadingSpinner from '@/components/Loading';
+import { URL_BACKEND } from '@/config/constants';
 
 
 type TipoOperacion = 'TODOS' | 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
