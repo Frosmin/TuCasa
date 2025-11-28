@@ -10,7 +10,6 @@ interface HistoricoModalProps {
   onClose: () => void
   tipoOperacion: TipoOperacion
   zonasDisponibles: string[]
-  tiposInmueble: string[]
 }
 
 const MESES_CORTOS = [
@@ -22,13 +21,13 @@ const MESES_COMPLETOS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ]
+const TIPOS_INMUEBLE = ['CASA', 'DEPARTAMENTO', 'LOTE', 'TIENDA']
 
 export const HistoricoModal = ({
   isOpen,
   onClose,
   tipoOperacion,
-  zonasDisponibles,
-  tiposInmueble
+  zonasDisponibles
 }: HistoricoModalProps) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,18 +59,18 @@ export const HistoricoModal = ({
 
     const filtrosBase: Record<string, FiltroConfig[]> = {
       CASA: [
-        { key: 'numDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5+'] },
-        { key: 'numBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4+'] },
-        { key: 'numPisos', label: 'Pisos', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'numDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12','13','14','15'] },
+        { key: 'numBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'numPisos', label: 'Pisos', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
         { key: 'garaje', label: 'Garaje', type: 'boolean' },
         { key: 'patio', label: 'Patio', type: 'boolean' },
         { key: 'amoblado', label: 'Amoblado', type: 'boolean' },
         { key: 'sotano', label: 'Sótano', type: 'boolean' }
       ],
       DEPARTAMENTO: [
-        { key: 'deptoNumDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4+'] },
-        { key: 'deptoNumBanos', label: 'Baños', type: 'select', options: ['1', '2', '3+'] },
-        { key: 'deptoPiso', label: 'Piso', type: 'select', options: ['1', '2', '3', '4', '5', '6+'] },
+        { key: 'deptoNumDormitorios', label: 'Dormitorios', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'deptoNumBanos', label: 'Baños', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
+        { key: 'deptoPiso', label: 'Piso', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12','13','14','15']  },
         { key: 'deptoAmoblado', label: 'Amoblado', type: 'boolean' },
         { key: 'ascensor', label: 'Ascensor', type: 'boolean' },
         { key: 'balcon', label: 'Balcón', type: 'boolean' }
@@ -82,7 +81,7 @@ export const HistoricoModal = ({
       ],
       TIENDA: [
         { key: 'tamano', label: 'Tamaño mínimo (m²)', type: 'number' },
-        { key: 'numAmbientes', label: 'Ambientes', type: 'select', options: ['1', '2', '3', '4+'] },
+        { key: 'numAmbientes', label: 'Ambientes', type: 'select', options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
         { key: 'banoPrivado', label: 'Baño Privado', type: 'boolean' },
         { key: 'deposito', label: 'Depósito', type: 'boolean' }
       ]
@@ -119,6 +118,7 @@ export const HistoricoModal = ({
 
       if (zona) params.zona = zona
       if (moneda) params.moneda = moneda
+      
 
       const response = await fetchHistorico(params)
 
@@ -236,12 +236,12 @@ export const HistoricoModal = ({
                 value={tipoInmueble}
                 onChange={(e) => {
                   setTipoInmueble(e.target.value)
-                  setFiltrosAdicionales({}) // Limpiar filtros al cambiar tipo
+                  setFiltrosAdicionales({}) 
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Seleccione un tipo</option>
-                {tiposInmueble.map(t => (
+                {TIPOS_INMUEBLE.map(t => (
                   <option key={t} value={t}>{t}</option>
                 ))}
               </select>

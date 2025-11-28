@@ -53,8 +53,8 @@ export const fetchHistorico = async (params: HistoricoParams): Promise<Historico
     }
   })
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-  const response = await fetch(`${baseUrl}/tucasabackend/api/oferta/historico?${queryParams.toString()}`)
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/tucasabackend'
+  const response = await fetch(`${baseUrl}/api/oferta/historico?${queryParams.toString()}`)
   
   if (!response.ok) {
     throw new Error('Error al cargar históricos')
