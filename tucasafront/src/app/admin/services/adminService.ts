@@ -1,4 +1,7 @@
 import { URL_BACKEND } from "@/config/constants";
+import { useToast } from '@/components/Toast';
+
+
 
 export interface SolicitudAgente {
   id: number;
@@ -24,6 +27,8 @@ interface ApiResponse {
   data: SolicitudAgente[];
 }
 
+
+
 export async function obtenerSolicitudesPendientes(): Promise<ApiResponse> {
   const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes`, {
     headers: {
@@ -35,14 +40,20 @@ export async function obtenerSolicitudesPendientes(): Promise<ApiResponse> {
 }
 
 export async function aprobarSolicitud(id: number) {
-  const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/${id}/aprobar`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!res.ok) throw new Error("Error al aprobar solicitud");
+  try {
+    const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/${id}/aprobar`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
 }
+
+
 
 export async function rechazarSolicitud(id: number) {
   const res = await fetch(`${URL_BACKEND}/api/admin/solicitudes/agentes/${id}/rechazar`, {

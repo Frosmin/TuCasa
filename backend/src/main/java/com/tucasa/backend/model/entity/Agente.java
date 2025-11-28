@@ -9,7 +9,6 @@ import lombok.Data;
 public class Agente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -19,5 +18,5 @@ public class Agente {
     private String descripcion;
     private String experiencia;
     private String matricula;  
-    private boolean verificado = false; 
+    private String cv;
 }
