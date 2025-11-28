@@ -11,6 +11,7 @@ export interface PropertyFormData {
   propertyType: PropertyType;
   direccion: string;
   latitud: string;
+  zona: string;
   longitud: string;
   superficie: string;
   precio: string;
@@ -78,6 +79,7 @@ export interface InmuebleData {
   superficie: number;
   idPropietario: number;
   descripcion: string;
+  zona: string;
   tipo: PropertyType;
   serviciosIds: number[];
 

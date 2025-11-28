@@ -1,6 +1,6 @@
 // publicar/data/property.constants.ts
 
-import { Home, Building2, Store } from 'lucide-react';
+import { Home, Building2, Store, CircleDollarSign } from 'lucide-react';
 import { PropertyType } from '../types/property.types';
 
 export const PROPERTY_TYPES = [
@@ -50,6 +50,7 @@ export const INITIAL_FORM_DATA = {
   direccion: '',
   latitud: '',
   longitud: '',
+  zona: '',
   superficie: '',
   precio: '',
   moneda: 'Bs' as const,

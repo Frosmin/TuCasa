@@ -23,7 +23,8 @@ export default function VenderPage() {
     handleSubmit,
     resetToStep1,
     handleLocationChange,
-    handleAddressChange, 
+    handleAddressChange,
+    handleZonaChange,
   } = usePropertyForm();
 
   // Paso 1: Selección de tipo de operación
@@ -74,7 +75,8 @@ export default function VenderPage() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               onLocationChange={handleLocationChange}
-              onAddressChange={handleAddressChange} // AGREGAR AQUÍ
+              onAddressChange={handleAddressChange}
+              onZonaChange={handleZonaChange}
               mode="registro"
             />
           </div>

@@ -8,6 +8,7 @@ export interface Inmueble {
     direccion: string
     latitud: number
     longitud: number
+    zona: string
     superficie: number
     idPropietario: number
     descripcion: string
@@ -32,5 +33,6 @@ export interface Inmueble {
     mascotasPermitidas?: boolean
     baulera?: boolean
     ascensor?: boolean
+    zona?: string
 }
 

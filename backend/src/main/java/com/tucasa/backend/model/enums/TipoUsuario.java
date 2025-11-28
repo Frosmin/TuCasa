@@ -5,5 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum TipoUsuario {
     CLIENTE,
-    AGENTE_INMOBILIARIO
+    AGENTE_INMOBILIARIO,
+    ADMIN
 }
