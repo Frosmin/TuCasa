@@ -8,7 +8,7 @@ import type { Oferta } from '@/models/Oferta'
 import { URL_BACKEND } from '@/config/constants'
 import type { EstadoPublicacion } from "@/models/Oferta";
 import ImageCarousel from '@/components/ImageCarousel';
-import PropertyLocationMap from './components/PropertyLocationMap'
+import PropertyLocationMap from '../../../components/PropertyLocationMap'
 import LikeButton from '@/components/LikeButton'
 import { useAuth } from '@/context/AuthContext'
 import { Owner, OWNER_INITIAL_DATA } from './type/user.type'
