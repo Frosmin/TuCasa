@@ -2,28 +2,28 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-
+import { URL_BACKEND } from "@/config/constants";
 interface User {
   id: number;
   nombre: string;
   apellido: string;
   telefono: string;
   correo: string;
-  direccion:string 
+  direccion: string
   rol: "CLIENTE" | "ADMIN" | "AGENTE_INMOBILIARIO";
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<User|false>;
+  login: (email: string, password: string) => Promise<User | false>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const API_BASE_URL = "http://localhost:8000/tucasabackend";
+
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${URL_BACKEND}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       const userData: User = data.data;
       const userToken: string =
-       data.token;
+        data.token;
 
       setUser(userData);
       setToken(userToken);
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", userToken);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      
+
       setUser(userData);
       setToken(userToken);
       return data.data;

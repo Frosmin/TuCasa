@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tucasa.backend.model.entity.SolicitudAgente;
+import com.tucasa.backend.model.service.implement.AgenteService;
 import com.tucasa.backend.model.service.implement.SolicitudAgenteService;
+import com.tucasa.backend.model.service.interfaces.UsuarioService;
 
 @RestController
 @RequestMapping("/api/agentes")
@@ -18,6 +20,11 @@ public class AgenteController {
     @Autowired
     private SolicitudAgenteService solicitudAgenteService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private AgenteService agenteService;
 
     @PostMapping("/solicitar")
     public ResponseEntity<?> solicitarAgente(
@@ -35,5 +42,15 @@ public class AgenteController {
         } catch (RuntimeException | IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/toClient/{id}")
+    public ResponseEntity<?> cambiarAgenteACliente(@PathVariable Long id){
+        return usuarioService.volverACliente(id);
+    }
+
+    @GetMapping("/info/{id}")
+    public ResponseEntity<?> datosAgente(@PathVariable Long id){
+        return agenteService.infoAgente(id);
     }
 }

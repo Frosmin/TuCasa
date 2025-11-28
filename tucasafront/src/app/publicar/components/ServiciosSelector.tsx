@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { Zap, Droplet, Flame, Wifi, Trash2, Shield, Check } from 'lucide-react';
+import { URL_BACKEND } from '@/config/constants';
 
 interface Servicio {
   id: number;
@@ -16,18 +17,18 @@ interface ServiciosSelectorProps {
 }
 
 const servicioIcons: Record<number, any> = {
-  1: Zap,        
-  2: Droplet,    
-  3: Flame,      
-  4: Wifi,       
-  5: Trash2,     
-  6: Shield,     
+  1: Zap,
+  2: Droplet,
+  3: Flame,
+  4: Wifi,
+  5: Trash2,
+  6: Shield,
 };
 
-export default function ServiciosSelector({ 
-  selectedIds, 
-  onChange, 
-  color = 'blue' 
+export default function ServiciosSelector({
+  selectedIds,
+  onChange,
+  color = 'blue'
 }: ServiciosSelectorProps) {
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ export default function ServiciosSelector({
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://localhost:8000/tucasabackend/api/servicio');
+        const response = await fetch(URL_BACKEND + '/api/servicio');
         const result = await response.json();
         if (result.error === false && result.data) {
           setServicios(result.data);
@@ -58,17 +59,17 @@ export default function ServiciosSelector({
     }
   };
 
-  const colorClasses = color === 'purple' 
+  const colorClasses = color === 'purple'
     ? {
-        selected: 'border-purple-500 bg-purple-50 text-purple-700',
-        hover: 'hover:border-purple-300 hover:bg-purple-50',
-        icon: 'text-purple-600'
-      }
+      selected: 'border-purple-500 bg-purple-50 text-purple-700',
+      hover: 'hover:border-purple-300 hover:bg-purple-50',
+      icon: 'text-purple-600'
+    }
     : {
-        selected: 'border-blue-500 bg-blue-50 text-blue-700',
-        hover: 'hover:border-blue-300 hover:bg-blue-50',
-        icon: 'text-blue-600'
-      };
+      selected: 'border-blue-500 bg-blue-50 text-blue-700',
+      hover: 'hover:border-blue-300 hover:bg-blue-50',
+      icon: 'text-blue-600'
+    };
 
   if (loading) {
     return (
@@ -87,17 +88,16 @@ export default function ServiciosSelector({
         {servicios.map((servicio) => {
           const isSelected = selectedIds.includes(servicio.id);
           const Icon = servicioIcons[servicio.id] || Shield;
-          
+
           return (
             <button
               key={servicio.id}
               type="button"
               onClick={() => toggleServicio(servicio.id)}
-              className={`relative flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all duration-300 ${
-                isSelected
+              className={`relative flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all duration-300 ${isSelected
                   ? colorClasses.selected
                   : `border-gray-300 bg-white text-gray-700 ${colorClasses.hover}`
-              }`}
+                }`}
             >
               <Icon className={`w-5 h-5 ${isSelected ? colorClasses.icon : 'text-gray-500'}`} />
               <span className="text-sm font-medium">{servicio.nombre}</span>
