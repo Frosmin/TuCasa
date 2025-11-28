@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import SolicitudAvalCard from "./components/solicitudAvalCard";
-import { getSolicitudes } from "./services/getSolicitudes";
+import { asignarmeAvaluo, getSolicitudes } from "./services/getSolicitudes";
 import LoadingSpinner from "@/components/Loading";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
@@ -17,6 +17,7 @@ export interface Usuario{
 }
 
 export interface SolicitudAval {
+  id: string,
   tipoInmueble: string;
   propietario: Usuario;
   celular: number;
@@ -29,7 +30,8 @@ export interface SolicitudAval {
 
 const Solicitudes = () => {
   const { token, user } = useAuth();
-  const { showError } = useToast();
+  const { showError, showSuccess } = useToast();
+  const userId = user?.id;
 
   // cambiar la lista hardcodeada con la recuperacion desde el back
   const [solicitudes, setSolicitudes] = useState<SolicitudAval[]>([]);
@@ -50,6 +52,21 @@ const Solicitudes = () => {
       setLoading(false);
     }
   }, [token, showError]);
+
+  const handleAsignar = useCallback(async (idAvaluo: string) => {
+    if (!userId) {
+      showError("No se encontro el id del usuario para la asignacion");
+      return;
+    }
+    try {
+      await asignarmeAvaluo(userId, idAvaluo);
+      showSuccess("Avalúo asignado correctamente.");
+      await fetchData(); 
+    } catch (error) {
+      console.error("Error al asignar avalúo:", error);
+      showError("Error al asignar el avalúo. Por favor, inténtalo de nuevo.");
+    }
+  }, [userId, showSuccess, showError, fetchData]);
 
   useEffect(() => {
     fetchData();
@@ -75,7 +92,7 @@ const Solicitudes = () => {
       <div className="flex flex-col justify-center items-center w-[50%]">
         {solicitudes.length > 0 ? (
           solicitudes.map((solicitud, index) => (
-            <SolicitudAvalCard key={index} solicitud={solicitud} />
+            <SolicitudAvalCard key={index} solicitud={solicitud} onAsign={handleAsignar}/>
           ))
         ) : (
           <div className="flex flex-col justify-center items-center rounded-2xl w-full mt-5 mb-5 p-10 bg-gray-100">

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { URL_BACKEND } from "@/config/constants";
 
 import { useToast } from "@/components/Toast";
 
@@ -49,9 +50,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const API_BASE_URL = "http://localhost:8000/tucasabackend/api";
-
-      const res = await fetch(API_BASE_URL + "/usuarios/registrar", {
+      const res = await fetch(URL_BACKEND + "api/usuarios/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

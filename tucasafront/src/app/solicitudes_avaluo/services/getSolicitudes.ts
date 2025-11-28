@@ -31,3 +31,24 @@ export const getSolicitudes = async (token: string): Promise<SolicitudAval[]> =>
     throw error;
   }
 };
+
+export const asignarmeAvaluo = async (idAgente: string | number, idAvaluo: string | number) => {
+  try {
+    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/asignarAgente`, {
+      method: 'POST',
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({idAgente,idAvaluo})
+    });
+    if (!res.ok) {
+      throw new Error(`Error ${res.status}: No se pudo asignar el avaluo`);
+    }
+    const response: SolicitudResponse = await res.json();
+    return response.data || [];
+  } catch (error) {
+    console.error("Error en asignarmeAvaluo:", error);
+    throw error;
+  }
+}
