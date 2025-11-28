@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo } from 'react'
 import { X, TrendingUp, Calendar, DollarSign, Filter, BarChart3, Home } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts'
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import { fetchHistorico, type HistoricoParams, type HistoricoData } from '@/app/api/historico'
 import type { TipoOperacion } from '@/models/Oferta'
 
@@ -190,8 +190,8 @@ export const HistoricoModal = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -351,7 +351,7 @@ export const HistoricoModal = ({
         </div>
 
         {/* Contenido */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-280px)]">
+        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 320px)' }}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
               {error}
@@ -434,11 +434,14 @@ export const HistoricoModal = ({
                 </ResponsiveContainer>
               </div>
 
-              {/* Tabla de Datos */}
+             {/* Tabla de Datos */}
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <h3 className="text-lg font-semibold text-gray-900 px-6 pt-4 pb-3 border-b border-gray-200">
+                  Detalle Mensual
+                </h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-100">
+                  <table className="w-full min-w-[640px]">
+                    <thead className="bg-gray-100 sticky top-0 z-10">
                       <tr>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Mes</th>
                         <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">Precio Promedio</th>
