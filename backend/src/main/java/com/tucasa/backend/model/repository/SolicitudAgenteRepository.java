@@ -15,6 +15,7 @@ public interface SolicitudAgenteRepository extends JpaRepository<SolicitudAgente
     boolean existsByUsuarioId(Long usuarioId);
     
     List<SolicitudAgente> findByEstado(EstadoSolicitud estado);
+    List<SolicitudAgente> findByUsuarioId(Long usuarioId);
 
     @Transactional
     Long deleteByUsuarioId(Long usuarioId);
