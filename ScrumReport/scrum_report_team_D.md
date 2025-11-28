@@ -40,9 +40,10 @@
 
 ### Javier
 
-* **Y:** —
-* **T:** —
-* **B:** —
+* **Y:** — se acabo el flujo para la parte de backend del endpoint de registro
+* **T:** — Inicio la vista y el endpoint
+* **B:** —Ninguno
+* 
 
 ---
 
@@ -62,7 +63,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Corregí mapeos; creé DTOs; implementé servicios y controladores base; añadí validaciones.
+* **T:** Probar endpoints con Insomnia; verificar persistencia real en Supabase.
+* **B:** Error de constraint por null en *tamanio* de Lote, ya solucionado.
 
 ---
 
@@ -111,7 +115,7 @@
 ## **Scrum Report #6 — Oct 24**
 
 ### Johan
-
+544
 * **Y:** Implementé controlador y servicio inicial de Publicación. Probé relaciones en Insomnia.
 * **T:** Integrar carga de imágenes y probar flujo de creación completo.
 * **B:** Referencias circulares al serializar entidades.
@@ -124,7 +128,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Corregí mapeos; creé DTOs; implementé servicios y controladores base; añadí validaciones.
+* **T:** Probar endpoints con Insomnia; verificar persistencia real en Supabase.
+* **B:** Error de constraint por null en *tamanio* de Lote, ya solucionado.
 
 ---
 
@@ -144,7 +151,6 @@
 
 ### Javier
 
-* **Y / T / B:** —
 
 ---
 
@@ -164,7 +170,9 @@
 
 ### Javier
 
-* **Y / T / B:** —
+* **Y:** Revisión de historias; inicié diseño del panel admin.
+* **T:** Corregir funcionalidades según observaciones del demo.
+* **B:** Ninguno.
 
 ---
 
@@ -184,7 +192,9 @@
 
 ### Javier
 
-* **Y / T / B:** —
+* **Y:** Se agrego la funcionalidad de los servicios en lotes
+* **T:** Se acabo la intregracion en la parte frontend
+* **B:** Ninguno.
 
 ---
 
@@ -204,7 +214,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+* **Y:** Documentacion de la historia asignada
+* **T:** Se arreglo errores de tipeo de la anterior historia
+* **B:** Ninguno
+
 
 ---
 
@@ -224,7 +237,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Se empezo el diseño de la parte frontend
+* **T:** se empezo la esctructura y la logica para la historia
+* **B:** Ninguno
 
 ---
 
@@ -244,7 +260,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Corregí el diseño inicial del frontend para las publicaciones y la aprobacion
+* **T:** Se empezo el diseño y prueba de los endpoints para las publicaciones
+* **B:** Ninguno
 
 ---
 
@@ -264,7 +283,10 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Se corrigio variables en los endpoints del patch y se integro al backend el patch
+* **T:** Se termino los endpoints y el diseño del frontend
+* **B:** Ninguno
 
 ---
 
@@ -284,5 +306,8 @@
 
 ### Javier
 
-* **Y / T / B:** —
+
+* **Y:** Se arreglo el estilo de tablas en el frontend 
+* **T:** Implento la conexion al frontend los endpoints de ver publicaciones y editar estado de una
+* **B:** Ninguno
 
