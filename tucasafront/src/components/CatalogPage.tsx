@@ -8,6 +8,7 @@ import { SearchBar } from '@/app/ventas/components/SearchBar'
 import { FiltroSidebar, type Filtros } from '@/app/ventas/components/FiltroSidebar'
 import { ResultadosOfertas } from '@/app/ventas/components/ResultadosOfertas'
 import { HistoricoModal } from '@/app/ventas/components/HistoricoModal'
+import { fetchZonasConInmuebles } from '@/app/api/zona'
 
 interface CatalogPageProps {
   tipoOperacion: TipoOperacion
@@ -55,16 +56,9 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     zona: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
-  
 
-  const zonasUnicas = useMemo(() => {
-    const zonas = new Set(
-      ofertas
-        .map(o => o.inmueble.zona)
-        .filter(Boolean)
-    )
-    return Array.from(zonas).sort() as string[]
-  }, [ofertas])
+
+  const [zonasDisponibles, setZonasDisponibles] = useState<string[]>([])
 
   const tiposPropiedad = [
     { id: '', label: 'Todos', icon: Home },
@@ -129,6 +123,23 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
 
     cargarOfertas()
   }, [tipoOperacion])
+
+  useEffect(() => {
+    const cargarZonas = async () => {
+      try {
+        const zonas = await fetchZonasConInmuebles()
+        setZonasDisponibles(zonas)
+      } catch (err) {
+        console.error('Error al cargar zonas:', err)
+        const zonasOfertas = Array.from(
+          new Set(ofertas.map(o => o.inmueble.zona).filter(Boolean))
+        ).sort() as string[]
+        setZonasDisponibles(zonasOfertas)
+      }
+    }
+
+    cargarZonas()
+  }, [])
 
   // Obtener tipos de inmuebles únicos
   const tiposUnicos = useMemo(() => {
@@ -436,8 +447,7 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
         isOpen={mostrarHistorico}
         onClose={() => setMostrarHistorico(false)}
         tipoOperacion={tipoOperacion}
-        zonasDisponibles={zonasUnicas}
-        tiposInmueble={tiposUnicos}
+        zonasDisponibles={zonasDisponibles}
       />
     </div>
   )

@@ -10,7 +10,6 @@ interface HistoricoModalProps {
   onClose: () => void
   tipoOperacion: TipoOperacion
   zonasDisponibles: string[]
-  tiposInmueble: string[]
 }
 
 const MESES_CORTOS = [
@@ -22,13 +21,13 @@ const MESES_COMPLETOS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ]
+const TIPOS_INMUEBLE = ['CASA', 'DEPARTAMENTO', 'LOTE', 'TIENDA']
 
 export const HistoricoModal = ({
   isOpen,
   onClose,
   tipoOperacion,
-  zonasDisponibles,
-  tiposInmueble
+  zonasDisponibles
 }: HistoricoModalProps) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -236,12 +235,12 @@ export const HistoricoModal = ({
                 value={tipoInmueble}
                 onChange={(e) => {
                   setTipoInmueble(e.target.value)
-                  setFiltrosAdicionales({}) // Limpiar filtros al cambiar tipo
+                  setFiltrosAdicionales({}) 
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Seleccione un tipo</option>
-                {tiposInmueble.map(t => (
+                {TIPOS_INMUEBLE.map(t => (
                   <option key={t} value={t}>{t}</option>
                 ))}
               </select>
