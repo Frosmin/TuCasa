@@ -7,4 +7,9 @@ import com.tucasa.backend.model.dto.AvaluoRequestDto;
 public interface AvaluoService {
     ResponseEntity<?> create(AvaluoRequestDto dto, String userEmail);
     ResponseEntity<?> getPendientes(String userEmail);
+        ResponseEntity<?> getAllAvaluos();
+
+    ResponseEntity<?> getAvaluosPorAgente(Long idAgente);
+    ResponseEntity<?> getAvaluoById(Long id);
+
 }

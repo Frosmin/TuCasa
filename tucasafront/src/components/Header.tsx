@@ -149,16 +149,26 @@ export default function Header() {
                   </Link>
 
                   {/* solicitud avaluo */}
-                  { user.rol as string === "AGENTE_INMOBILIARIO" && (
-                    <Link 
-                      href={"/solicitudes_avaluo"} 
-                      onClick={()=>setMenuOpen(false)}
-                      
-                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    >
-                      <DollarSign className="w-4 h-4" /> Solicitudes avaluo
-                    </Link>
-                  )}
+                  {user.rol as string === "AGENTE_INMOBILIARIO" && (
+  <>
+    <Link
+      href={"/solicitudes_avaluo"}
+      onClick={() => setMenuOpen(false)}
+      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+    >
+      <DollarSign className="w-4 h-4" /> Solicitudes avaluo
+    </Link>
+
+    <Link
+      href={"/mis_avaluos"}
+      onClick={() => setMenuOpen(false)}
+      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+    >
+      <LayoutList className="w-4 h-4" /> Mis Avalúos
+    </Link>
+  </>
+)}
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);
