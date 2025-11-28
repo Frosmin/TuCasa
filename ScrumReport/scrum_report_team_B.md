@@ -289,3 +289,27 @@
 -   **Y:** Trabajé en la republicacion y terminacion de ofertas
 -   **T:** Hoy voy a hacer pruebas para la desactivacion de una oferta
 -   **B:** No he tenido problemas
+
+# Scrum Report #13 — Nov 28
+
+## Pablo
+
+-   **Y:** Trabajé en resolver bugs para la integracion
+-   **T:** Hoy voy a subir datos para pruebas en la demo
+-   **B:** No he tenido problemas
+
+---
+
+## Diego
+
+-   **Y:** Trabaje en correcciones de historicos de precios
+-   **T:** Hoy voy a corregir los bugs que se presenten
+-   **B:** Tuve problemas con una libreria para mostrar listados y graficos (solucionado)
+
+---
+
+## Jhunior
+
+-   **Y:** Trabajé en coordinar la integracion
+-   **T:** Hoy voy a coordinar la integracion
+-   **B:** No he tenido problemas
