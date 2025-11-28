@@ -69,5 +69,8 @@ public class OfertaController {
         return ofertaService.findFavoritosByUserId(principal.getName());
     }
 
-
+    @GetMapping("/propietario/{propietarioId}")
+    public ResponseEntity<List<OfertaResponseDto>> getOfertasPorPropietario(@PathVariable Long propietarioId) {
+        return (ResponseEntity<List<OfertaResponseDto>>) ofertaService.findByUserId(propietarioId);
+    }
 }
