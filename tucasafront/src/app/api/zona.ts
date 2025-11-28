@@ -1,3 +1,4 @@
+import { URL_BACKEND } from "@/config/constants"
 export interface ZonaConInmuebles {
   zona: string
   cantidad_inmuebles: number
@@ -12,7 +13,7 @@ export interface ZonasResponse {
 }
 
 export const fetchZonasConInmuebles = async (): Promise<string[]> => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/tucasabackend'
+  const baseUrl = URL_BACKEND || 'http://localhost:8000/tucasabackend'
   const response = await fetch(`${baseUrl}/api/zonas/ofertas`)
   
   if (!response.ok) {

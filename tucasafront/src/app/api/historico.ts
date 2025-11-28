@@ -1,3 +1,4 @@
+import { URL_BACKEND } from "@/config/constants"
 export interface HistoricoParams {
   fechaInicio: string 
   fechaFin: string 
@@ -53,7 +54,7 @@ export const fetchHistorico = async (params: HistoricoParams): Promise<Historico
     }
   })
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/tucasabackend'
+  const baseUrl = URL_BACKEND || 'http://localhost:8000/tucasabackend'
   const response = await fetch(`${baseUrl}/api/oferta/historico?${queryParams.toString()}`)
   
   if (!response.ok) {
