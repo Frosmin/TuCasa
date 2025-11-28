@@ -16,4 +16,6 @@ public interface AvaluoRepository extends JpaRepository<Avaluo, Long> {
     List<Avaluo> findByTipoAvaluo(TipoAvaluo tipoAvaluo);
     List<Avaluo> findByUsuarioId(Long usuarioId);
     List<Avaluo> findByAgenteId(Long agenteId);
+    List<Avaluo> findAll();
+    List<Avaluo> findByAgente_Id(Long idAgente);
 }

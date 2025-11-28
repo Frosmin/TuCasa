@@ -20,7 +20,7 @@ export default function DashboardAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState('');
   const [filteredData, setFilteredData] = useState<SolicitudAgente[]>([]);
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showInfo } = useToast();
 
 
 
@@ -98,8 +98,12 @@ export default function DashboardAdmin() {
   const handleAprobar = async () => {
     if (!solicitudSeleccionada) return;
     try {
-      await aprobarSolicitud(solicitudSeleccionada.id);
-      showSuccess("La solicitud fue Aprobada");
+      const response = await aprobarSolicitud(solicitudSeleccionada.id);
+      if(response.message === "La solicitud ya fue procesada") {
+        showInfo("La solicitud ya fue Aprobada")
+      } else {
+        showSuccess("La solicitud fue Aprobada");
+      }
       cerrarModal();
       cargarSolicitudes();
     } catch (error: any) {
@@ -204,7 +208,7 @@ export default function DashboardAdmin() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => abrirModal(s)}
-                        className="text-blue-600 hover:underline"
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
                       >
                         Ver Detalles
                       </button>
