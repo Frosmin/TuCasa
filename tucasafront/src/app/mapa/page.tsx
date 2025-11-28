@@ -23,6 +23,7 @@ import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
 import { URL_BACKEND } from '@/config/constants';
+import LoadingSpinner from '@/components/Loading';
 
 
 type TipoOperacion = 'TODOS' | 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
@@ -457,12 +458,10 @@ export default function MapaPage() {
 
   if (!isLoaded || loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-700 font-semibold text-lg">Cargando mapa y propiedades...</p>
-        </div>
-      </div>
+      <LoadingSpinner 
+        message="Cargando mapa y propiedades..." 
+        fullScreen={true} 
+      />
     );
   }
 
