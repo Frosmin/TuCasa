@@ -1,11 +1,11 @@
 import { Building2, Home, LucideIcon, Map, Store } from "lucide-react";
-import { SolicitudAval } from "../page";
+import { SolicitudAval } from "../page"; 
 
 interface SolicitudAvalCardProps {
   solicitud: SolicitudAval;
+  onAsign: (idAvaluo: string | number) => Promise<void>; 
 }
-
-const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
+const SolicitudAvalCard = ({ solicitud, onAsign }: SolicitudAvalCardProps) => { 
   const icons: Record<string, LucideIcon> = {
     CASA: Home,
     DEPARTAMENTO: Building2,
@@ -16,6 +16,9 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
   const openMaps = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   };
+  const handleAsignar = () => {
+    onAsign(solicitud.id);
+  }
   return (
     <div className="grid md:grid-cols-[1fr_3fr_1fr_1fr] w-full p-5 m-2 border-b rounded-2xl bg-gray-100">
       {/* Icon */}
@@ -56,8 +59,14 @@ const SolicitudAvalCard = ({ solicitud }: SolicitudAvalCardProps) => {
           Ver ubicación
         </button>
       </div>
-      {/* Aqui */}
-      <div className="flex justify-center items-center">Aceptar</div>
+      <div className="flex justify-center items-center">
+        <button
+          onClick={handleAsignar} 
+          className="px-4 py-2 bg-green-600 text-white rounded-lg"
+        >
+          Asignarme
+        </button>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tucasa.backend.model.dto.AsignarAgenteRequestDto;
 import com.tucasa.backend.model.dto.AvaluoRequestDto;
 import com.tucasa.backend.model.service.interfaces.AvaluoService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,4 +38,8 @@ public class AvaluoController {
         return avaluoService.getPendientes(principal.getName());
     }
 
+    @PostMapping("/asignarAgente")
+    public ResponseEntity<?> asignarAgente (@RequestBody AsignarAgenteRequestDto request) {
+        return avaluoService.asignarAgente(request.getIdAgente(), request.getIdAvaluo());
+    }
 }

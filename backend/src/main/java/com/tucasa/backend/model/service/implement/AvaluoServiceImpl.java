@@ -85,5 +85,23 @@ public class AvaluoServiceImpl implements AvaluoService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> asignarAgente(Long idAgente, Long idAvaluo){
+        String successMessage = "Se asignó al agente al avaluo";
+        String errorMessage = "No se pudo asignar al agente al avaluo";
+        try {    
+            Usuario agente = usuarioRepository.findById(idAgente)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            Avaluo av = avaluoRepository.findById(idAvaluo)
+                .orElseThrow(() -> new RuntimeException("Avaluo no encontrado"));
 
+            av.setAgente(agente);
+            av.setTipoAvaluo(TipoAvaluo.COMPLETADO);
+            avaluoRepository.save(av);
+            return apiResponse.responseSuccess(successMessage,null);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e);
+        }
+    }
 }
