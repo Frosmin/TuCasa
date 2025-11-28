@@ -9,8 +9,6 @@ import com.tucasa.backend.model.dto.AgenteRequestDto;
 import com.tucasa.backend.model.dto.AgenteResponseDto;
 import com.tucasa.backend.model.dto.UsuarioResponseDto;
 import com.tucasa.backend.model.entity.Agente;
-import com.tucasa.backend.model.entity.Inmueble;
-import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Usuario;
 import com.tucasa.backend.model.enums.TipoUsuario;
 import com.tucasa.backend.model.repository.AgenteRepository;
@@ -42,13 +40,14 @@ public class AgenteServiceImpl implements AgenteService {
 
         try {
             List<Agente> agentes = agenteRepository.findAll();
-            if(!agentes.isEmpty()) {
+            if (!agentes.isEmpty()) {
                 List<AgenteResponseDto> response = agentes.stream()
                         .map(this::mapToDto)
                         .collect(Collectors.toList());
                 return apiResponse.responseSuccess(successMessage, response);
             } else {
-                return apiResponse.responseDataError(errorMessage, null);            }
+                return apiResponse.responseDataError(errorMessage, null);
+            }
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, null);
         }
@@ -68,7 +67,8 @@ public class AgenteServiceImpl implements AgenteService {
     }
 
     private AgenteResponseDto mapToDto(Agente agente) {
-        if(agente == null) return null; 
+        if (agente == null)
+            return null;
 
         UsuarioResponseDto usuarioDto = new UsuarioResponseDto();
         Usuario usuario = agente.getUsuario();
@@ -97,8 +97,9 @@ public class AgenteServiceImpl implements AgenteService {
     @Transactional
     public ResponseEntity<?> create(AgenteRequestDto dto) {
         try {
-            Usuario usuario = usuarioRepository.findById(dto.getUsuario().getId()).orElseThrow(() -> new RuntimeException("usuario no encontrado"));
-            
+            Usuario usuario = usuarioRepository.findById(dto.getUsuario().getId())
+                    .orElseThrow(() -> new RuntimeException("usuario no encontrado"));
+
             Agente agente = new Agente();
             agente.setUsuario(usuario);
             agente.setDescripcion(dto.getDescripcion());
@@ -110,15 +111,35 @@ public class AgenteServiceImpl implements AgenteService {
             Agente agenteSave = agenteRepository.save(agente);
 
             return apiResponse.responseCreate(Constants.RECORD_CREATED, mapToDto(agenteSave));
-            
 
-        } catch(Exception e){
+        } catch (Exception e) {
             return apiResponse.responseDataError(Constants.RECORD_NOT_CREATED, e.getMessage());
         }
     }
 
+    @Override
+    public ResponseEntity<?> delete(Long id) {
+        String successMessage = Constants.RECORD_DELETED;
+        String errorMessage = "Agente no encontrado " + id;
+
+        try {
+            Agente agente = agenteRepository.findById(id)
+                    .orElse(null);
+
+            if (agente == null) {
+                return apiResponse.responseDataError(errorMessage,null);
+            }
+
+            agenteRepository.delete(agente);
+            return apiResponse.responseSuccess(successMessage, null);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
     @Transactional
-    public Agente convertirEnAgente(Long usuarioId, String descripcion, String experiencia, String matricula, String cv) {
+    public Agente convertirEnAgente(Long usuarioId, String descripcion, String experiencia, String matricula,
+            String cv) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 

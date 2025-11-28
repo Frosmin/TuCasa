@@ -8,4 +8,5 @@ public interface AgenteService {
     ResponseEntity<?> findAll();
     ResponseEntity<?> findById(Long id);
     ResponseEntity<?> create(AgenteRequestDto dto);
+    ResponseEntity<?> delete(Long id);
 }

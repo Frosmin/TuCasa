@@ -76,7 +76,7 @@ export default function Agentes() {
                   <td className="px-6 py-4">
                     <button
                       onClick={() => { router.push(`/agentes/agente/${a.id}`) }}
-                      className="text-blue-600 hover:underline"
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
                     >
                       Ver Detalles
                     </button>
