@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default function AgentsListAndCards() {
-    const [view, setView] = useState<"cards" | "list">("cards");
+    const [view, setView] = useState<"cards" | "list">("list");
     const [query, setQuery] = useState<string>("");
     const [selected, setSelected] = useState<UserType | null>(null);
     const [closing, setClosing] = useState(false);
