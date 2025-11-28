@@ -44,6 +44,9 @@ export default function PropertyForm({
 }: PropertyFormProps) {
   const router = useRouter();
   return (
+
+    
+
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Tipo de Propiedad */}
       {mode === "registro" && (
@@ -53,6 +56,7 @@ export default function PropertyForm({
       />
       )}
       
+
 
       {/* Campos específicos para Casa */}
       {formData.propertyType === 'CASA' && (
@@ -290,11 +294,7 @@ export default function PropertyForm({
               className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
 
-              {isSubmitting
-                ? "Publicando..."
-                : formData.operacion === OPERATION_TYPES[3].id
-                  ? "Solicitar avaluo"
-                  : "Publicar ahora"}
+              {isSubmitting ? "Publicando..." : "Publicar ahora"}
               </button>
           </div>
         )}
