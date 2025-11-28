@@ -62,12 +62,14 @@ public class OfertaController {
         return ofertaService.search(params, true);
     }
 
-    // 
-
-     @GetMapping("/favoritos")
+    @GetMapping("/favoritos")
     public ResponseEntity<?> getFavoritos(Principal principal) {
         return ofertaService.findFavoritosByUserId(principal.getName());
     }
 
+    @GetMapping("/propietario/{propietarioId}")
+    public ResponseEntity<List<OfertaResponseDto>> getOfertasPorPropietario(@PathVariable Long propietarioId) {
+        return (ResponseEntity<List<OfertaResponseDto>>) ofertaService.findByUserId(propietarioId);
+    }
 
 }
