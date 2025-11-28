@@ -150,8 +150,8 @@ public class SolicitudAgenteServiceImpl implements SolicitudAgenteService {
                 return apiResponse.responseDataError("Solicitud no encontrada", null);
             }
 
-            if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
-                return apiResponse.responseDataError("La solicitud ya fue procesada", null);
+            if (solicitud.getEstado() == EstadoSolicitud.APROBADA) {
+                return apiResponse.responseSuccess("La solicitud ya fue procesada", null);
             }
 
             solicitud.setEstado(EstadoSolicitud.APROBADA);
@@ -191,8 +191,8 @@ public class SolicitudAgenteServiceImpl implements SolicitudAgenteService {
                 return apiResponse.responseDataError("Solicitud no encontrada", null);
             }
 
-            if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
-                return apiResponse.responseDataError("La solicitud ya fue procesada", null);
+            if(solicitud.getEstado() == EstadoSolicitud.APROBADA) {
+                agenteService.delete(solicitud.getUsuario().getId());
             }
 
             solicitud.setEstado(EstadoSolicitud.RECHAZADA);

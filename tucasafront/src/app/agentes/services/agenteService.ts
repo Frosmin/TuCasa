@@ -27,6 +27,8 @@ export async function obtenerAgentes(): Promise<Agente[]> {
     },
   });
 
+  console.log(res)
+
   if (!res.ok) throw new Error("Error al obtener los agentes");
   const json = await res.json();
   return json.data;
@@ -38,6 +40,8 @@ export async function obtenerAgente(id: number): Promise<Agente> {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  
 
   if (!res.ok) throw new Error("Error al obtener los agentes");
   const json = await res.json();
