@@ -22,6 +22,8 @@ import {
 import ReactDOMServer from 'react-dom/server';
 import type { Inmueble, TipoPropiedad } from '@/models/Inmueble';
 import type { Oferta } from '@/models/Oferta';
+import LoadingSpinner from '@/components/Loading';
+import { URL_BACKEND } from '@/config/constants';
 
 
 type TipoOperacion = 'TODOS' | 'VENTA' | 'ALQUILER' | 'ANTICRETICO';
@@ -52,7 +54,7 @@ const OPERACION_CONFIG = {
   AVALUO: { color: '#9810fa', label: 'Avaluo', bgLight: '#fffbeb' },
 } as const;
 const COCHABAMBA_CENTER = { lat: -17.3895, lng: -66.1568 };
-const API_BASE_URL = 'http://localhost:8000/tucasabackend/api';
+const API_BASE_URL = URL_BACKEND + '/api';
 
 export default function MapaPage() {
   const { isLoaded, loadError } = useGoogleMaps();
@@ -456,12 +458,10 @@ export default function MapaPage() {
 
   if (!isLoaded || loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-700 font-semibold text-lg">Cargando mapa y propiedades...</p>
-        </div>
-      </div>
+      <LoadingSpinner 
+        message="Cargando mapa y propiedades..." 
+        fullScreen={true} 
+      />
     );
   }
 
