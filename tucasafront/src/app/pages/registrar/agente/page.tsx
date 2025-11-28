@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
-
-import { useToast } from "@/components/Toast";
 import { URL_BACKEND } from "@/config/constants";
+import { useToast } from "@/components/Toast";
 
 
 export default function RegisterPage() {
@@ -51,9 +50,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      
-
-      const res = await fetch(URL_BACKEND + "/api/usuarios/registrar", {
+      const res = await fetch(URL_BACKEND + "api/usuarios/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

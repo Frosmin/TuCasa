@@ -84,6 +84,87 @@ public class AvaluoServiceImpl implements AvaluoService {
             return apiResponse.responseDataError("Error al buscar pendientes", e.getMessage());
         }
     }
+    @Override
+    public ResponseEntity<?> getAllAvaluos() {
+        try {
+            List<Avaluo> lista = avaluoRepository.findAll();
 
+            List<AvaluoResponseDto> dtos = lista.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
 
+            return apiResponse.responseSuccess("Todos los avalúos encontrados", dtos);
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener los avalúos", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAvaluosPorAgente(Long idAgente) {
+        try {
+            List<Avaluo> lista = avaluoRepository.findByAgente_Id(idAgente);
+
+            List<AvaluoResponseDto> dtos = lista.stream()
+                    .map(AvaluoResponseDto::new)
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess("Avalúos del agente encontrados", dtos);
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener los avalúos del agente", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAvaluoById(Long id) {
+        try {
+            var optAvaluo = avaluoRepository.findById(id);
+            if(optAvaluo.isEmpty()) {
+                return apiResponse.responseNotFoundError("Avalúo no encontrado", null);
+            }
+            AvaluoResponseDto dto = new AvaluoResponseDto(optAvaluo.get());
+            return apiResponse.responseSuccess("Avalúo encontrado", dto);
+        } catch(Exception e) {
+            return apiResponse.responseDataError("Error al obtener avalúo", e.getMessage());
+        }
+    }
+    @Override
+    public ResponseEntity<?> actualizarEstado(Long id, TipoAvaluo nuevoEstado) {
+        var optAvaluo = avaluoRepository.findById(id);
+
+        if (optAvaluo.isEmpty()) {
+            return apiResponse.responseNotFoundError("Avaluó no encontrado", null);
+        }
+
+        try {
+            Avaluo avaluo = optAvaluo.get();
+            avaluo.setTipoAvaluo(nuevoEstado);
+            avaluoRepository.save(avaluo);
+
+            return apiResponse.responseSuccess("Estado actualizado correctamente", new AvaluoResponseDto(avaluo));
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al actualizar estado", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> asignarAgente(Long idAgente, Long idAvaluo){
+        String successMessage = "Se asignó al agente al avaluo";
+        String errorMessage = "No se pudo asignar al agente al avaluo";
+        try {    
+            Usuario agente = usuarioRepository.findById(idAgente)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            Avaluo av = avaluoRepository.findById(idAvaluo)
+                .orElseThrow(() -> new RuntimeException("Avaluo no encontrado"));
+
+            av.setAgente(agente);
+            av.setTipoAvaluo(TipoAvaluo.COMPLETADO);
+            avaluoRepository.save(av);
+            return apiResponse.responseSuccess(successMessage,null);
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e);
+        }
+    }
 }

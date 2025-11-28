@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff, BookUser } from "lucide-react";
-
+import { URL_BACKEND } from "@/config/constants";
 import { useToast } from "@/components/Toast";
 import { useRouter } from "next/navigation";
-import { URL_BACKEND } from "@/config/constants";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -53,7 +52,7 @@ export default function RegisterPage() {
 
     try {
 
-      const res = await fetch(`${URL_BACKEND}/auth/register`, {
+      const res = await fetch(URL_BACKEND + "/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

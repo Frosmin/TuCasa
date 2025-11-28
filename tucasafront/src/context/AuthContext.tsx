@@ -89,21 +89,20 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { URL_BACKEND } from "@/config/constants";
-
 interface User {
   id: number;
   nombre: string;
   apellido: string;
   telefono: string;
   correo: string;
-  direccion:string 
+  direccion: string
   rol: "CLIENTE" | "ADMIN" | "AGENTE_INMOBILIARIO";
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<User|false>;
+  login: (email: string, password: string) => Promise<User | false>;
   logout: () => void;
 }
 
@@ -140,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       const userData: User = data.data;
       const userToken: string =
-       data.token;
+        data.token;
 
       setUser(userData);
       setToken(userToken);
@@ -148,7 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", userToken);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      
+
       setUser(userData);
       setToken(userToken);
       return data.data;

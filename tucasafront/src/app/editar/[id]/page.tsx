@@ -33,6 +33,7 @@ export default function EditarPage() {
         handleServiciosChange,
         handleLocationChange,
         handleAddressChange,
+        handleZonaChange,
     } = usePropertyForm();
 
     useEffect(() => {
@@ -178,6 +179,7 @@ export default function EditarPage() {
                             isSubmitting={isSubmitting}
                             onLocationChange={handleLocationChange}
                             onAddressChange={handleAddressChange}
+                            onZonaChange={handleZonaChange}
                             mode='edicion'
                         />
                     </div>

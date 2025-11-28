@@ -7,7 +7,8 @@ import { fetchOfertas, type OfertasResult } from '@/api/oferta'
 import { SearchBar } from '@/app/ventas/components/SearchBar'
 import { FiltroSidebar, type Filtros } from '@/app/ventas/components/FiltroSidebar'
 import { ResultadosOfertas } from '@/app/ventas/components/ResultadosOfertas'
-import { URL_BACKEND } from '@/config/constants';
+import { HistoricoModal } from '@/app/ventas/components/HistoricoModal'
+import { fetchZonasConInmuebles } from '@/app/api/zona'
 
 interface CatalogPageProps {
   tipoOperacion: TipoOperacion
@@ -32,6 +33,7 @@ const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
+  const [mostrarHistorico, setMostrarHistorico] = useState(false)
   const [ofertas, setOfertas] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -54,6 +56,9 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
     zona: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
+
+
+  const [zonasDisponibles, setZonasDisponibles] = useState<string[]>([])
 
   const tiposPropiedad = [
     { id: '', label: 'Todos', icon: Home },
@@ -118,6 +123,23 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
 
     cargarOfertas()
   }, [tipoOperacion])
+
+  useEffect(() => {
+    const cargarZonas = async () => {
+      try {
+        const zonas = await fetchZonasConInmuebles()
+        setZonasDisponibles(zonas)
+      } catch (err) {
+        console.error('Error al cargar zonas:', err)
+        const zonasOfertas = Array.from(
+          new Set(ofertas.map(o => o.inmueble.zona).filter(Boolean))
+        ).sort() as string[]
+        setZonasDisponibles(zonasOfertas)
+      }
+    }
+
+    cargarZonas()
+  }, [])
 
   // Obtener tipos de inmuebles únicos
   const tiposUnicos = useMemo(() => {
@@ -315,23 +337,33 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
       {/* Selector de Tipo de Propiedad */}
       <div className="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {tiposPropiedad.map(({ id, label, icon: Icon }) => {
-              const length = ofertas.filter(o => id === '' || o.inmueble.tipo === id).length
-              return (
-                <button
-                  key={id}
-                  onClick={() => setTipoInmuebleSeleccionado(id)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {tiposPropiedad.map(({ id, label, icon: Icon }) => {
+                const length = ofertas.filter(o => id === '' || o.inmueble.tipo === id).length
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setTipoInmuebleSeleccionado(id)}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium whitespace-nowrap ${tipoInmuebleSeleccionado === id
                       ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50'
-                    }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  {label} ({length})
-                </button>
-              )
-            })}
+                      }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {label} ({length})
+                  </button>
+                )
+              })}
+            </div>
+            {/* Botón de Histórico */}
+            <button
+              onClick={() => setMostrarHistorico(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-indigo-500 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all duration-300 font-medium whitespace-nowrap"
+            >
+              <TrendingUp className="w-5 h-5" />
+              Ver Histórico
+            </button>
           </div>
         </div>
       </div>
@@ -411,6 +443,12 @@ export const CatalogPage = ({ tipoOperacion }: CatalogPageProps) => {
           </div>
         </div>
       </div>
+      <HistoricoModal
+        isOpen={mostrarHistorico}
+        onClose={() => setMostrarHistorico(false)}
+        tipoOperacion={tipoOperacion}
+        zonasDisponibles={zonasDisponibles}
+      />
     </div>
   )
 }

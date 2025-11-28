@@ -50,6 +50,12 @@ public class OfertaController {
     public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
         return ofertaService.search(params, false);
     }
+
+    @GetMapping("/historico")
+    public ResponseEntity<?> searchHistorico(@RequestParam Map<String, String> params) {
+        return ofertaService.searchHistorico(params);
+    }
+
          @PatchMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstado(
             @PathVariable Long id,
@@ -57,17 +63,25 @@ public class OfertaController {
         return ofertaService.actualizarEstadoPublicacion(id, estadoPublicacion);
     }
 
+    @PatchMapping("/{id}/propietario/estado")
+    public ResponseEntity<?> actualizarEstadoMiPublicacion(
+            @PathVariable Long id,
+            @RequestParam String estadoPublicacion) {
+        return ofertaService.actualizarEstadoMiPublicacion(id, estadoPublicacion);
+    }
+
     @GetMapping("/map")
     public ResponseEntity<?> searchOnMap(@RequestParam Map<String, String> params) {
         return ofertaService.search(params, true);
     }
 
-    // 
-
-     @GetMapping("/favoritos")
+    @GetMapping("/favoritos")
     public ResponseEntity<?> getFavoritos(Principal principal) {
         return ofertaService.findFavoritosByUserId(principal.getName());
     }
 
-
+    @GetMapping("/propietario/{propietarioId}")
+    public ResponseEntity<List<OfertaResponseDto>> getOfertasPorPropietario(@PathVariable Long propietarioId) {
+        return (ResponseEntity<List<OfertaResponseDto>>) ofertaService.findByUserId(propietarioId);
+    }
 }

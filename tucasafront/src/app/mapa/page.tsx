@@ -407,13 +407,6 @@ export default function MapaPage() {
     mapInstanceRef.current.setMapTypeId(newType);
   };
 
-  const limpiarFiltros = () => {
-    setTipoInmuebleSeleccionado('');
-    setTipoOperacion('TODOS');
-    setZonaSeleccionada('');
-  };
-
-  const tienesFiltrosActivos = tipoInmuebleSeleccionado !== '' || tipoOperacion !== 'TODOS' || zonaSeleccionada !== '';
   const estadisticasPorZona = useMemo(() => {
     const stats: { [zona: string]: { count: number; totalUSD: number; totalBOB: number } } = {};
 

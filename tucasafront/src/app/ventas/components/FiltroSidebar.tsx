@@ -34,7 +34,6 @@ interface FiltroSidebarProps {
 export const FiltroSidebar = ({
   filters,
   setFilters,
-  tipos,
   tipoInmueble,
   ofertas,
 }: FiltroSidebarProps) => {
