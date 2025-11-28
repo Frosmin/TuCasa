@@ -41,7 +41,7 @@ export default function AgentsListAndCards() {
                 a.correo.toLowerCase().includes(q)
         );
     }, [agents, query]);
-    
+
     const closeModal = () => {
         setClosing(true);
         setOpening(false);
@@ -52,7 +52,7 @@ export default function AgentsListAndCards() {
     };
 
     const openModal = async (u: UserType) => {
-        setSelected(u);  
+        setSelected(u);
         setOpening(true);
         try {
             const res = await fetch(`${URL_BACKEND}/api/agentes/info/${u.id}`);
@@ -129,8 +129,8 @@ export default function AgentsListAndCards() {
                                 </div>
                             </div>
                             <div className="mt-4 flex items-center justify-between gap-2">
-                                <div className="text-sm text-gray-600">
-                                    <div className="flex items-center gap-2"><Phone className="w-4 h-4" />{u.telefono}</div>
+                                <div className="text-sm text-gray-600 truncate">
+                                    <div className="flex items-center gap-2 truncate"><Phone className="w-4 h-4" />{u.telefono}</div>
                                     <div className="flex items-center gap-2 mt-1"><Mail className="w-4 h-4" />{u.correo}</div>
                                     {u.matricula && <div className="mt-1 text-gray-500 text-xs">Matrícula: {u.matricula}</div>}
                                     {u.experiencia && <div className="mt-1 text-gray-500 text-xs">Experiencia: {u.experiencia}</div>}
@@ -170,7 +170,7 @@ export default function AgentsListAndCards() {
                                         </div>
                                     </td>
                                     <td className="p-3">
-                                        <div className="text-sm">{u.telefono}</div>
+                                        <div className="text-sm truncate">{u.telefono}</div>
                                         <div className="text-sm text-gray-500">{u.correo}</div>
                                     </td>
                                     <td className="p-3 text-sm text-gray-600">{u.direccion}</td>
@@ -192,46 +192,69 @@ export default function AgentsListAndCards() {
             )}
             {selected && (
                 <div
-                    className={`fixed inset-0 z-50 flex items-center justify-center p-4 
-                                transition-all duration-300 
-                                ${closing ? "bg-black/0" : "bg-black/40"}`}
+                    className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${closing ? "bg-black/0" : "bg-black/40"
+                        }`}
                     onClick={closeModal}
                 >
                     <div
-                        className={`bg-white rounded-2xl max-w-2xl w-full p-6 relative transform transition-all duration-300 ${closing
-                            ? "scale-95 opacity-0"
-                            : opening
-                                ? "scale-100 opacity-100"
-                                : "scale-95 opacity-0"
+                        className={`bg-white rounded-2xl max-w-2xl w-full p-6 relative transform transition-all duration-300 ${closing ? "scale-95 opacity-0" : opening ? "scale-100 opacity-100" : "scale-95 opacity-0"
                             }`}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6">
+                            Detalles del Agente
+                        </h1>
                         <button
                             className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-                            onClick={closeModal}>
+                            onClick={closeModal}
+                        >
                             <X />
                         </button>
+
                         <div className="flex flex-col sm:flex-row gap-6">
-                            <div className="w-full sm:w-40 flex-shrink-0">
+                            <div className="w-full sm:w-40 flex-shrink-0 flex flex-col items-center sm:items-start gap-3">
                                 <img src={profileSrc} alt="avatar" className="w-40 h-40 rounded-xl object-cover" />
+
+                                <div className="p-3  rounded-lg w-full text-center sm:text-left">
+
+                                    <h3 className="text-2xl font-semibold">{selected.nombre} {selected.apellido}</h3>
+                                    <p className="text-sm text-gray-500 mb-4">{selected.rol}</p>
+
+                                </div>
+
+                                <div className="p-3  rounded-lg w-full ">
+                                    <div className="text-xs text-gray-400">Teléfono</div>
+                                    <div className="font-medium truncate">{selected.telefono}</div>
+                                </div>
+
+                                {selected.cvPath && (
+                                    <div className="p-3  rounded-lg w-full text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
+                                        <FileText className="w-5 h-5" />
+                                        <a
+                                            href={selected.cvPath}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 underline"
+                                        >
+                                            Ver CV PDF
+                                        </a>
+                                    </div>
+                                )}
                             </div>
+
                             <div className="flex-1">
-                                <h3 className="text-2xl font-semibold">{selected.nombre} {selected.apellido}</h3>
-                                <p className="text-sm text-gray-500 mb-4">{selected.rol}</p>
-                                <div className="gap-3">
-                                    <div className="p-3 bg-gray-50 rounded-lg my-2">
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="p-3 bg-gray-50 rounded-lg my-2 sm:col-span-2">
                                         <div className="text-xs text-gray-400">Correo</div>
                                         <div className="font-medium truncate">{selected.correo}</div>
-                                    </div>
-                                    <div className="p-3 bg-gray-50 rounded-lg my-2">
-                                        <div className="text-xs text-gray-400">Teléfono</div>
-                                        <div className="font-medium">{selected.telefono}</div>
                                     </div>
 
                                     <div className="p-3 bg-gray-50 rounded-lg my-2 sm:col-span-2">
                                         <div className="text-xs text-gray-400">Dirección</div>
                                         <div className="font-medium">{selected.direccion}</div>
                                     </div>
+
                                     {selected.descripcion && (
                                         <div className="p-3 bg-gray-50 rounded-lg my-2 sm:col-span-2">
                                             <div className="text-xs text-gray-400">Descripción</div>
@@ -250,13 +273,6 @@ export default function AgentsListAndCards() {
                                         <div className="p-3 bg-gray-50 rounded-lg my-2">
                                             <div className="text-xs text-gray-400">Matrícula</div>
                                             <div className="font-medium">{selected.matricula}</div>
-                                        </div>
-                                    )}
-
-                                    {selected.cvPath && (
-                                        <div className="p-3 bg-gray-50 rounded-lg my-2 sm:col-span-2 flex items-center gap-2">
-                                            <FileText className="w-5 h-5" />
-                                            <a href={selected.cvPath} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Ver CV PDF</a>
                                         </div>
                                     )}
                                 </div>

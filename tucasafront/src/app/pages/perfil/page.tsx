@@ -135,7 +135,7 @@ export default function ProfilePage() {
             className={`flex flex-col bg-gray-100 p-4 rounded-xl shadow-sm ${styles.hoverField}`}
           >
             <span className="text-xs text-gray-500 mb-1">Teléfono</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 truncate">
               <Phone className="w-5 h-5 text-gray-600" />
               <span>{user.telefono}</span>
             </div>
@@ -179,9 +179,9 @@ export default function ProfilePage() {
             </button>
           )}
 
-          <button className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-xl hover:bg-gray-300 transition-all shadow-md">
+          {/* <button className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-xl hover:bg-gray-300 transition-all shadow-md">
             Editar perfil
-          </button>
+          </button> */}
         </div>
       </div>
       {confirmOpen && (
