@@ -26,6 +26,5 @@ public class SolicitudAgenteRequestDto {
 
     @NotNull(message = "El cv es obligatorio", groups = Create.class)
     private MultipartFile cvPath;
-
     
 }

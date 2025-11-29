@@ -2,6 +2,7 @@ package com.tucasa.backend.model.service.implement;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,31 +12,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+import com.tucasa.backend.security.auth.utils.SecurityUtils;
+import com.tucasa.backend.model.dto.*;
 import com.tucasa.backend.utils.CampoInmuebleBusqueda;
+import com.tucasa.backend.utils.Functions;
 import com.tucasa.backend.utils.PropietarioMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tucasa.backend.Constants.Constants;
-import com.tucasa.backend.model.dto.CasaRequestDto;
-import com.tucasa.backend.model.dto.CasaResponseDto;
-import com.tucasa.backend.model.dto.DepartamentoRequestDto;
-import com.tucasa.backend.model.dto.DepartamentoResponseDto;
-import com.tucasa.backend.model.dto.InmuebleRequestDto;
-import com.tucasa.backend.model.dto.InmuebleResponseDto;
-import com.tucasa.backend.model.dto.LoteRequestDto;
-import com.tucasa.backend.model.dto.LoteResponseDto;
-import com.tucasa.backend.model.dto.MultimediaRequestDto;
-import com.tucasa.backend.model.dto.MultimediaResponseDto;
-import com.tucasa.backend.model.dto.OfertaRequestDto;
-import com.tucasa.backend.model.dto.OfertaResponseDto;
-import com.tucasa.backend.model.dto.OfertaResponseFavoritoDto;
-import com.tucasa.backend.model.dto.TiendaRequestDto;
-import com.tucasa.backend.model.dto.TiendaResponseDto;
 import com.tucasa.backend.model.entity.Casa;
 import com.tucasa.backend.model.entity.Departamento;
+import com.tucasa.backend.model.entity.Favorito;
 import com.tucasa.backend.model.entity.Inmueble;
 import com.tucasa.backend.model.entity.Lote;
 import com.tucasa.backend.model.entity.Oferta;
@@ -330,6 +321,8 @@ public class OfertaServiceImpl implements OfertaService {
             inmueble.setLatitud(dto.getLatitud());
         if (dto.getLongitud() != null)
             inmueble.setLongitud(dto.getLongitud());
+        if (dto.getZona() != null)
+            inmueble.setZona(dto.getZona());
         if (dto.getDescripcion() != null)
             inmueble.setDescripcion(dto.getDescripcion());
         if (dto.getActivo() != null)
@@ -678,40 +671,220 @@ public class OfertaServiceImpl implements OfertaService {
 
         return dto;
     }
+
     @Override
-public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion) {
-    try {
-        Optional<Oferta> optional = ofertaRepository.findById(id);
-
-        if (optional.isEmpty()) {
-            return apiResponse.responseDataError("La oferta no existe", null);
-        }
-
-        Oferta oferta = optional.get();
-
-        List<String> estadosValidos = List.of(
-                "pendiente",
-                "cancelado",
-                "publicado"
+    public ResponseEntity<?> searchHistorico(Map<String, String> params) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                        "EXTRACT(YEAR FROM o.fecha_publicacion_inicio) as anio, " +
+                        "EXTRACT(MONTH FROM o.fecha_publicacion_inicio) as mes, " +
+                        "AVG(o.precio) as promedio_precio, " +
+                        "COUNT(o.id) as cantidad_ofertas " +
+                        "FROM ofertas o " +
+                        "INNER JOIN inmuebles i ON o.id_inmueble = i.id " +
+                        "LEFT JOIN casas c ON i.id = c.id " +
+                        "LEFT JOIN tiendas t ON i.id = t.id " +
+                        "LEFT JOIN departamentos d ON i.id = d.id " +
+                        "LEFT JOIN lote l ON i.id = l.id " +
+                        "WHERE o.activo = true AND i.activo = true " +
+                        "AND UPPER(o.tipo_operacion) <> 'AVALUO' " +
+                        "AND ( UPPER(o.estado_publicacion) = 'PUBLICADO' " +
+                                "OR UPPER(o.estado_publicacion) = 'TERMINADO') "
         );
 
-        if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
-            return apiResponse.responseDataError("Estado no válido", null);
+        // Filtro obligatorio por rango de fechas
+        String fechaInicio = params.get("fechaInicio");
+        String fechaFin = params.get("fechaFin");
+
+        if (fechaInicio == null || fechaInicio.isBlank() || fechaFin == null || fechaFin.isBlank()) {
+            return apiResponse.responseDataError("Los parámetros fechaInicio y fechaFin son obligatorios", null);
         }
 
-        oferta.setEstadoPublicacion(estadoPublicacion);
-        ofertaRepository.save(oferta);
-   return apiResponse.responseSuccess("Estado actualizado correctamente", mapToDto(oferta));
+        sql.append(" AND o.fecha_publicacion_inicio >= '").append(fechaInicio.replace("'", "''")).append("'");
+        sql.append(" AND o.fecha_publicacion_inicio <= '").append(fechaFin.replace("'", "''")).append("'");
 
-       
+        // Aplicar los mismos filtros que en search
+        for (var entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-    } catch (Exception e) {
-        return apiResponse.responseDataError("Error interno", e.getMessage());
+            // Saltar los parámetros de fecha y control
+            if (key.equals("fechaInicio") || key.equals("fechaFin") ||
+                    key.equals("latitud") || key.equals("longitud") || key.equals("proximidad") ||
+                    value == null || value.isBlank()) {
+                continue;
+            }
+
+            CampoInmuebleBusqueda campo = CampoInmuebleBusqueda.fromParam(key);
+
+            if (campo == null) continue;
+
+            switch (campo.getTipo()) {
+                case TEXTO -> sql.append(" AND ")
+                        .append(campo.getColumna())
+                        .append(" ILIKE '%").append(value.replace("'", "''")).append("%'");
+                case NUMERICO -> {
+                    try {
+                        new BigDecimal(value);
+                        if (key.equals("precioMin")) sql.append(" AND ").append(campo.getColumna()).append(" >= ").append(value);
+                        else if (key.equals("precioMax")) sql.append(" AND ").append(campo.getColumna()).append(" <= ").append(value);
+                        else sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                    } catch (NumberFormatException ignored) {}
+                }
+                case BOOLEANO -> {
+                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+                        sql.append(" AND ").append(campo.getColumna()).append(" = ").append(value);
+                }
+            }
+        }
+
+        // Filtro de proximidad geográfica
+        Double latitud = params.containsKey("latitud") ? Double.valueOf(params.get("latitud")) : null;
+        Double longitud = params.containsKey("longitud") ? Double.valueOf(params.get("longitud")) : null;
+        Double proximidad = params.containsKey("proximidad") ? Double.valueOf(params.get("proximidad")) : null;
+
+        if (latitud != null && longitud != null && proximidad != null) {
+            sql.append(" AND (")
+                    .append("6371 * acos(")
+                    .append("cos(radians(").append(latitud).append(")) * cos(radians(i.latitud)) * ")
+                    .append("cos(radians(i.longitud) - radians(").append(longitud).append(")) + ")
+                    .append("sin(radians(").append(latitud).append(")) * sin(radians(i.latitud))")
+                    .append(")")
+                    .append(") <= ").append(proximidad);
+        }
+
+        // Agrupar por año y mes
+        sql.append(" GROUP BY anio, mes");
+        sql.append(" ORDER BY anio ASC, mes ASC");
+
+        try {
+            Query query = entityManager.createNativeQuery(sql.toString());
+            List<Object[]> resultados = query.getResultList();
+
+            List<OfertaHistoricoResponseDto> historico = OfertaHistoricoResponseDto.mapToList(resultados);
+
+            return apiResponse.responseSuccess(Constants.RECORDS_FOUND, historico);
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error al obtener histórico de precios", e.getMessage());
+        }
     }
-}
+
+
+
+    @Override
+    public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPublicacion) {
+        try {
+            Optional<Oferta> optional = ofertaRepository.findById(id);
+
+            if (optional.isEmpty()) {
+                return apiResponse.responseDataError("La oferta no existe", null);
+            }
+
+            Oferta oferta = optional.get();
+
+            List<String> estadosValidos = List.of(
+                    "pendiente",
+                    "cancelado",
+                    "publicado",
+                    "terminado"
+            );
+
+            if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
+                return apiResponse.responseDataError("Estado no válido", null);
+            }
+
+            if(Objects.equals(estadoPublicacion, "pulicado")
+            ){
+                oferta.setFechaPublicacionInicio(LocalDateTime.now());
+            }
+
+
+            if(Objects.equals(estadoPublicacion, "cancelado") ||
+                    Objects.equals(estadoPublicacion, "terminado")
+            ){
+                oferta.setFechaPublicacionFin(LocalDateTime.now());
+            }
+
+            oferta.setEstadoPublicacion(estadoPublicacion);
+            ofertaRepository.save(oferta);
+       return apiResponse.responseSuccess("Estado actualizado correctamente", mapToDto(oferta));
+
+
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error interno", e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> actualizarEstadoMiPublicacion(Long id, String estadoPublicacion) {
+        try {
+            Optional<Oferta> optional = ofertaRepository.findById(id);
+
+            if (optional.isEmpty()) {
+                return apiResponse.responseDataError("La oferta no existe", null);
+            }
+
+            Oferta oferta = optional.get();
+
+            String userEmailToken = SecurityUtils.getCurrentUserEmail();
+
+            if(userEmailToken == null || userEmailToken.isEmpty()){
+                return apiResponse.responseDataError("Usuario no autenticado", null);
+            }
+
+            Optional<Usuario> propietarioFinded = usuarioRepository.findByCorreo(userEmailToken);
+
+            if(propietarioFinded.isEmpty()){
+                return apiResponse.responseDataError("Usuario no identificado", null);
+            }
+
+            Usuario propietario = propietarioFinded.get();
+
+            Usuario propietarioOferta = inmuebleRepository.findPropietarioByInmuebleId(oferta.getInmueble().getId());
+
+            if( !Objects.equals(propietario.getId(), propietarioOferta.getId())){
+                return apiResponse.responseDataError("No puedes cerrar una publicacion que no hayas publicado", null);
+            }
+
+            List<String> estadosValidos = List.of(
+                    "cancelado",
+                    "publicado",
+                    "terminado"
+            );
+
+            if (!estadosValidos.contains(estadoPublicacion.toLowerCase())) {
+                return apiResponse.responseDataError("Estado no válido", null);
+            }
+
+            String resposeMessage = "";
+
+            if(Objects.equals(estadoPublicacion, "pulicado")
+            ){
+                oferta.setFechaPublicacionInicio(LocalDateTime.now());
+                resposeMessage = "Oferta publicada exitosamente";
+            }
+
+
+            if(Objects.equals(estadoPublicacion, "cancelado") ||
+                    Objects.equals(estadoPublicacion, "terminado")
+            ){
+                oferta.setFechaPublicacionFin(LocalDateTime.now());
+                resposeMessage = Objects.equals(estadoPublicacion, "cancelado")?
+                        "Oferta cancelada exitosamente" : "Oferta terminada exitosamente";
+            }
+
+            oferta.setEstadoPublicacion(estadoPublicacion);
+            ofertaRepository.save(oferta);
+            return apiResponse.responseSuccess(resposeMessage,null);
+
+        } catch (Exception e) {
+            return apiResponse.responseDataError("Error interno" + e.getMessage(), null);
+        }
+    }
 
     private OfertaResponseDto mapToDto(Oferta oferta) {
-        return mapToDto(oferta, false);
+        return mapToDto(oferta, false);              
     }
 
     @Override
@@ -729,6 +902,40 @@ public ResponseEntity<?> actualizarEstadoPublicacion(Long id, String estadoPubli
             } else {
                 return apiResponse.responseSuccess(successMessage, List.of()); 
             }
+        } catch (Exception e) {
+            return apiResponse.responseDataError(errorMessage, e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> findFavoritosByUserId(String userEmail) {
+        String successMessage = Constants.RECORDS_FOUND;
+        String errorMessage = Constants.NO_RECORDS;
+        var usuarioOpt = usuarioRepository.findByCorreo(userEmail);
+        var usuario = usuarioOpt.get();
+
+        try {
+           
+            List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuario.getId());
+
+            if (favoritos.isEmpty()) {
+                return apiResponse.responseSuccess(successMessage, List.of());
+            }
+
+
+
+            List<Long> ofertaIds = favoritos.stream()
+                    .map(f -> f.getOferta().getId())
+                    .toList();
+
+            List<Oferta> ofertaCompleta = ofertaRepository.findAllCompletoByIds(ofertaIds);
+            
+            List<OfertaResponseDto> response = ofertaCompleta.stream()
+                    .filter(Oferta::isActivo)       // si sigue activa
+                    .map(this::mapToDto)            
+                    .collect(Collectors.toList());
+
+            return apiResponse.responseSuccess(successMessage, response);
+
         } catch (Exception e) {
             return apiResponse.responseDataError(errorMessage, e.getMessage());
         }

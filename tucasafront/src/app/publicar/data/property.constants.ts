@@ -32,13 +32,6 @@ export const OPERATION_TYPES = [
     icon: Store,
     colorClass: 'purple',
   },
-  {
-    id: 'AVALUO',
-    label: 'Avaluo',
-    description: 'Avaluo de propiedad',
-    icon: CircleDollarSign,
-    colorClass: 'green',
-  }
 ];
 
 export const CURRENCY_OPTIONS = [

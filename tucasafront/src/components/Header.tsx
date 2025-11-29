@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, User, LogOut, LayoutList, UserPlus,PanelTop } from "lucide-react";
+import { Heart, User, LogOut, LayoutList, DollarSign, UserPlus,PanelTop } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
+import { div } from "framer-motion/client";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -74,24 +75,53 @@ export default function Header() {
           </Link>
 
           {!!user && (
+            <div className="flex items-center gap-8 text-sm font-medium">
+              <Link
+                href={"/publicar"}
+                className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+              >
+                Publicar
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+              </Link>
+              <Link
+                href={"/agentes"}
+                className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+              >
+                Agentes
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+              </Link>
+            </div>
+          )}
+
+          {!!user && (
             <Link
-              href={"/publicar"}
+              href={"/avaluo"}
               className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
             >
-              Publicar
+              Servicios
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
             </Link>
           )}
+          <Link
+            href={"/ver-agentes"}
+            className="relative text-gray-700 font-bold hover:text-blue-600 transition-colors duration-300 group py-2"
+          >
+            Personal
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
+          </Link>
         </div>
 
         {/* User Actions */}
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-105">
+              <Link
+                href="/favoritos"
+                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-105"
+              >
                 <Heart className="w-5 h-5" />
                 <span className="text-sm font-medium">Favoritos</span>
-              </button>
+              </Link>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="p-2 bg-gray-200 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-110"
@@ -114,7 +144,7 @@ export default function Header() {
                   ) : (
                     <Link
                       onClick={() => setMenuOpen(false)}
-                    href={"/pages/perfil"}
+                      href={"/pages/perfil"}
                       className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       <User className="w-4 h-4" /> Perfil
@@ -128,6 +158,28 @@ export default function Header() {
                   >
                     <LayoutList className="w-4 h-4" /> Ver Publicaciones
                   </Link>
+
+                  {/* solicitud avaluo */}
+                  {user.rol as string === "AGENTE_INMOBILIARIO" && (
+  <>
+    <Link
+      href={"/solicitudes_avaluo"}
+      onClick={() => setMenuOpen(false)}
+      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+    >
+      <DollarSign className="w-4 h-4" /> Solicitudes avaluo
+    </Link>
+
+    <Link
+      href={"/mis_avaluos"}
+      onClick={() => setMenuOpen(false)}
+      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
+    >
+      <LayoutList className="w-4 h-4" /> Mis Avalúos
+    </Link>
+  </>
+)}
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);
