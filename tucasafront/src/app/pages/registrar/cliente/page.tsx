@@ -51,7 +51,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      // const API_BASE_URL = "http://localhost:8000/tucasabackend";
+      const API_BASE_URL = "http://localhost:8000/tucasabackend";
 
       const res = await fetch(URL_BACKEND + "/auth/register", {
         method: "POST",

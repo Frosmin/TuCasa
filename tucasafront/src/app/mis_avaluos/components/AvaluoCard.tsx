@@ -4,9 +4,11 @@ import { SolicitudAval } from "@/app/mis_avaluos/services/getMisAvaluos";
 
 const EstadoBadge = ({ estado }: { estado: string }) => {
   const colors: any = {
-    PENDIENTE: "bg-yellow-100 text-yellow-800",
-    EN_PROCESO: "bg-blue-100 text-blue-800",
+    CANCELADO: "bg-red-100 text-red-800",
+    EN_PROGRESO: "bg-blue-100 text-blue-800",
+    POR_ASIGNAR: "bg-yellow-100 text-yellow-800",
     COMPLETADO: "bg-green-100 text-green-800",
+
   };
 
   return (
