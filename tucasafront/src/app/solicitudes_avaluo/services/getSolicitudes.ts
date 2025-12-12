@@ -1,5 +1,6 @@
 import { URL_BACKEND } from "@/config/constants";
 import { SolicitudAval } from "../page";
+
 interface SolicitudResponse {
   error: boolean;
   message: string;
@@ -7,9 +8,10 @@ interface SolicitudResponse {
   data: SolicitudAval[];
 }
 
+// Obtener avalúos en progreso
 export const getSolicitudes = async (token: string): Promise<SolicitudAval[]> => {
   try {
-    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/lista/pendientes`, {
+    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/lista/en-progreso`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -22,33 +24,39 @@ export const getSolicitudes = async (token: string): Promise<SolicitudAval[]> =>
     }
 
     const response: SolicitudResponse = await res.json();
-    
-    
     return response.data || [];
-    
+
   } catch (error) {
     console.error("Error en getSolicitudes:", error);
     throw error;
   }
 };
 
-export const asignarmeAvaluo = async (idAgente: string | number, idAvaluo: string | number) => {
+// Asignar un agente a un avalúo
+export const asignarmeAvaluo = async (
+  idAgente: string | number,
+  idAvaluo: string | number,
+  token?: string
+) => {
   try {
-    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/asignarAgente`, {
+    const res = await fetch(`${URL_BACKEND}/api/oferta/avaluo/asignar-agente`, {
       method: 'POST',
       headers: {
-        // 'Authorization': `Bearer ${token}`,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({idAgente,idAvaluo})
+      body: JSON.stringify({ idAgente, idAvaluo })
     });
+
     if (!res.ok) {
-      throw new Error(`Error ${res.status}: No se pudo asignar el avaluo`);
+      throw new Error(`Error ${res.status}: No se pudo asignar el avalúo`);
     }
+
     const response: SolicitudResponse = await res.json();
     return response.data || [];
+
   } catch (error) {
     console.error("Error en asignarmeAvaluo:", error);
     throw error;
   }
-}
+};

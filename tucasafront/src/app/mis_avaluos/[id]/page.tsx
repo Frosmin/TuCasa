@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getAvaluoById } from "../services/getAvaluoById";
+import { updateEstadoAvaluo } from "../services/updateEstado";
 import LoadingSpinner from "@/components/Loading";
 
 import {
@@ -22,8 +23,6 @@ import {
 } from "@/components/select";
 
 import { Button } from "@/components/button";
-import { updateEstadoAvaluo } from "../services/updateEstado";
-
 import PropertyLocationMap from "@/components/PropertyLocationMap";
 
 interface Propietario {
@@ -44,10 +43,25 @@ interface Avaluo {
 }
 
 const ESTADOS = [
-  { label: "Pendiente", value: "PENDIENTE" },
-  { label: "En Proceso", value: "EN_PROCESO" },
+  { label: "Por Asignar", value: "POR_ASIGNAR" },
+  { label: "En Progreso", value: "EN_PROGRESO" },
   { label: "Completado", value: "COMPLETADO" },
+  { label: "Cancelado", value: "CANCELADO" },
 ];
+
+const estadoClasses: Record<string, string> = {
+  CANCELADO: "bg-red-100 text-red-800 border border-red-300",
+  EN_PROGRESO: "bg-blue-100 text-blue-800 border border-blue-300",
+  POR_ASIGNAR: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+  COMPLETADO: "bg-green-100 text-green-800 border border-green-300",
+};
+
+const transiciones: Record<string, string[]> = {
+  POR_ASIGNAR: ["EN_PROGRESO", "CANCELADO"],
+  EN_PROGRESO: ["COMPLETADO", "CANCELADO"],
+  COMPLETADO: [],
+  CANCELADO: [],
+};
 
 const AvaluoDetallePage = () => {
   const router = useRouter();
@@ -84,7 +98,7 @@ const AvaluoDetallePage = () => {
     try {
       const response = await updateEstadoAvaluo(id, nuevoEstado);
       console.log("Respuesta backend:", response);
-      setAvaluo((prev) => prev ? { ...prev, estado: nuevoEstado } : prev);
+      setAvaluo((prev) => (prev ? { ...prev, estado: nuevoEstado } : prev));
       setOpen(false);
     } catch (error) {
       console.error("Error actualizando estado:", error);
@@ -103,9 +117,10 @@ const AvaluoDetallePage = () => {
     return <p className="text-center mt-10">No se encontró el avalúo.</p>;
   }
 
-  return (
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
+  const estadosDisponibles = transiciones[avaluo.estado] || [];
 
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
       {/* BOTÓN VOLVER */}
       <div className="flex justify-start">
         <Button
@@ -118,7 +133,6 @@ const AvaluoDetallePage = () => {
 
       {/* INFORMACIÓN PRINCIPAL */}
       <div className="flex flex-col md:flex-row justify-between items-start bg-white rounded-3xl shadow-lg p-6 border border-gray-100 gap-6">
-        
         <div className="flex-1">
           <h1 className="text-3xl font-extrabold text-gray-900 mb-6">{avaluo.tipoInmueble}</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -136,19 +150,15 @@ const AvaluoDetallePage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-gray-500 text-sm">Estado</span>
-              <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold 
-                ${avaluo.estado === 'PENDIENTE' ? 'bg-yellow-100 text-yellow-800' : ''}
-                ${avaluo.estado === 'EN_PROCESO' ? 'bg-blue-100 text-blue-800' : ''}
-                ${avaluo.estado === 'COMPLETADO' ? 'bg-green-100 text-green-800' : ''}
-              `}>
-                {avaluo.estado}
+              <span className={`inline-block px-2 py-1 rounded-full text-sm font-semibold ${estadoClasses[avaluo.estado]}`}>
+                {avaluo.estado.replace("_", " ")}
               </span>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col justify-center md:justify-start mt-4 md:mt-0">
-          <Button onClick={() => setOpen(true)} className="w-full md:w-40">
+          <Button onClick={() => { setNuevoEstado(avaluo.estado); setOpen(true); }} className="w-full md:w-40">
             Cambiar Estado
           </Button>
         </div>
@@ -159,8 +169,8 @@ const AvaluoDetallePage = () => {
         latitude={avaluo.latitud}
         longitude={avaluo.longitud}
         address={avaluo.direccion}
-        zone={avaluo.zona || "N/A"}
-        propertyName={avaluo.descripcion || avaluo.tipoInmueble}
+        zone={avaluo.zona ?? "No especificada"}
+        propertyName={avaluo.descripcion ?? avaluo.tipoInmueble}
       />
 
       {/* MODAL */}
@@ -171,18 +181,21 @@ const AvaluoDetallePage = () => {
           </DialogHeader>
 
           <Select
+            value={nuevoEstado || avaluo.estado}
             onValueChange={setNuevoEstado}
-            defaultValue={avaluo.estado}
           >
             <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Seleccionar estado..." />
             </SelectTrigger>
             <SelectContent>
-              {ESTADOS.map((e) => (
-                <SelectItem key={e.value} value={e.value}>
-                  {e.label}
-                </SelectItem>
-              ))}
+              {estadosDisponibles.map((estado) => {
+                const estadoObj = ESTADOS.find((e) => e.value === estado);
+                return estadoObj ? (
+                  <SelectItem key={estadoObj.value} value={estadoObj.value}>
+                    {estadoObj.label}
+                  </SelectItem>
+                ) : null;
+              })}
             </SelectContent>
           </Select>
 
@@ -193,7 +206,6 @@ const AvaluoDetallePage = () => {
         </DialogContent>
       </Dialog>
     </div>
-
   );
 };
 

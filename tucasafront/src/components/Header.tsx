@@ -6,6 +6,7 @@ import { Heart, User, LogOut, LayoutList, DollarSign, UserPlus,PanelTop } from "
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { div } from "framer-motion/client";
+import Notificaciones from "@/components/Notificaciones";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -110,6 +111,10 @@ export default function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 ease-out"></span>
           </Link>
         </div>
+        {!!user && user.rol === "CLIENTE" && (
+          <Notificaciones clienteId={user.id} />
+        )}
+
 
         {/* User Actions */}
         <div className="flex items-center gap-3">

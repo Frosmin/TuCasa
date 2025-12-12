@@ -5,14 +5,29 @@ import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@
 import { useState } from "react";
 import { Button } from "@/components/button";
 
-const ModalCambiarEstado = ({ open, setOpen, estadoActual, onSubmit }: any) => {
-  const [nuevoEstado, setNuevoEstado] = useState("");
+interface ModalCambiarEstadoProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  estadoActual: string;
+  onSubmit: (nuevoEstado: string) => void;
+}
 
-  const transiciones: any = {
-    PENDIENTE: ["EN_PROCESO"],
-    EN_PROCESO: ["COMPLETADO"],
-    COMPLETADO: [],
-  };
+const estadoStyles: Record<string, string> = {
+  CANCELADO: "bg-red-100 text-red-800 px-2 py-1 rounded",
+  EN_PROGRESO: "bg-blue-100 text-blue-800 px-2 py-1 rounded",
+  POR_ASIGNAR: "bg-yellow-100 text-yellow-800 px-2 py-1 rounded",
+  COMPLETADO: "bg-green-100 text-green-800 px-2 py-1 rounded",
+};
+
+const transiciones: Record<string, string[]> = {
+  EN_PROCESO: ["COMPLETADO", "CANCELADO"],
+  POR_ASIGNAR: ["EN_PROGRESO", "COMPLETADO", "CANCELADO"],
+  COMPLETADO: [],
+  CANCELADO: [],
+};
+
+const ModalCambiarEstado = ({ open, setOpen, estadoActual, onSubmit }: ModalCambiarEstadoProps) => {
+  const [nuevoEstado, setNuevoEstado] = useState("");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -22,7 +37,7 @@ const ModalCambiarEstado = ({ open, setOpen, estadoActual, onSubmit }: any) => {
         </DialogHeader>
 
         <p className="text-sm text-gray-500 mb-2">
-          Estado actual: <strong>{estadoActual}</strong>
+          Estado actual: <span className={estadoStyles[estadoActual]}>{estadoActual.replace("_", " ")}</span>
         </p>
 
         <Select onValueChange={setNuevoEstado}>
@@ -31,9 +46,9 @@ const ModalCambiarEstado = ({ open, setOpen, estadoActual, onSubmit }: any) => {
           </SelectTrigger>
 
           <SelectContent>
-            {transiciones[estadoActual].map((est: string) => (
+            {transiciones[estadoActual]?.map((est) => (
               <SelectItem key={est} value={est}>
-                {est.replace("_", " ")}
+                <span className={estadoStyles[est]}>{est.replace("_", " ")}</span>
               </SelectItem>
             ))}
           </SelectContent>

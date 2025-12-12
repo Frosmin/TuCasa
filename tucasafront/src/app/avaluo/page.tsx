@@ -44,8 +44,10 @@ const Avaluo = () => {
       celularContacto: contact,
       latitud: parseFloat(latitude),
       longitud: parseFloat(longitude),
-      direccion: "av random",
+      direccion: address,  
+      zona: zona          
     };
+
 
     try {
       const response = await fetch(`${URL_BACKEND}/api/oferta/avaluo`, {
