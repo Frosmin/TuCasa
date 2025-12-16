@@ -4,11 +4,11 @@ interface Props {
 
 const PDFViewer = ({ url }: Props) => {
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen flex items-center justify-center ">
       <iframe
         src={url}
-        width="100%"
-        height="100%"
+        width="90%"
+        height="90%"
         style={{ border: "none" }}
         title="Manual de Usuario"
       />
