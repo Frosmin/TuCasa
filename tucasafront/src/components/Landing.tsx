@@ -1,7 +1,10 @@
+'use client'
+import { useAuth } from '@/context/AuthContext';
 import { Home, Building2, Store, Search, MapPin, TrendingUp, Shield, Clock, Users, CheckCircle, ArrowRight, Star, Phone, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Landing() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -291,7 +294,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-5 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Home className="w-8 h-8 text-blue-400" />
@@ -337,9 +340,35 @@ export default function Landing() {
                 </li>
               </ul>
             </div>
+
+            <div>
+              <h3 className="font-bold mb-4">Ayuda</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <a href="/manual_usuario" className="hover:text-white transition-colors">Manual de usuario</a> 
+                  <a href={process.env.NEXT_PUBLIC_USER_MANUAL_DOWNLOAD} className="hover:text-white transition-colors"> (Descargar)</a>
+                </li>
+                {
+                  (user?.rol==="AGENTE_INMOBILIARIO" || user?.rol==="ADMIN") && (
+                    <li>
+                      <a href="/manual_agente" className="hover:text-white transition-colors">Manual de agente</a> 
+                      <a href={process.env.NEXT_PUBLIC_AGENT_MANUAL_DOWNLOAD} className="hover:text-white transition-colors"> (Descargar)</a>
+                    </li>
+                  )
+                }
+                {
+                  user?.rol==="ADMIN" && (
+                    <li>
+                      <a href="/manual_admin" className="hover:text-white transition-colors">Manual de administrador</a> 
+                      <a href={process.env.NEXT_PUBLIC_ADMIN_MANUAL_DOWNLOAD} className="hover:text-white transition-colors"> (Descargar)</a>
+                    </li>
+                  )  
+                }
+              </ul>
+            </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <div className="border-t border-gray-800 mt-12  text-center text-gray-400">
             <p>&copy; 2025 TuCasa. Todos los derechos reservados.</p>
           </div>
         </div>

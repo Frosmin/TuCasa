@@ -98,7 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService{
                 List<Avaluo> avaluosAsignados = avaluoRepository.findByAgenteId(id);
                 if (!avaluosAsignados.isEmpty()) {
                     for (Avaluo avaluo : avaluosAsignados) {
-                        avaluo.setTipoAvaluo(TipoAvaluo.PENDIENTE);
+                        avaluo.setTipoAvaluo(TipoAvaluo.EN_PROGRESO);
                         avaluo.setAgente(null);
                         avaluoRepository.save(avaluo);
                     }
